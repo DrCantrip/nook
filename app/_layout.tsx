@@ -8,33 +8,34 @@ import { useStyleProfile } from "../src/hooks/useStyleProfile";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { session, loading: authLoading } = useAuth();
-  const { hasProfile, loading: profileLoading } = useStyleProfile();
+  const { session, user, loading: authLoading } = useAuth();
+  const { hasProfile, loading: profileLoading } = useStyleProfile(user);
   const segments = useSegments();
   const router = useRouter();
 
-  const loading = authLoading || (session && profileLoading);
+  const loading = authLoading || (!!session && profileLoading);
 
   useEffect(() => {
     if (loading) return;
 
     SplashScreen.hideAsync();
+  }, [loading]);
+
+  useEffect(() => {
+    if (loading) return;
 
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboardingGroup = segments[0] === "(onboarding)";
 
     if (!session) {
-      // No session → auth
       if (!inAuthGroup) {
         router.replace("/(auth)/welcome");
       }
     } else if (!hasProfile) {
-      // Session but no style profile → onboarding
       if (!inOnboardingGroup) {
         router.replace("/(onboarding)/swipe");
       }
     } else {
-      // Session + profile → main app
       if (inAuthGroup || inOnboardingGroup) {
         router.replace("/(app)/home");
       }

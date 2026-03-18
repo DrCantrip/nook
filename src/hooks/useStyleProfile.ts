@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
+import { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
-import { useAuth } from "./useAuth";
 
-export function useStyleProfile() {
-  const { user } = useAuth();
+export function useStyleProfile(user: User | null) {
   const [hasProfile, setHasProfile] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -14,17 +13,25 @@ export function useStyleProfile() {
       return;
     }
 
-    supabase
-      .from("style_profiles")
-      .select("id")
-      .eq("user_id", user.id)
-      .limit(1)
-      .single()
+    setLoading(true);
+    Promise.resolve(
+      supabase
+        .from("style_profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .single()
+    )
       .then(({ data, error }) => {
         setHasProfile(!!data && !error);
+      })
+      .catch(() => {
+        setHasProfile(false);
+      })
+      .finally(() => {
         setLoading(false);
       });
-  }, [user]);
+  }, [user?.id]);
 
   return { hasProfile, loading };
 }
