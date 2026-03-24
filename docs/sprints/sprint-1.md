@@ -1,353 +1,120 @@
-# Cornr — Sprint 1
+# Sprint 1 — Auth, Navigation, Design System
 
-**Goal:** Auth flow complete, bottom nav working, monitoring in place, infrastructure hardened.
+Weeks 3–5. ~22h. Gate: Sprint 0 complete.
+Output: Sign up → sign in → all screens. Design tokens. EPC lookup. ErrorBoundary. Offline banner.
 
----
-
-## Pre-T5 Actions (must be done before starting T5)
-
-These are blockers from Known Issues. Complete all before any new feature work.
-
-### P1: Install NativeWind + Metro config
-```bash
-npx expo install nativewind tailwindcss
-```
-- Create/update `tailwind.config.js` with content paths pointing to `./app/**/*.{ts,tsx}` and `./src/**/*.{ts,tsx}`
-- Create/update `metro.config.js` to wrap with `withNativeWind`
-- Verify a test class like `className="bg-primary-900"` renders correctly
-
-### P2: Install react-query
-```bash
-npx expo install @tanstack/react-query
-```
-- Create `src/providers/QueryProvider.tsx` wrapping `QueryClientProvider`
-- Add to app layout
-
-### P3: Install phosphor-react-native
-```bash
-npx expo install phosphor-react-native react-native-svg
-```
-- Verify an icon renders: `<House size={24} />`
-
-### P4: Fix CLAUDE.md expo-router version
-- Update CLAUDE.md to say `expo-router v6` (not v3)
-- Verify `app/index.tsx` exists as required by v6
-
-### P5: Add pg_cron job for daily_call_count reset
-- In Supabase SQL editor (staging first):
-```sql
-SELECT cron.schedule(
-  'reset-daily-call-count',
-  '0 0 * * *',
-  $$UPDATE profiles SET daily_call_count = 0$$
-);
-```
-- Test on nook-staging before production
-
-### P6: Add ITSAppUsesNonExemptEncryption to app.json
-- In `app.json` under `expo.ios`:
-```json
-"infoPlist": {
-  "ITSAppUsesNonExemptEncryption": false
-}
-```
-- This avoids the export compliance questionnaire on every TestFlight upload
-
-**Done when:** All 6 pre-actions complete, `npx tsc --noEmit` passes, NativeWind classes render, icons render.
+STATUS: T1–T5 COMPLETE. T6 COMPLETE. Next: T7 Bottom Navigation.
 
 ---
 
-## T5 — Sign Up Screen
+## Pre-T5 Actions [COMPLETE]
 
-**Description:** Create the sign up screen with email/password registration and 18+ age verification. This is the first screen new users see after the welcome screen.
-
-**Steps:**
-1. Create `app/(auth)/sign-up.tsx`
-2. Add to `src/content/strings.ts`:
-   - `signUp.title`: "Create your account"
-   - `signUp.emailLabel`: "Email address"
-   - `signUp.passwordLabel`: "Password"
-   - `signUp.ageCheckbox`: "I confirm I am 18 years or older"
-   - `signUp.submitButton`: "Create account"
-   - `signUp.hasAccount`: "Already have an account?"
-   - `signUp.signInLink`: "Sign in"
-   - `signUp.ageError`: "You must be 18 or older to use Cornr"
-   - `signUp.passwordHint`: "At least 8 characters"
-3. Build the form:
-   - Email input (keyboard type: email-address, autoCapitalize: none)
-   - Password input (secureTextEntry, min 8 chars validation)
-   - 18+ age verification checkbox — must be checked to submit
-   - "Create account" button (primary-900 background, 10px radius)
-   - "Already have an account? Sign in" link below
-4. All interactive elements: `activeOpacity={0.85}`
-5. On submit:
-   - Validate email format, password length, age checkbox
-   - Call `supabase.auth.signUp({ email, password })`
-   - On success: fire PostHog event `signup_completed` with no PII
-   - Navigate to main app (navigation guard handles this)
-   - On error: show inline error message
-6. Screen title: 22px/600 per typography rules
-7. All colours from Tailwind tokens only
-
-**Done when:**
-- [ ] `app/(auth)/sign-up.tsx` exists and renders
-- [ ] Email + password inputs with validation
-- [ ] 18+ checkbox blocks submission when unchecked
-- [ ] Supabase signUp call works
-- [ ] PostHog `signup_completed` event fires on success
-- [ ] All strings from `strings.ts`
-- [ ] All colours from Tailwind tokens
-- [ ] `activeOpacity={0.85}` on all pressables
-- [ ] `npx tsc --noEmit` passes
-- [ ] No hardcoded strings or colours
+All resolved 24 Mar 2026:
+- ✅ NativeWind + metro config installed
+- ✅ @tanstack/react-query installed
+- ✅ phosphor-react-native installed
+- ✅ CLAUDE.md updated (v6, PromiseLike, useAuth, visual rules, Cornr branding)
+- ✅ pg_cron daily_call_count reset added
+- ✅ ITSAppUsesNonExemptEncryption added to app.json
 
 ---
 
-## T6 — Sign In + Password Reset
+## T1: GitHub Repo + Scaffold [COMPLETE]
+## T2: Supabase Auth + useAuth [COMPLETE]
+## T3: Navigation Guard [COMPLETE]
+## T4: Welcome Screen [COMPLETE]
+## T5: Sign Up Screen [COMPLETE]
 
-**Description:** Sign in screen with email/password and a "Forgot password?" flow.
+Built 24 Mar 2026. Email/password, 18+ checkbox, anon upgrade, Privacy Policy link, NativeWind classes.
 
-**Steps:**
-1. Create `app/(auth)/sign-in.tsx`
-2. Add strings to `src/content/strings.ts`:
-   - `signIn.title`: "Welcome back"
-   - `signIn.emailLabel`: "Email address"
-   - `signIn.passwordLabel`: "Password"
-   - `signIn.submitButton`: "Sign in"
-   - `signIn.forgotPassword`: "Forgot your password?"
-   - `signIn.noAccount`: "Don't have an account?"
-   - `signIn.signUpLink`: "Create one"
-   - `signIn.resetTitle`: "Reset your password"
-   - `signIn.resetDescription`: "Enter your email and we'll send you a reset link"
-   - `signIn.resetButton`: "Send reset link"
-   - `signIn.resetSuccess`: "Check your email for the reset link"
-3. Build sign in form:
-   - Email + password inputs
-   - "Sign in" primary CTA
-   - "Forgot your password?" link -> modal or separate screen
-   - "Don't have an account? Create one" link -> sign-up
-4. Forgot password flow:
-   - Email input
-   - Call `supabase.auth.resetPasswordForEmail(email)`
-   - Show success message
-5. All interactive elements: `activeOpacity={0.85}`
-6. Fire PostHog `signin_completed` on successful sign in
+## T6: Sign In + Password Reset [COMPLETE]
 
-**Done when:**
-- [ ] `app/(auth)/sign-in.tsx` exists and renders
-- [ ] Email + password sign in works via Supabase
-- [ ] "Forgot password?" sends reset email
-- [ ] Navigation to sign-up works
-- [ ] PostHog `signin_completed` event fires
-- [ ] All strings from `strings.ts`
-- [ ] All colours from Tailwind tokens
-- [ ] `activeOpacity={0.85}` on all pressables
-- [ ] `npx tsc --noEmit` passes
+Built 24 Mar 2026. Email/password, forgot password flow, reset confirmation, NativeWind classes.
 
 ---
 
-## T7 — Bottom Navigation (4 tabs)
+## T7: Bottom Navigation [CLAUDE CODE]
 
-**Description:** Create the main bottom tab navigator with 4 tabs using Phosphor Icons.
+**Prompt:**
 
-**Steps:**
-1. Create `app/(tabs)/_layout.tsx` with bottom tab navigator
-2. Create placeholder screens:
-   - `app/(tabs)/index.tsx` — Home
-   - `app/(tabs)/products.tsx` — Products
-   - `app/(tabs)/trades.tsx` — Trades
-   - `app/(tabs)/profile.tsx` — Profile
-3. Tab bar configuration:
-   - Icons from phosphor-react-native ONLY:
-     - Home: `<House />` (filled when active)
-     - Products: `<ShoppingBag />` (filled when active)
-     - Trades: `<Wrench />` (filled when active)
-     - Profile: `<User />` (filled when active)
-   - Active icon colour: primary-900 (#1A3A5C)
-   - Inactive icon colour: gray-400
-   - Icon size: 24
-   - Touch targets: minimum 44pt (44x44)
-   - Tab labels below icons
-4. Add tab label strings to `strings.ts`
-5. Tab bar background: white, top border 1px gray-200
+Build bottom tab navigator using expo-router Tabs layout at app/(app)/_layout.tsx. 4 tabs: Home (Phosphor House), Products (Phosphor ShoppingBag), Trades (Phosphor Wrench), Profile (Phosphor User). Active tab: primary-900 fill weight icon + label. Inactive: neutral-500 light weight icon + label. Tab label: 11px/500. Tab icon: 24px. Tab bar background: white, top border 1px neutral-100. Active tab icon: scale animation 1.0→1.1→1.0 (this is one of only two places scale is permitted — Brand Identity rule). Tab bar visible on all (app) screens. Hide on (auth) and (onboarding) screens.
 
-**Done when:**
-- [ ] 4 tabs render with correct Phosphor icons
-- [ ] Active/inactive states with correct colours
-- [ ] Touch targets >= 44pt
-- [ ] Tab labels from `strings.ts`
-- [ ] Icons from phosphor-react-native ONLY (not @expo/vector-icons)
-- [ ] Navigation between tabs works
-- [ ] `npx tsc --noEmit` passes
+**Done when:** 4 tabs visible. Active tab highlighted with fill icon. Inactive tabs use light icon.
 
 ---
 
-## T8 — Home Screen Shell
+## T8: Home Screen Shell [CLAUDE CODE]
 
-**Description:** Create the basic Home screen layout as a shell for future content.
+**Prompt:**
 
-**Steps:**
-1. Update `app/(tabs)/index.tsx`
-2. Add strings:
-   - `home.greeting`: "Hi, {{name}}"
-   - `home.subtitle`: "Your home hub"
-3. Layout:
-   - Screen background: warmstone (#F5F4F0)
-   - Greeting with user's name from auth context (22px/600 title)
-   - Subtitle below
-   - Empty state placeholder for future cards
-4. Pull-to-refresh shell (no data to refresh yet, but the gesture should work)
-5. SafeAreaView with proper insets
+Build Home screen at app/(app)/home.tsx. Screen background: warmstone (#F5F4F0). Screen title: "Your Home" — 22px/600. If user has no rooms: show empty state — Phosphor DoorOpen 64px neutral-300, "Your home, waiting to become yours." Subtext: "Add your first room to get started." CTA: "Add a room" (primary-900, navigates to room setup). If user has rooms: FlatList of room cards. If user has 1 room with recommendations loaded and no second room: show second-room prompt from STRINGS.homeReturnPrompt below the first room card.
 
-**Done when:**
-- [ ] Home screen renders with greeting
-- [ ] User name pulled from auth context
-- [ ] warmstone background
-- [ ] Screen title follows typography rules (22px/600)
-- [ ] SafeAreaView with proper insets
-- [ ] Pull-to-refresh gesture works (even if no-op)
-- [ ] All strings from `strings.ts`
-- [ ] `npx tsc --noEmit` passes
+**Done when:** Empty state renders with DoorOpen icon. Room cards render when rooms exist. Second-room prompt appears for single-room users.
 
 ---
 
-## T9 — Sentry EU Setup
+## T9: Sentry (EU) [CLAUDE CODE]
 
-**Description:** Add Sentry error monitoring, EU data region.
+**Prompt:**
 
-**Steps:**
-1. Install Sentry:
-```bash
-npx expo install @sentry/react-native
-```
-2. Create `src/lib/sentry.ts`:
-   - Init with EU DSN (from Supabase Edge Function secrets — never in .env)
-   - For dev: use a placeholder DSN or disable
-3. Wrap root layout with Sentry error boundary
-4. Configure source maps for EAS builds (config only, not running a build)
-5. Add Sentry to `app/_layout.tsx`
-6. Test with `Sentry.captureException(new Error('test'))` in dev
+Set up Sentry EU project for Cornr. Install @sentry/react-native. Configure in root layout with EU data residency (ingest.de.sentry.io). Store DSN in .env (EXPO_PUBLIC_SENTRY_DSN). Trigger a deliberate crash to verify events appear in Sentry dashboard. Remove test crash after verification.
 
-**Done when:**
-- [ ] Sentry SDK installed
-- [ ] Init in `src/lib/sentry.ts`
-- [ ] Error boundary wraps root layout
-- [ ] DSN not hardcoded in app code
-- [ ] `npx tsc --noEmit` passes
+**Done when:** EU project created in Sentry dashboard. Test crash visible. Test crash code removed.
 
 ---
 
-## T10 — PostHog EU Setup
+## T10: PostHog (EU) [CLAUDE CODE]
 
-**Description:** Add PostHog analytics, EU region (Frankfurt).
+**Prompt:**
 
-**Steps:**
-1. Install PostHog:
-```bash
-npx expo install posthog-react-native
-```
-2. Create `src/lib/posthog.ts`:
-   - Init with EU host (`https://eu.posthog.com`)
-   - API key from config (not hardcoded secret — PostHog public keys are safe in app)
-3. Create `src/providers/PostHogProvider.tsx`
-4. Add to app layout provider stack
-5. Verify events fire in PostHog dashboard
+Set up PostHog EU project for Cornr. Install posthog-react-native. Wrap root layout with PostHogProvider using EU host (eu.posthog.com). Store API key in .env (EXPO_PUBLIC_POSTHOG_KEY). Fire a test event (app_opened), verify it appears in PostHog dashboard.
 
-**Done when:**
-- [ ] PostHog SDK installed
-- [ ] EU region configured
-- [ ] Provider wraps app
-- [ ] Test event visible in PostHog dashboard
-- [ ] `npx tsc --noEmit` passes
+**Done when:** EU project created. Test event visible in PostHog dashboard.
 
 ---
 
-## T-EPC — Silent EPC Lookup
+## T-EPC: Silent EPC Lookup [CLAUDE CODE]
 
-**Description:** Add silent EPC (Energy Performance Certificate) lookup by postcode. This runs in the background — no UI in this task.
+**Prompt:**
 
-**Steps:**
-1. Create Supabase Edge Function `epc-lookup`
-2. Function accepts `{ postcode }` in request body
-3. Calls the public EPC API: `https://epc.opendatacommunities.org/api/v1/domestic/search`
-4. JWT verified at top — unauthenticated requests get 401
-5. Returns EPC data for the postcode
-6. No PII sent to external API — postcode only
-7. Rate limit: use the user's `daily_call_count`
+After user enters postcode in onboarding (saved to users.postcode_district), add a silent background call — do NOT block the onboarding flow or show any UI: fetch EPC API at epc.opendatacommunities.org/api/v1/domestic/search with postcode and size=1. If result found, extract construction-age-band and update users.property_period. If not found, property_period remains null — no error, no user impact. Store EPC_API_KEY as Supabase Edge Function secret. Register at epc.opendatacommunities.org first.
 
-**Done when:**
-- [ ] Edge Function `epc-lookup` exists
-- [ ] JWT verification at top
-- [ ] Calls EPC API with postcode only
-- [ ] Returns structured EPC data
-- [ ] 401 for unauthenticated requests
-- [ ] No PII in external API call
-- [ ] Tested on staging
+**Done when:** Postcode entry silently populates property_period. Null if not found. Onboarding not blocked.
 
 ---
 
-## T-ERR — React Error Boundary
+## T-ERR: ErrorBoundary [CLAUDE CODE]
 
-**Description:** Add a user-facing error boundary that catches React render errors gracefully.
+**Prompt:**
 
-**Steps:**
-1. Create `src/components/ErrorBoundary.tsx`
-2. Class component with `componentDidCatch`
-3. Fallback UI:
-   - "Something went wrong" message (from strings.ts)
-   - "Try again" button that resets the error boundary
-   - Report to Sentry if configured
-4. Wrap main app content (inside Sentry boundary, outside navigation)
-5. Add strings to `strings.ts`
+Create a React ErrorBoundary class component at src/components/ErrorBoundary.tsx. Must be a class component (React error boundaries cannot be function components). Catches render errors in child tree. Shows branded fallback: warmstone background, Cornr wordmark, "Something went wrong" message, "Try again" button that calls this.setState to reset. Wrap the root layout's Slot component with this ErrorBoundary.
 
-**Done when:**
-- [ ] `src/components/ErrorBoundary.tsx` exists
-- [ ] Catches render errors
-- [ ] Shows fallback UI with retry
-- [ ] Reports to Sentry
-- [ ] Strings from `strings.ts`
-- [ ] `npx tsc --noEmit` passes
+**Done when:** Deliberate render error is caught. Fallback screen shows with Try again button. Try again recovers the app.
 
 ---
 
-## T-OFF — Offline Banner
+## T-OFF: Offline Connectivity Banner [CLAUDE CODE]
 
-**Description:** Show a banner when the device loses internet connectivity.
+**Prompt:**
 
-**Steps:**
-1. Create `src/components/OfflineBanner.tsx`
-2. Use `@react-native-community/netinfo` or expo equivalent
-3. Banner appears at top of screen when offline
-4. Banner text from `strings.ts`: "You're offline. Some features may be unavailable."
-5. Banner disappears when connectivity returns
-6. Banner style: yellow/amber background, dark text
+Install @react-native-community/netinfo. Create OfflineBanner component at src/components/OfflineBanner.tsx. When device is offline (useNetInfo().isConnected === false): show amber banner at top of screen with "You're offline. Some features may not work." text. Non-blocking — user can still navigate. When Reduce Motion is enabled: show banner instantly (no slide animation). Cache current archetype in expo-secure-store so archetype result screen works offline.
 
-**Done when:**
-- [ ] Banner appears when offline
-- [ ] Banner disappears when online
-- [ ] Text from `strings.ts`
-- [ ] Non-intrusive positioning (top of screen, doesn't push content)
-- [ ] `npx tsc --noEmit` passes
+**Done when:** Airplane mode shows amber banner. Reconnecting dismisses it. Reduce Motion = instant show/hide.
 
 ---
 
-## T-CLI — Supabase CLI Local Dev
+## T-CLI: Supabase CLI Local Dev [CLAUDE CODE]
 
-**Description:** Set up Supabase CLI for local development and testing.
+**Prompt:**
 
-**Steps:**
-1. Install Supabase CLI if not present
-2. Run `supabase init` in project root (if not already done)
-3. Configure `supabase/config.toml` for local dev
-4. Document in README or docs how to:
-   - Start local Supabase: `supabase start`
-   - Run migrations locally
-   - Test Edge Functions locally
-5. Ensure `.env` local overrides point to local Supabase URL
+Install Supabase CLI globally. Run supabase init in project root. Link to nook-staging project with supabase link. Verify supabase functions serve starts without error. This enables local Edge Function testing before deploying to Supabase.
 
-**Done when:**
-- [ ] `supabase/` directory with config exists
-- [ ] `supabase start` launches local instance
-- [ ] Local dev documented
-- [ ] Edge Functions testable locally
-- [ ] No secrets committed to git
+**Done when:** supabase --version returns a version number. supabase functions serve starts successfully.
+
+---
+
+## PostHog Events (Sprint 1)
+
+- signup_completed { source, time_since_archetype_seconds }
+- signup_skipped { time_on_archetype_screen_seconds }
+- signin_completed

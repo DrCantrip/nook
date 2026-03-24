@@ -2,8 +2,8 @@
 
 ## Current build status
 Current sprint: Sprint 1
-Current task: T6
-Last completed: T5 Sign Up screen
+Current task: T7
+Last completed: T6 Sign In + password reset
 Blocking issues: NONE
 
 ## Stack

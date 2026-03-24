@@ -21,4 +21,18 @@ export const STRINGS = {
     privacyPolicyUrl: "https://cornr.app/privacy",
     genericError: "Something went wrong. Please try again.",
   },
+  signIn: {
+    title: "Welcome back",
+    emailLabel: "Email address",
+    passwordLabel: "Password",
+    submitButton: "Sign in",
+    forgotPassword: "Forgot your password?",
+    noAccount: "Don't have an account?",
+    signUpLink: "Sign up",
+    resetTitle: "Reset your password",
+    resetDescription: "Enter your email and we'll send you a reset link",
+    resetButton: "Send reset link",
+    resetSuccess: "Check your email for a reset link.",
+    genericError: "Something went wrong. Please try again.",
+  },
 } as const;
