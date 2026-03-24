@@ -35,4 +35,10 @@ export const STRINGS = {
     resetSuccess: "Check your email for a reset link.",
     genericError: "Something went wrong. Please try again.",
   },
+  tabs: {
+    home: "Home",
+    products: "Products",
+    trades: "Trades",
+    profile: "Profile",
+  },
 } as const;

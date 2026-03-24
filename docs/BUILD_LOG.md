@@ -27,6 +27,7 @@
 | S1 | Pre-T5 | 2026-03-24 | NativeWind, react-query, phosphor, CLAUDE.md fix, pg_cron, app.json | tsc | All 4 known issues resolved |
 | S1 | T5 | 2026-03-24 | Sign Up screen | tsc | Email/password, 18+ checkbox, Supabase auth |
 | S1 | T6 | 2026-03-24 | Sign In + password reset | tsc | signInWithPassword, resetPasswordForEmail, inline errors |
+| S1 | T7 | 2026-03-24 | Bottom tab navigator | tsc | 4 tabs, Phosphor icons, fill/light, scale animation |
 
 ## Known Issues
 

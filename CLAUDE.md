@@ -2,8 +2,8 @@
 
 ## Current build status
 Current sprint: Sprint 1
-Current task: T7
-Last completed: T6 Sign In + password reset
+Current task: T8
+Last completed: T7 Bottom tab navigator
 Blocking issues: NONE
 
 ## Stack
