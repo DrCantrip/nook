@@ -11,3 +11,5 @@
 5. **expo-router v6 requires app/index.tsx** — The entry point must exist at `app/index.tsx`. Without it, the router silently fails to mount and you get a blank screen with no error.
 
 6. **Don't manually update CLAUDE.md/BUILD_LOG** — Use the /done command to keep mission control (CLAUDE.md, BUILD_LOG.md) in sync automatically. Manual updates across Claude Chat and Claude Code in VS Code lead to stale or conflicting state. Let the workflow commands handle it.
+
+7. **Trusting Claude Code to execute speeds things up at the cost of context** — Letting Claude Code run through a plan in VS Code without checking every response in Claude.ai is faster, but you lose visibility into the reasoning behind each step. Acceptable trade-off for well-defined tasks; review more closely for ambiguous ones.

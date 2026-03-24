@@ -24,12 +24,14 @@
 | S1 | T3 | 2026-03-19 | Navigation guard + route groups | tsc | expo-router |
 | S1 | T4 | 2026-03-20 | Welcome screen + device testing | tsc | |
 | S1 | — | 2026-03-24 | Workflow infrastructure + Supabase MCP | tsc | Commands, build log, sprint docs, verify scripts |
+| S1 | Pre-T5 | 2026-03-24 | NativeWind, react-query, phosphor, CLAUDE.md fix, pg_cron, app.json | tsc | All 4 known issues resolved |
+| S1 | T5 | 2026-03-24 | Sign Up screen | tsc | Email/password, 18+ checkbox, Supabase auth |
 
 ## Known Issues
 
 | Severity | Issue | Impact | Fix |
 |----------|-------|--------|-----|
-| HIGH | NativeWind not installed — tailwind classes non-functional | All styling broken | `npx expo install nativewind tailwindcss` + metro config |
-| HIGH | CLAUDE.md says expo-router v3 but v6 is installed | Docs misleading, wrong patterns used | Update CLAUDE.md to reference v6 |
-| HIGH | daily_call_count in Supabase never resets | API rate limits accumulate forever | Add pg_cron job to reset daily at midnight UTC |
-| MEDIUM | react-query and phosphor-react-native not installed | Data fetching and icons unavailable | `npx expo install @tanstack/react-query phosphor-react-native` |
+| ~~HIGH~~ | ~~NativeWind not installed~~ | RESOLVED 2026-03-24 | Installed + metro/tailwind/babel config |
+| ~~HIGH~~ | ~~CLAUDE.md says expo-router v3~~ | RESOLVED 2026-03-24 | Updated to v6, added Cornr branding |
+| ~~HIGH~~ | ~~daily_call_count never resets~~ | RESOLVED 2026-03-24 | pg_cron job: reset-daily-call-count at midnight UTC |
+| ~~MEDIUM~~ | ~~react-query and phosphor not installed~~ | RESOLVED 2026-03-24 | Installed with --legacy-peer-deps |
