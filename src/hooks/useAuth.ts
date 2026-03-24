@@ -30,8 +30,15 @@ export function useAuth() {
 
   const user: User | null = session?.user ?? null;
 
-  const signUp = (email: string, password: string) =>
-    supabase.auth.signUp({ email, password });
+  const isAnonymous = session?.user?.is_anonymous === true;
+
+  const signUp = (email: string, password: string) => {
+    if (isAnonymous) {
+      // Upgrade anonymous user — preserves existing user_id and linked data
+      return supabase.auth.updateUser({ email, password });
+    }
+    return supabase.auth.signUp({ email, password });
+  };
 
   const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });

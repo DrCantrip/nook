@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   Text,
@@ -47,7 +47,7 @@ export default function SignUpScreen() {
       // PostHog signup_completed event — no PII
       // TODO: Fire posthog.capture("signup_completed") once PostHog provider is added (T10)
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(S.genericError);
     } finally {
       setLoading(false);
     }
@@ -98,7 +98,7 @@ export default function SignUpScreen() {
 
           {/* Age checkbox */}
           <Pressable
-            className="flex-row items-center mb-6 min-h-[44px]"
+            className="flex-row items-center mb-4 min-h-[44px]"
             onPress={() => setAgeConfirmed((v) => !v)}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: ageConfirmed }}
@@ -119,6 +119,19 @@ export default function SignUpScreen() {
               {S.ageCheckbox}
             </Text>
           </Pressable>
+
+          {/* Privacy policy */}
+          <View className="flex-row flex-wrap mb-6">
+            <Text className="text-sm text-gray-500">{S.privacyPolicy} </Text>
+            <Pressable
+              onPress={() => Linking.openURL(S.privacyPolicyUrl)}
+              style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+            >
+              <Text className="text-sm font-semibold text-primary-600 underline">
+                {S.privacyPolicyLink}
+              </Text>
+            </Pressable>
+          </View>
 
           {/* Error */}
           {error && (
