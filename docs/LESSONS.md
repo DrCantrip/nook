@@ -9,3 +9,5 @@
 4. **Check expo.dev/go before SDK decisions** — Not all Expo SDK packages work in Expo Go. Always verify compatibility at expo.dev/go before adding a dependency. If it requires a dev client, plan for that build step.
 
 5. **expo-router v6 requires app/index.tsx** — The entry point must exist at `app/index.tsx`. Without it, the router silently fails to mount and you get a blank screen with no error.
+
+6. **Don't manually update CLAUDE.md/BUILD_LOG** — Use the /done command to keep mission control (CLAUDE.md, BUILD_LOG.md) in sync automatically. Manual updates across Claude Chat and Claude Code in VS Code lead to stale or conflicting state. Let the workflow commands handle it.

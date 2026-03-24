@@ -1,9 +1,9 @@
 # CLAUDE.md - Nook Project Rules
 
 ## Current build status
-Current sprint: Sprint 0
-Current task: T15
-Last completed: T14 NativeWind tokens
+Current sprint: Sprint 1
+Current task: T5
+Last completed: T4 Welcome screen + device testing
 Blocking issues: NONE
 
 ## Stack

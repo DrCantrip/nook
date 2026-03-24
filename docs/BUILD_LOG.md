@@ -23,6 +23,7 @@
 | S1 | T2 | 2026-03-18 | useAuth hook | tsc | |
 | S1 | T3 | 2026-03-19 | Navigation guard + route groups | tsc | expo-router |
 | S1 | T4 | 2026-03-20 | Welcome screen + device testing | tsc | |
+| S1 | — | 2026-03-24 | Workflow infrastructure + Supabase MCP | tsc | Commands, build log, sprint docs, verify scripts |
 
 ## Known Issues
 
