@@ -18,7 +18,7 @@ export const STRINGS = {
     passwordHint: "At least 8 characters",
     privacyPolicy: "By creating an account you agree to our",
     privacyPolicyLink: "Privacy Policy",
-    privacyPolicyUrl: "https://cornr.app/privacy",
+    privacyPolicyNotice: "Privacy policy will be available at cornr.co.uk/privacy before launch",
     genericError: "Something went wrong. Please try again.",
   },
   signIn: {
@@ -33,6 +33,7 @@ export const STRINGS = {
     resetDescription: "Enter your email and we'll send you a reset link",
     resetButton: "Send reset link",
     resetSuccess: "Check your email for a reset link.",
+    backToSignIn: "Back to sign in",
     genericError: "Something went wrong. Please try again.",
   },
   tabs: {
@@ -40,5 +41,14 @@ export const STRINGS = {
     products: "Products",
     trades: "Trades",
     profile: "Profile",
+  },
+  home: {
+    title: "Your Home",
+    emptyIcon: "DoorOpen",
+    emptyHeadline: "Your home, waiting to become yours.",
+    emptySubtext: "Add your first room to get started.",
+    emptyCta: "Add a room",
+    secondRoomPrompt: "Ready to style another room? Adding a second room helps Cornr understand your whole home.",
+    secondRoomCta: "Add another room",
   },
 } as const;

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Nook",
-    "slug": "Nook",
+    "name": "Cornr",
+    "slug": "cornr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -31,6 +31,6 @@
       "expo-router",
       "expo-asset"
     ],
-    "scheme": "nook"
+    "scheme": "cornr"
   }
 }

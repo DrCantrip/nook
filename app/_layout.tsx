@@ -28,19 +28,24 @@ export default function RootLayout() {
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboardingGroup = segments[0] === "(onboarding)";
 
+    let target: string | null = null;
+
     if (!session) {
-      if (!inAuthGroup) {
-        router.replace("/(auth)/welcome");
-      }
+      if (!inAuthGroup) target = "/(auth)/welcome";
     } else if (!hasProfile) {
-      if (!inOnboardingGroup) {
-        router.replace("/(onboarding)/swipe");
-      }
+      if (!inOnboardingGroup) target = "/(onboarding)/swipe";
     } else {
-      if (inAuthGroup || inOnboardingGroup) {
-        router.replace("/(app)/home");
-      }
+      if (inAuthGroup || inOnboardingGroup) target = "/(app)/home";
     }
+
+    if (!target) return;
+
+    // Defer to next tick so the navigator has finished processing
+    // the current render before receiving a replace action.
+    const id = setTimeout(() => {
+      router.replace(target as string);
+    }, 0);
+    return () => clearTimeout(id);
   }, [session, hasProfile, loading, segments]);
 
   if (loading) {

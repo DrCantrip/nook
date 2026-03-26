@@ -28,6 +28,7 @@
 | S1 | T5 | 2026-03-24 | Sign Up screen | tsc | Email/password, 18+ checkbox, Supabase auth |
 | S1 | T6 | 2026-03-24 | Sign In + password reset | tsc | signInWithPassword, resetPasswordForEmail, inline errors |
 | S1 | T7 | 2026-03-24 | Bottom tab navigator | tsc | 4 tabs, Phosphor icons, fill/light, scale animation |
+| S1 | T8 | 2026-03-25 | Home screen shell | tsc | Empty state, room cards, second-room prompt, pull-to-refresh |
 
 ## Known Issues
 

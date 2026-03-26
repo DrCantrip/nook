@@ -1,111 +1,147 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 import { STRINGS } from "../../src/content/strings";
 import { COLORS } from "../../src/tokens/colors";
 
+const S = STRINGS.welcome;
+
 export default function WelcomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.root}>
-      {/* Dark overlay on lower half */}
-      <View style={styles.overlay} />
+    <ImageBackground
+      source={require("../../assets/welcome-hero.jpg")}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <LinearGradient
+        colors={["transparent", "rgba(0,0,0,0.35)"]}
+        locations={[0, 1]}
+        pointerEvents="none"
+        style={styles.gradient}
+      />
 
-      <SafeAreaView style={styles.safeArea}>
-        {/* Top content */}
-        <View style={styles.top}>
-          <Text style={styles.title}>{STRINGS.welcome.title}</Text>
-          <Text style={styles.subtitle}>{STRINGS.welcome.subtitle}</Text>
+      {/* Full-screen container with manual safe area padding */}
+      <View
+        cssInterop={false}
+        style={[
+          styles.container,
+          { paddingTop: insets.top, paddingBottom: insets.bottom },
+        ]}
+      >
+        {/* Top — branding */}
+        <View cssInterop={false} style={styles.topSection}>
+          <Text style={styles.wordmark}>{S.title}</Text>
+          <Text style={styles.tagline}>{S.subtitle}</Text>
         </View>
 
-        {/* Bottom content */}
-        <View style={styles.bottom}>
-          <Text style={styles.headline}>{STRINGS.welcome.headline}</Text>
+        {/* Bottom — CTA area */}
+        <View cssInterop={false} style={styles.bottomSection}>
+          <Text style={styles.headline}>{S.headline}</Text>
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.ctaButton,
-              pressed && { opacity: 0.85 },
-            ]}
-            onPress={() => router.push("/(onboarding)/swipe")}
-          >
-            <Text style={styles.ctaText}>{STRINGS.welcome.cta}</Text>
-          </Pressable>
+          {/* Button: white bg on outer View, press state on inner Pressable */}
+          <View cssInterop={false} style={styles.ctaWrapper}>
+            <Pressable
+              cssInterop={false}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push("/(auth)/sign-up");
+              }}
+              style={({ pressed }) => [
+                styles.ctaPressable,
+                { opacity: pressed ? 0.85 : 1 },
+              ]}
+            >
+              <Text style={styles.ctaText}>{S.cta}</Text>
+            </Pressable>
+          </View>
 
+          {/* Sign in link */}
           <Pressable
-            style={({ pressed }) => [
-              styles.signInButton,
-              pressed && { opacity: 0.85 },
-            ]}
+            cssInterop={false}
             onPress={() => router.push("/(auth)/sign-in")}
+            style={({ pressed }) => [
+              styles.signInPressable,
+              { opacity: pressed ? 0.85 : 1 },
+            ]}
           >
-            <Text style={styles.signInText}>{STRINGS.welcome.signIn}</Text>
+            <Text style={styles.signInText}>{S.signIn}</Text>
           </Pressable>
         </View>
-      </SafeAreaView>
-    </View>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
+  background: {
     flex: 1,
-    backgroundColor: COLORS.warmstone,
+    backgroundColor: "#000000",
   },
-  overlay: {
+  gradient: {
     position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
+    bottom: 0,
     height: "50%",
-    backgroundColor: "rgba(0,0,0,0.35)",
   },
-  safeArea: {
+  container: {
     flex: 1,
     justifyContent: "space-between",
   },
-  top: {
+  topSection: {
     alignItems: "center",
-    paddingTop: 24,
+    paddingTop: 60,
   },
-  title: {
+  wordmark: {
     fontSize: 28,
     fontWeight: "700",
     color: COLORS.white,
     letterSpacing: -0.5,
   },
-  subtitle: {
+  tagline: {
     fontSize: 16,
     fontWeight: "400",
     color: "rgba(255,255,255,0.8)",
-    marginTop: 6,
+    marginTop: 8,
   },
-  bottom: {
-    paddingHorizontal: 24,
-    paddingBottom: 16,
+  bottomSection: {
+    paddingHorizontal: 20,
+    paddingBottom: 32,
   },
   headline: {
     fontSize: 20,
     fontWeight: "600",
     color: COLORS.white,
     textAlign: "center",
-    marginBottom: 16,
   },
-  ctaButton: {
+  ctaWrapper: {
     backgroundColor: COLORS.white,
     borderRadius: 10,
-    padding: 16,
+    marginTop: 16,
+    overflow: "hidden",
+  },
+  ctaPressable: {
+    minHeight: 52,
     alignItems: "center",
+    justifyContent: "center",
   },
   ctaText: {
     fontSize: 16,
     fontWeight: "600",
     color: COLORS.primary900,
+    letterSpacing: 0.2,
   },
-  signInButton: {
+  signInPressable: {
     marginTop: 16,
     alignItems: "center",
+    justifyContent: "center",
+    minHeight: 44,
+    paddingVertical: 12,
   },
   signInText: {
     fontSize: 14,

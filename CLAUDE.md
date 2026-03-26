@@ -2,8 +2,8 @@
 
 ## Current build status
 Current sprint: Sprint 1
-Current task: T8
-Last completed: T7 Bottom tab navigator
+Current task: T9
+Last completed: T8 Home screen shell
 Blocking issues: NONE
 
 ## Stack
@@ -66,6 +66,24 @@ Primary buttons: bg-primary-900, text-white, rounded-button, py-3.
 Secondary buttons: border border-primary-600, text-primary-600, rounded-button, py-3.
 Teal panels (AI content only): bg-teal-bg, text-teal-text, rounded-card, p-4.
 44pt minimum touch targets on all interactive elements.
+Before building any screen, read the relevant component spec from the UX Design Review (project knowledge). The UX Design Review overrides simplified specs in sprint prompts.
+
+### MANDATORY: Read before building
+Before building or modifying ANY screen or component, read docs/DESIGN_SPECS.md.
+This file contains exact values for spacing, colours, typography, shadows, press states, and touch targets.
+Do not use default values. Do not guess. Every number in the spec was chosen deliberately.
+
+### The spec overrides everything
+If a sprint prompt says "add a button" without specifying height, the spec says 52px.
+If a sprint prompt says "primary colour" without a hex, the spec says #1A3A5C.
+The UX Design Review (project knowledge) overrides simplified specs in sprint prompts.
+docs/DESIGN_SPECS.md is the local copy of those specs for Claude Code to reference.
+
+### Verify during /done
+The /done command includes a Design Spec Check step. It verifies spacing, colours, typography, touch targets, and press states against the spec. If anything doesn't match, fix it before committing.
+
+## Navigation rules
+After adding or modifying any router.push() or router.replace() call, verify the target route file exists. Run: find app/ -name '*.tsx' to list all routes. If the target doesn't exist, stop and flag it — don't commit broken navigation.
 
 ## ProductCard rules
 Rationale always starts "Chosen because..." — never any other prefix

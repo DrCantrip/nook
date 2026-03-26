@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { ArrowLeft } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
 import { STRINGS } from "../../src/content/strings";
@@ -72,6 +73,19 @@ export default function SignInScreen() {
   if (showReset) {
     return (
       <SafeAreaView className="flex-1 bg-warmstone">
+        {/* Back button */}
+        <Pressable
+          className="ml-4 mt-2 min-w-[44px] min-h-[44px] items-start justify-center"
+          onPress={() => {
+            setShowReset(false);
+            setResetSent(false);
+            setResetError(null);
+          }}
+          style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+        >
+          <ArrowLeft size={24} color="#1A3A5C" />
+        </Pressable>
+
         <View className="flex-1 justify-center px-6">
           <Text className="text-[22px] font-semibold tracking-tight text-primary-900 mb-2">
             {S.resetTitle}
@@ -145,7 +159,7 @@ export default function SignInScreen() {
             style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
           >
             <Text className="text-sm font-semibold text-primary-600">
-              {S.submitButton}
+              {S.backToSignIn}
             </Text>
           </Pressable>
         </View>
@@ -155,6 +169,15 @@ export default function SignInScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-warmstone">
+      {/* Back button */}
+      <Pressable
+        className="ml-4 mt-2 min-w-[44px] min-h-[44px] items-start justify-center"
+        onPress={() => router.back()}
+        style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+      >
+        <ArrowLeft size={24} color="#1A3A5C" />
+      </Pressable>
+
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}

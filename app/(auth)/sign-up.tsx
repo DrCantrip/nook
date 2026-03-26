@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
-  Linking,
   Platform,
   Pressable,
   Text,
@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { ArrowLeft } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { STRINGS } from "../../src/content/strings";
 
@@ -55,6 +56,15 @@ export default function SignUpScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-warmstone">
+      {/* Back button */}
+      <Pressable
+        className="ml-4 mt-2 min-w-[44px] min-h-[44px] items-start justify-center"
+        onPress={() => router.back()}
+        style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+      >
+        <ArrowLeft size={24} color="#1A3A5C" />
+      </Pressable>
+
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -124,7 +134,7 @@ export default function SignUpScreen() {
           <View className="flex-row flex-wrap mb-6">
             <Text className="text-sm text-gray-500">{S.privacyPolicy} </Text>
             <Pressable
-              onPress={() => Linking.openURL(S.privacyPolicyUrl)}
+              onPress={() => Alert.alert(S.privacyPolicyLink, S.privacyPolicyNotice)}
               style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
             >
               <Text className="text-sm font-semibold text-primary-600 underline">
