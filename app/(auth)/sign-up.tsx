@@ -24,6 +24,7 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -32,6 +33,7 @@ export default function SignUpScreen() {
 
   async function handleSignUp() {
     setError(null);
+    setSuccess(null);
 
     if (!ageConfirmed) {
       setError(S.ageError);
@@ -45,8 +47,10 @@ export default function SignUpScreen() {
         setError(authError.message);
         return;
       }
-      // PostHog signup_completed event — no PII
-      // TODO: Fire posthog.capture("signup_completed") once PostHog provider is added (T10)
+      // Success — either new account (needs email confirmation) or existing
+      // account (Supabase sends reset email to prevent enumeration).
+      // Show the same safe message in both cases.
+      setSuccess(S.checkEmail);
     } catch {
       setError(S.genericError);
     } finally {
@@ -142,6 +146,15 @@ export default function SignUpScreen() {
               </Text>
             </Pressable>
           </View>
+
+          {/* Success */}
+          {success && (
+            <View className="bg-white rounded-card p-4 mb-4">
+              <Text className="text-base text-primary-900 text-center">
+                {success}
+              </Text>
+            </View>
+          )}
 
           {/* Error */}
           {error && (

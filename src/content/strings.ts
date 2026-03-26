@@ -19,6 +19,7 @@ export const STRINGS = {
     privacyPolicy: "By creating an account you agree to our",
     privacyPolicyLink: "Privacy Policy",
     privacyPolicyNotice: "Privacy policy will be available at cornr.co.uk/privacy before launch",
+    checkEmail: "Check your email to continue.",
     genericError: "Something went wrong. Please try again.",
   },
   signIn: {
