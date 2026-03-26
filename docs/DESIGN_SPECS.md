@@ -255,3 +255,24 @@ Same as above but: background WHITE, text primary-900.
 - Never mix icon families (Phosphor only)
 - Never use border-radius 12 on buttons (10px only)
 - Never use height 44 on primary buttons (52px only)
+
+---
+
+## 11. NativeWind escape hatch rules
+
+NativeWind v4's CSS interop (jsxImportSource: "nativewind") wraps ALL React Native core components. It can silently strip backgroundColor, flex, justifyContent, alignItems, and minHeight from both inline styles AND StyleSheet.create outputs.
+
+### When to bypass NativeWind entirely on a screen
+- Full-screen ImageBackground layouts (Welcome, any future splash/marketing screen)
+- Any screen where SafeAreaView + justifyContent: "space-between" is the primary layout pattern
+- Any component where a style callback (pressed, focused) sets layout properties
+
+### How to bypass
+- Use useSafeAreaInsets() hook + plain View instead of SafeAreaView
+- Add cssInterop={false} to EVERY View and Pressable on the screen
+- Put ALL layout properties in StyleSheet.create()
+- Style callbacks should ONLY toggle opacity — never set layout props like alignItems, justifyContent, or minHeight in a callback
+- Use zero NativeWind className props on bypassed screens
+
+### Where NativeWind className is fine
+NativeWind className works for screens that use simple flat layouts (Sign Up, Sign In, Home, Products). It breaks on screens with complex layering (ImageBackground + gradient + safe area + pinned bottom content).

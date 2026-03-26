@@ -108,3 +108,5 @@ Write "archetype" in any user-visible text
 Use activeOpacity other than 0.85
 Apply identical border-radius to all elements
 Run migration SQL on production without testing on staging first
+Use NativeWind className on full-screen ImageBackground layouts. Use StyleSheet.create + cssInterop={false} on every component. See docs/DESIGN_SPECS.md "NativeWind escape hatch rules".
+Put layout properties (flex, justifyContent, alignItems, minHeight, backgroundColor) inside Pressable style callbacks. Only opacity goes in the callback. Everything else in StyleSheet.create.
