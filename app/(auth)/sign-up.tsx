@@ -15,6 +15,7 @@ import { ArrowLeft } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
 import { capture } from "../../src/services/posthog";
+import { recordEvent } from "../../src/services/engagement";
 import { STRINGS } from "../../src/content/strings";
 import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
@@ -73,6 +74,11 @@ export default function SignUpScreen() {
             })
           );
           capture("signup_completed", { marketing_opt_in: marketingOptIn });
+          recordEvent(data?.user ?? null, "signup_completed", {
+            marketing_opt_in: marketingOptIn,
+            audience_data_opt_in: false,
+            source: "sign_up_screen",
+          });
         } catch (e) {
           console.warn("Failed to save marketing consent:", e);
         }
