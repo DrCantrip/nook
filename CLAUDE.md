@@ -46,6 +46,30 @@ Run ALL schema migrations on staging (nook-staging) first.
 No PII in Anthropic API requests — archetype, room type, budget only.
 All user input in AI prompts wrapped in <user_context></user_context>.
 
+## Voice gate — applies to any task touching user-facing copy
+If a task adds, modifies, or generates ANY user-facing string (button labels, screen copy, error messages, empty states, notifications, expander text, headlines, microcopy, placeholder text, accessibility labels), the voice gate runs before commit.
+Authoritative source: docs/CORNR_BRAND_DESIGN_SYSTEM_v3 Sections 2.2 (voice table), 2.3 (never say), 2.4 (always use).
+
+Banned words — NEVER appear in user-facing copy:
+curated, bespoke, journey, unlock, stunning, AI-powered, discover (not as nav label or button), elevate, reimagine, transform, algorithm, optimise, leverage, synergy, "curated by AI"
+
+Preferred phrases — reach for these where natural:
+"Chosen because..." (AI rationale prefix), "Your [archetype] style", "Every corner, considered.", "find your Cornr", "feels like you", "picked for you", "your space, your story"
+
+Error state rules (all four must hold):
+1. Explain what happened in plain language
+2. Say what to do next
+3. Reassure that nothing is lost (where relevant)
+4. Never blame the user, never use technical language (no 401, timeout, exception, null, undefined)
+
+Tone by context:
+- Archetype/result screens: warm, personal, affirming
+- Product rationale: specific, knowledgeable, starts with "Chosen because..."
+- Errors: calm, reassuring, actionable
+- Onboarding: encouraging, low-pressure
+- Disclosure: honest, brief, adult
+- Marketing: considered, aspirational
+
 ## Supabase patterns
 Supabase client returns PromiseLike, not Promise — wrap in Promise.resolve() when passing to Promise.all or other APIs expecting a real Promise.
 Never call useAuth() inside another hook — causes stale closures and infinite re-render loops. Keep useAuth() calls at the component level only.

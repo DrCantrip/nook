@@ -52,7 +52,15 @@ If the user provides lessons:
 
 If the user says no or skips, move on.
 
-## 9. Commit
+## 9. Voice Gate
+If this commit adds or modifies user-facing strings:
+1. List every string added or modified in this commit
+2. Scan each string for banned words from CLAUDE.md voice gate (curated, bespoke, journey, unlock, stunning, AI-powered, discover, elevate, reimagine, transform, algorithm, optimise, leverage, synergy)
+3. If any banned word found: STOP. Report the violation. Suggest a replacement using the preferred phrases or plain Cornr voice. Do not commit until fixed.
+4. For error messages specifically, verify all four error state rules hold (explain, next step, reassure, no blame/tech).
+5. If no user-facing strings were added or modified, skip this step and note "Voice gate: no user-facing strings in this commit".
+
+## 10. Commit
 Say: "Ready to commit. Type 'commit' to proceed."
 
 NEVER auto-commit. Wait for the user to type "commit" before running any git commands.
