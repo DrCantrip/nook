@@ -14,7 +14,7 @@
 - **At the start of any new claude.ai session:** upload this file to the project (or confirm it's already there). Claude reads it before doing anything strategic.
 - **At the start of any Claude Code session:** `/start` should read `docs/CORNR_CANONICAL.md` from the repo.
 - **When strategic decisions are made:** Claude updates this file in the conversation, you replace the file in the project and the repo. One file, one update, no PDF wrangling.
-- **The v4 PDFs (Master Doc, Brand & Design System, Operations & Legal, Competitor Analysis) remain in project knowledge as archival reference.** They're not wrong, they're snapshots. This file is the living layer on top.
+- **The Brand & Design System v3 PDF, Operations & Legal v2 PDF, and Competitor Analysis v2 PDF remain in project knowledge as stable reference documents.** The Cornr Master Document v4 PDF has been archived to Google Drive — its content is fully captured in this canonical. This file is the only living layer for build planning and product decisions.
 
 ---
 
@@ -228,6 +228,20 @@ At room setup, after budget selection, three additional fields are captured:
 - Nothing yet (clears all other checkboxes when selected)
 
 All three fields stored on the `rooms` table. All three passed into the Sprint 3 Haiku prompt. Frame as a *briefing*, not a *form* — copy treats this as Cornr getting better at serving the user, not Cornr making the user work.
+
+### Settled product decisions — do not reopen
+
+These decisions are load-bearing for v1 and have been validated through prior planning sessions. They are NOT subject to the provisional-until-proven rule. Reopening any of them requires strong new evidence and a deliberate strategic decisions log entry in Section 0.
+
+1. **Archetype scoring algorithm (weighted version).** RIGHT_SWIPE_MULTIPLIER = 1.0, LEFT_SWIPE_MULTIPLIER = −0.4, SECONDARY_THRESHOLD = 0.4. Edge case: equal/near-zero scores → assign "curator" with low confidence flag.
+2. **Auth flow: auth-after-value.** Auth happens AFTER the archetype reveal, never before. Anonymous users see recommendations but cannot save, set up multiple rooms, or access trades. 24-hour anonymous session expiry. No social login in v1. Email + password only. Email confirmation disabled to preserve auth-after-value momentum.
+3. **Budget tiers — friendly labels, never price ranges in UI.** High Street Finds (under £200/item), Great Quality (£200–£600/item), Invest Well (£600+/item). Price ranges never shown to users.
+4. **AI architecture: Claude Haiku 4.5, single call per session.** NOT Sonnet or Opus. Returns exactly 3 products as JSON. Rate limit: 20 calls/user/day registered, 3 total anonymous. £30/month hard spend cap. All user content in `<user_context>` XML tags. Upstash Redis IP-based rate limiting alongside Postgres per-user limits.
+5. **Tradesperson pillar v1: browse-only, zero monetisation.** Companies House badge only (Gas Safe removed — no public API). Results sorted by rating DESC, review_count DESC. Call button (tel: link) only. No messaging, quotes, or booking in v1. v2 Workstream E is the full trades engine.
+6. **Monetisation: Awin + Skimlinks affiliate, day one.** Apply to both. Amazon Associates UK as fallback. All affiliate links open in expo-web-browser (in-app), NEVER system browser — required for Wayfair commission (mobile app exclusion workaround). No ads, no paid tier in v1. ARPU targets: £0.25/user month 3, £0.80–£1.00/user month 6.
+7. **Archetype retake in Profile.** Deletes style_profiles, re-runs swipe, assigns new archetype. Rooms preserved. Wishlist preserved with one-time style-change banner. Self-healing room recommendation refresh via archetype_at_recommendation comparison.
+8. **Push notifications after first room setup completion.** Pre-prompt screen before native iOS dialog. 4 notification triggers (seasonal refresh quarterly, second room nudge 7 days, wishlist reminder 14 days, new products monthly). Global cap: max 2 per user per 7 days.
+9. **Deferred features — do NOT build in v1.** Social login (v2). Gas Safe badge (v2 — no public API). In-app messaging/quotes/booking (v2 Workstream E). Cornr Pro paid tier (v2 Workstream A — Digital Home). Camera/room scan (v1.1). Digital Home Record (v3+). LiDAR/AR (v3+). B2B/estate agent features (v3). Real-time Awin sync (v2). PWA (permanently rejected). Email marketing platform integration (post-launch — Loops.so recommended). Visual ShareCard image generation (Sprint 6 or post-launch).
 
 ---
 
@@ -517,7 +531,15 @@ The vocabulary file `src/content/trends.ts` is created during Sprint 3 prep. It 
 
 Full prompt template drafted at Sprint 3 T1 build time.
 
-### Sprints 4–6 — unchanged from Master Doc v4
+### Sprints 4–6 — high-level summary
+
+Detailed task specs for Sprints 4–6 will be drafted when each sprint is reached. High-level scope:
+
+**Sprint 4 — Trades + Rename (~22h, Weeks 11–13).** Tradesperson discovery by postcode using Google Places. Companies House badge only. Browse-only, zero monetisation in v1. Full Cornr rebrand across all external services (T-RENAME-1 through T-RENAME-8): Supabase, GitHub, Expo, app.json, PostHog, Sentry, social handles, git commit email. Gate: Sprint 3 complete.
+
+**Sprint 5 — Engagement: Push, Email, Delete (~18h, Weeks 14–15).** Push notification permission with pre-prompt screen after first room setup. Four notification triggers (seasonal refresh, second room nudge, wishlist reminder, new products). Global cap: max 2 per user per 7 days. Delete Account flow with two-step confirmation. Welcome email via Supabase Auth Hook. Password reset deep link. Gate: Sprint 4 complete.
+
+**Sprint 6 — Polish, Accessibility, Submission (~32h, Weeks 16–19).** EAS production build with bundle ID `uk.co.cornr.app`. App icon. UX design review polish pass. Accessibility audit (VoiceOver, all 16 checklist items from BDS v3). Security audit (npm audit, RLS verification, secrets check). Content & legal audit. App Store metadata. Terms of Service at cornr.co.uk/terms. TestFlight with 50 testers. App Store + Google Play submission. Post-launch OTA capability via EAS. Gate: all 3 pre-submission checklists green.
 
 ---
 
@@ -580,7 +602,7 @@ When a strategic decision is made:
 2. Update any other affected sections of this file.
 3. Daryll replaces the file in project knowledge and the repo. **No PDF wrangling, no .docx conversions, no manual section edits across multiple documents.** This file is the only living document.
 
-The v4 PDFs (Master Doc, Brand & Design System, Operations & Legal, Competitor Analysis) remain in project knowledge as snapshots. They're not edited going forward. This file is authoritative.
+The Brand & Design System v3, Operations & Legal v2, and Competitor Analysis v2 PDFs remain in project knowledge as stable reference documents — they are not edited going forward, and if they conflict with this canonical, this canonical wins. The Cornr Master Document v4 PDF has been archived to Google Drive (content captured in this canonical). This file is authoritative for all build planning and product decisions.
 
 ### Mission Control rules
 
@@ -610,7 +632,7 @@ This rule exists because Cornr has accumulated substantial research (Glassette i
 
 Every user-facing naming, copywriting, and taxonomy decision in Cornr v1 is provisional until tested against real user data. This includes archetype names and descriptions, style territory pairings, reveal screen copy, share quote templates, product rationale templates, button labels, and voice choices. These are hypotheses from evidence and research, not immutable commitments. TestFlight (Sprint 6) and the first 100 post-launch users are explicit review gates. If data says change it, we change it.
 
-This rule does NOT apply to: database schema, RLS policies, data model, security and consent flows, WCAG contrast rules, brand hard constraints from BDS v3 (palette, fonts, 90/10 rule), or any decision tagged "all settled, do not reopen" in Master Doc Section 2. Those are load-bearing; everything downstream of them flexes.
+This rule does NOT apply to: database schema, RLS policies, data model, security and consent flows, WCAG contrast rules, brand hard constraints from BDS v3 (palette, fonts, 90/10 rule), or any decision listed in the "Settled product decisions — do not reopen" subsection of Section 2 below. Those are load-bearing; everything downstream of them flexes.
 
 ---
 
@@ -638,9 +660,9 @@ This rule does NOT apply to: database schema, RLS policies, data model, security
 2. Memory (already in Claude's context automatically).
 3. The relevant sprint section (Section 7) for whatever you're building next.
 4. Brand & Design System v3 PDF (in project knowledge) for component specs and visual rules.
-5. Master Doc v4 PDF (in project knowledge) for anything not in this file.
+5. For anything not in this canonical: check git history first, then ask Daryll. The Master Doc v4 PDF has been archived to Google Drive (Cornr/Archive/Documents/) — retrieve from there only if historical context is genuinely needed.
 
-If the v4 PDFs and this file disagree, **this file wins**.
+If the remaining PDFs and this file disagree, **this file wins**.
 
 ---
 
