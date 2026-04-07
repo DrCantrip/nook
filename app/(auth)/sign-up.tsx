@@ -27,6 +27,7 @@ export default function SignUpScreen() {
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -43,6 +44,7 @@ export default function SignUpScreen() {
     }
 
     setLoading(true);
+    setSubmitted(true);
     try {
       const { error: authError } = await signUp(email.trim(), password);
       if (authError) {
@@ -125,7 +127,7 @@ export default function SignUpScreen() {
             </Pressable>
           </View>
 
-          {success && (
+          {submitted && success && (
             <View style={styles.successBox}>
               <Text style={styles.successText}>{success}</Text>
             </View>
