@@ -57,5 +57,10 @@ export const STRINGS = {
     emptyCta: "Add a room",
     secondRoomPrompt: "Ready to style another room? Adding a second room helps Cornr understand your whole home.",
     secondRoomCta: "Add another room",
+    wishlistFallbackHeadline: "Still thinking about this?",
+    wishlistFallbackCta: "View your wishlist",
+    quietWelcomeHeadline: "Your home, your way",
+    quietWelcomeBody: "Every corner, considered. Take a moment to explore.",
+    quietWelcomeCta: "Take a look",
   },
 } as const;
