@@ -2,13 +2,19 @@ import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Slot, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { initSentry, Sentry } from "../src/services/sentry";
+import { initPostHog } from "../src/services/posthog";
 import { useAuth } from "../src/hooks/useAuth";
 import { useStyleProfile } from "../src/hooks/useStyleProfile";
 import { useAppFonts } from "../src/hooks/useAppFonts";
 
+// Init observability at module load
+initSentry();
+initPostHog();
+
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayout() {
   const { session, user, loading: authLoading } = useAuth();
   const { hasProfile, loading: profileLoading } = useStyleProfile(user);
   const { fontsLoaded } = useAppFonts();
@@ -41,8 +47,6 @@ export default function RootLayout() {
 
     if (!target) return;
 
-    // Defer to next tick so the navigator has finished processing
-    // the current render before receiving a replace action.
     const id = setTimeout(() => {
       router.replace(target as string);
     }, 0);
@@ -59,3 +63,5 @@ export default function RootLayout() {
 
   return <Slot />;
 }
+
+export default Sentry.wrap(RootLayout);
