@@ -3,11 +3,9 @@ import { Animated } from "react-native";
 import { Tabs } from "expo-router";
 import { House, ShoppingBag, Wrench, User } from "phosphor-react-native";
 import { STRINGS } from "../../src/content/strings";
+import { colors } from "../../src/theme/tokens";
 
 const S = STRINGS.tabs;
-
-const ACTIVE_COLOR = "#1A3A5C"; // primary-900
-const INACTIVE_COLOR = "#737373"; // neutral-500
 
 function AnimatedTabIcon({
   Icon,
@@ -49,16 +47,17 @@ export default function AppLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: ACTIVE_COLOR,
-        tabBarInactiveTintColor: INACTIVE_COLOR,
+        tabBarActiveTintColor: colors.ink,
+        tabBarInactiveTintColor: colors.warm400,
         tabBarLabelStyle: {
+          fontFamily: "DMSans-Medium",
           fontSize: 11,
           fontWeight: "500",
         },
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: colors.white,
           borderTopWidth: 1,
-          borderTopColor: "#F5F5F5", // neutral-100
+          borderTopColor: colors.warm100,
         },
         tabBarItemStyle: {
           paddingVertical: 4,
@@ -80,11 +79,7 @@ export default function AppLayout() {
         options={{
           title: S.products,
           tabBarIcon: ({ color, focused }) => (
-            <AnimatedTabIcon
-              Icon={ShoppingBag}
-              color={color}
-              focused={focused}
-            />
+            <AnimatedTabIcon Icon={ShoppingBag} color={color} focused={focused} />
           ),
         }}
       />

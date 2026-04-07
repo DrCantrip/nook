@@ -3,6 +3,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -13,6 +14,7 @@ import { ArrowLeft } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
 import { STRINGS } from "../../src/content/strings";
+import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
 const S = STRINGS.signIn;
 
@@ -25,7 +27,6 @@ export default function SignInScreen() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Reset password state
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
@@ -43,7 +44,6 @@ export default function SignInScreen() {
         setError(authError.message);
         return;
       }
-      // Navigation guard in _layout.tsx handles redirect
     } catch {
       setError(S.genericError);
     } finally {
@@ -71,42 +71,29 @@ export default function SignInScreen() {
   }
 
   if (showReset) {
+    const canReset = resetEmail.length > 0 && !resetLoading;
     return (
-      <SafeAreaView className="flex-1 bg-warmstone">
-        {/* Back button */}
+      <SafeAreaView style={styles.safe}>
         <Pressable
-          className="ml-4 mt-2 min-w-[44px] min-h-[44px] items-start justify-center"
-          onPress={() => {
-            setShowReset(false);
-            setResetSent(false);
-            setResetError(null);
-          }}
-          style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+          style={styles.backButton}
+          onPress={() => { setShowReset(false); setResetSent(false); setResetError(null); }}
         >
-          <ArrowLeft size={24} color="#1A3A5C" />
+          <ArrowLeft size={24} color={colors.ink} />
         </Pressable>
 
-        <View className="flex-1 justify-center px-6">
-          <Text className="text-[22px] font-semibold tracking-tight text-primary-900 mb-2">
-            {S.resetTitle}
-          </Text>
-          <Text className="text-base text-gray-500 mb-8">
-            {S.resetDescription}
-          </Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>{S.resetTitle}</Text>
+          <Text style={styles.description}>{S.resetDescription}</Text>
 
           {resetSent ? (
-            <View className="bg-white rounded-card p-4 mb-6">
-              <Text className="text-base text-primary-900 text-center">
-                {S.resetSuccess}
-              </Text>
+            <View style={styles.successBox}>
+              <Text style={styles.successText}>{S.resetSuccess}</Text>
             </View>
           ) : (
             <>
-              <Text className="text-base text-primary-900 mb-1.5 font-medium">
-                {S.emailLabel}
-              </Text>
+              <Text style={styles.label}>{S.emailLabel}</Text>
               <TextInput
-                className="bg-white border border-gray-200 rounded-input px-4 py-3 text-base text-gray-900 mb-6"
+                style={[styles.input, { marginBottom: spacing.xl }]}
                 value={resetEmail}
                 onChangeText={setResetEmail}
                 keyboardType="email-address"
@@ -114,35 +101,17 @@ export default function SignInScreen() {
                 autoComplete="email"
                 autoCorrect={false}
                 placeholder={S.emailLabel}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.warm400}
               />
 
-              {resetError && (
-                <Text className="text-red-600 text-sm mb-4">{resetError}</Text>
-              )}
+              {resetError && <Text style={styles.errorText}>{resetError}</Text>}
 
               <Pressable
-                className={`rounded-button py-3 items-center ${
-                  resetEmail.length > 0 && !resetLoading
-                    ? "bg-primary-900"
-                    : "bg-gray-300"
-                }`}
+                style={[styles.submitButton, !canReset && styles.submitDisabled]}
                 onPress={handleResetPassword}
-                disabled={resetEmail.length === 0 || resetLoading}
-                style={({ pressed }) => ({
-                  opacity:
-                    pressed && resetEmail.length > 0 && !resetLoading
-                      ? 0.85
-                      : 1,
-                })}
+                disabled={!canReset}
               >
-                <Text
-                  className={`text-base font-semibold ${
-                    resetEmail.length > 0 && !resetLoading
-                      ? "text-white"
-                      : "text-gray-500"
-                  }`}
-                >
+                <Text style={[styles.submitLabel, !canReset && styles.submitLabelDisabled]}>
                   {S.resetButton}
                 </Text>
               </Pressable>
@@ -150,17 +119,10 @@ export default function SignInScreen() {
           )}
 
           <Pressable
-            className="mt-6 items-center min-h-[44px] justify-center"
-            onPress={() => {
-              setShowReset(false);
-              setResetSent(false);
-              setResetError(null);
-            }}
-            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+            style={styles.backLink}
+            onPress={() => { setShowReset(false); setResetSent(false); setResetError(null); }}
           >
-            <Text className="text-sm font-semibold text-primary-600">
-              {S.backToSignIn}
-            </Text>
+            <Text style={styles.backLinkText}>{S.backToSignIn}</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -168,31 +130,21 @@ export default function SignInScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-warmstone">
-      {/* Back button */}
-      <Pressable
-        className="ml-4 mt-2 min-w-[44px] min-h-[44px] items-start justify-center"
-        onPress={() => router.back()}
-        style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
-      >
-        <ArrowLeft size={24} color="#1A3A5C" />
+    <SafeAreaView style={styles.safe}>
+      <Pressable style={styles.backButton} onPress={() => router.back()}>
+        <ArrowLeft size={24} color={colors.ink} />
       </Pressable>
 
       <KeyboardAvoidingView
-        className="flex-1"
+        style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View className="flex-1 justify-center px-6">
-          <Text className="text-[22px] font-semibold tracking-tight text-primary-900 mb-8">
-            {S.title}
-          </Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>{S.title}</Text>
 
-          {/* Email */}
-          <Text className="text-base text-primary-900 mb-1.5 font-medium">
-            {S.emailLabel}
-          </Text>
+          <Text style={styles.label}>{S.emailLabel}</Text>
           <TextInput
-            className="bg-white border border-gray-200 rounded-input px-4 py-3 text-base text-gray-900 mb-4"
+            style={styles.input}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -200,73 +152,44 @@ export default function SignInScreen() {
             autoComplete="email"
             autoCorrect={false}
             placeholder={S.emailLabel}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.warm400}
           />
 
-          {/* Password */}
-          <Text className="text-base text-primary-900 mb-1.5 font-medium">
-            {S.passwordLabel}
-          </Text>
+          <Text style={styles.label}>{S.passwordLabel}</Text>
           <TextInput
-            className="bg-white border border-gray-200 rounded-input px-4 py-3 text-base text-gray-900 mb-2"
+            style={[styles.input, { marginBottom: spacing.sm }]}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
             autoCapitalize="none"
             autoComplete="password"
             placeholder={S.passwordLabel}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.warm400}
           />
 
-          {/* Forgot password */}
           <Pressable
-            className="self-end mb-6 min-h-[44px] justify-center"
-            onPress={() => {
-              setShowReset(true);
-              setResetEmail(email);
-            }}
-            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+            style={styles.forgotButton}
+            onPress={() => { setShowReset(true); setResetEmail(email); }}
           >
-            <Text className="text-sm text-primary-600">
-              {S.forgotPassword}
-            </Text>
+            <Text style={styles.forgotText}>{S.forgotPassword}</Text>
           </Pressable>
 
-          {/* Error */}
-          {error && (
-            <Text className="text-red-600 text-sm mb-4">{error}</Text>
-          )}
+          {error && <Text style={styles.errorText}>{error}</Text>}
 
-          {/* Submit */}
           <Pressable
-            className={`rounded-button py-3 items-center w-full ${
-              canSubmit ? "bg-primary-900" : "bg-gray-300"
-            }`}
+            style={[styles.submitButton, !canSubmit && styles.submitDisabled]}
             onPress={handleSignIn}
             disabled={!canSubmit}
-            style={({ pressed }) => ({
-              opacity: pressed && canSubmit ? 0.85 : 1,
-            })}
           >
-            <Text
-              className={`text-base font-semibold ${
-                canSubmit ? "text-white" : "text-gray-500"
-              }`}
-            >
+            <Text style={[styles.submitLabel, !canSubmit && styles.submitLabelDisabled]}>
               {loading ? "Signing in..." : S.submitButton}
             </Text>
           </Pressable>
 
-          {/* Sign up link */}
-          <View className="flex-row justify-center mt-6">
-            <Text className="text-base text-gray-500">{S.noAccount} </Text>
-            <Pressable
-              onPress={() => router.replace("/(auth)/sign-up")}
-              style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
-            >
-              <Text className="text-base font-semibold text-primary-600">
-                {S.signUpLink}
-              </Text>
+          <View style={styles.linkRow}>
+            <Text style={styles.linkText}>{S.noAccount} </Text>
+            <Pressable onPress={() => router.replace("/(auth)/sign-up")}>
+              <Text style={styles.linkAccent}>{S.signUpLink}</Text>
             </Pressable>
           </View>
         </View>
@@ -274,3 +197,87 @@ export default function SignInScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.cream },
+  flex: { flex: 1 },
+  backButton: {
+    marginLeft: spacing.lg,
+    marginTop: spacing.sm,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  content: { flex: 1, justifyContent: "center", paddingHorizontal: spacing.xl },
+  title: {
+    ...typography.screenTitle,
+    color: colors.ink,
+    marginBottom: spacing["3xl"],
+  },
+  description: {
+    ...typography.body,
+    color: colors.warm600,
+    marginBottom: spacing["3xl"],
+  },
+  label: {
+    ...typography.uiLabel,
+    color: colors.ink,
+    marginBottom: spacing.sm,
+  },
+  input: {
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.warm200,
+    borderRadius: radius.input,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    ...typography.body,
+    color: colors.ink,
+    marginBottom: spacing.lg,
+  },
+  forgotButton: {
+    alignSelf: "flex-end",
+    marginBottom: spacing.xl,
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  forgotText: { ...typography.uiLabel, color: colors.accent },
+  errorText: { color: colors.error, fontSize: 14, marginBottom: spacing.lg },
+  submitButton: {
+    backgroundColor: colors.accentSurface,
+    borderRadius: radius.button,
+    minHeight: 52,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  submitDisabled: { backgroundColor: colors.warm200 },
+  submitLabel: { ...typography.cta, color: colors.white },
+  submitLabelDisabled: { color: colors.warm400 },
+  successBox: {
+    backgroundColor: colors.white,
+    borderRadius: radius.card,
+    padding: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  successText: { ...typography.body, color: colors.ink, textAlign: "center" },
+  backLink: {
+    marginTop: spacing.xl,
+    alignItems: "center",
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  backLinkText: {
+    ...typography.uiLabel,
+    color: colors.accent,
+    fontFamily: "DMSans-SemiBold",
+  },
+  linkRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: spacing.xl,
+  },
+  linkText: { ...typography.body, color: colors.warm600 },
+  linkAccent: { ...typography.body, color: colors.accent, fontFamily: "DMSans-SemiBold" },
+});

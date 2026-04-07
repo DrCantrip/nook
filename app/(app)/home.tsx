@@ -1,11 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { DoorOpen } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
 import { STRINGS } from "../../src/content/strings";
+import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
 const S = STRINGS.home;
 
@@ -56,40 +64,31 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-warmstone" edges={["top"]}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-base text-gray-400">Loading...</Text>
+      <SafeAreaView style={styles.safe} edges={["top"]}>
+        <View style={styles.centered}>
+          <Text style={styles.loadingText}>Loading...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-warmstone" edges={["top"]}>
-      <View className="px-5 pt-6 pb-2">
-        <Text className="text-[22px] font-semibold text-primary-900" style={{ letterSpacing: -0.3 }}>
-          {S.title}
-        </Text>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{S.title}</Text>
       </View>
 
       {rooms.length === 0 ? (
-        <View className="flex-1 items-center px-5" style={{ justifyContent: "flex-start", paddingTop: "40%" }}>
-          <DoorOpen size={64} color="#D1D5DB" weight="light" />
-          <Text className="text-base font-normal text-gray-600 mt-5 text-center" style={{ lineHeight: 24 }}>
-            {S.emptyHeadline}
-          </Text>
-          <Text className="text-sm font-normal text-gray-500 mt-2 text-center" style={{ lineHeight: 20 }}>
-            {S.emptySubtext}
-          </Text>
-          <View className="bg-primary-900 rounded-button mt-8 self-stretch overflow-hidden">
+        <View style={styles.emptyState}>
+          <DoorOpen size={64} color={colors.warm200} weight="light" />
+          <Text style={styles.emptyHeadline}>{S.emptyHeadline}</Text>
+          <Text style={styles.emptySubtext}>{S.emptySubtext}</Text>
+          <View style={styles.ctaWrapper}>
             <Pressable
-              className="min-h-[52px] items-center justify-center"
+              style={({ pressed }) => [styles.ctaPressable, { opacity: pressed ? 0.85 : 1 }]}
               onPress={() => router.push("/(app)/room-setup" as never)}
-              style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
             >
-              <Text className="text-white text-base font-semibold" style={{ letterSpacing: 0.2, lineHeight: 20 }}>
-                {S.emptyCta}
-              </Text>
+              <Text style={styles.ctaText}>{S.emptyCta}</Text>
             </Pressable>
           </View>
         </View>
@@ -97,16 +96,14 @@ export default function HomeScreen() {
         <FlatList
           data={rooms}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
+          contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           renderItem={({ item }) => (
-            <View className="bg-white rounded-card p-4 mb-3 shadow-sm">
-              <Text className="text-[17px] font-semibold text-primary-900">
-                {item.display_name}
-              </Text>
-              <Text className="text-sm text-gray-500 mt-1 capitalize">
+            <View style={styles.roomCard}>
+              <Text style={styles.roomName}>{item.display_name}</Text>
+              <Text style={styles.roomMeta}>
                 {item.room_type}
                 {item.budget_tier ? ` · ${item.budget_tier}` : ""}
               </Text>
@@ -114,19 +111,14 @@ export default function HomeScreen() {
           )}
           ListFooterComponent={
             hasRecommendations ? (
-              <View className="bg-white rounded-card p-4 mt-3 shadow-sm">
-                <Text className="text-base text-gray-700">
-                  {S.secondRoomPrompt}
-                </Text>
-                <View className="bg-primary-900 rounded-button mt-4 overflow-hidden">
+              <View style={styles.secondRoomCard}>
+                <Text style={styles.secondRoomText}>{S.secondRoomPrompt}</Text>
+                <View style={styles.ctaWrapper}>
                   <Pressable
-                    className="min-h-[52px] items-center justify-center"
+                    style={({ pressed }) => [styles.ctaPressable, { opacity: pressed ? 0.85 : 1 }]}
                     onPress={() => router.push("/(app)/room-setup" as never)}
-                    style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
                   >
-                    <Text className="text-white text-base font-semibold" style={{ letterSpacing: 0.2, lineHeight: 20 }}>
-                      {S.secondRoomCta}
-                    </Text>
+                    <Text style={styles.ctaText}>{S.secondRoomCta}</Text>
                   </Pressable>
                 </View>
               </View>
@@ -137,3 +129,78 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.cream },
+  centered: { flex: 1, alignItems: "center", justifyContent: "center" },
+  loadingText: { ...typography.body, color: colors.warm400 },
+  header: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.sm,
+  },
+  title: { ...typography.screenTitle, color: colors.ink },
+  emptyState: {
+    flex: 1,
+    alignItems: "center",
+    paddingHorizontal: spacing.xl,
+    justifyContent: "flex-start",
+    paddingTop: "40%",
+  },
+  emptyHeadline: {
+    ...typography.body,
+    color: colors.warm600,
+    marginTop: spacing.xl,
+    textAlign: "center",
+  },
+  emptySubtext: {
+    ...typography.uiLabel,
+    color: colors.warm400,
+    marginTop: spacing.sm,
+    textAlign: "center",
+  },
+  ctaWrapper: {
+    backgroundColor: colors.accentSurface,
+    borderRadius: radius.button,
+    marginTop: spacing["3xl"],
+    alignSelf: "stretch",
+    overflow: "hidden",
+  },
+  ctaPressable: {
+    minHeight: 52,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ctaText: { ...typography.cta, color: colors.white },
+  listContent: { paddingHorizontal: spacing.xl, paddingBottom: spacing["2xl"] },
+  roomCard: {
+    backgroundColor: colors.white,
+    borderRadius: radius.card,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+    shadowColor: colors.ink,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  roomName: { ...typography.cardHeading, color: colors.ink },
+  roomMeta: {
+    ...typography.uiLabel,
+    color: colors.warm600,
+    marginTop: spacing.xs,
+    textTransform: "capitalize",
+  },
+  secondRoomCard: {
+    backgroundColor: colors.white,
+    borderRadius: radius.card,
+    padding: spacing.lg,
+    marginTop: spacing.md,
+    shadowColor: colors.ink,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  secondRoomText: { ...typography.body, color: colors.warm600 },
+});
