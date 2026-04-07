@@ -1,6 +1,6 @@
 export const STRINGS = {
   welcome: {
-    title: "Cornr",
+    title: "cornr",
     subtitle: "Every corner, considered.",
     headline: "Find your home style in 60 seconds.",
     cta: "Get started",
