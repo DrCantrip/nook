@@ -14,8 +14,13 @@ import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
 import { STRINGS } from "../../src/content/strings";
 import { colors, spacing, radius, typography } from "../../src/theme/tokens";
+import { EditorialCard } from "../../src/components/organisms/EditorialCard";
 
 const S = STRINGS.home;
+
+// TODO: swap for a real Pexels-licenced warm interior image before launch
+const FALLBACK_IMAGE =
+  "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1200";
 
 type Room = {
   id: string;
@@ -25,12 +30,31 @@ type Room = {
   room_analysis: Record<string, unknown> | null;
 };
 
+type EditorialRow = {
+  id: string;
+  headline: string;
+  body_text: string | null;
+  image_url: string;
+  cta_label: string;
+  cta_url: string;
+  archetype_filter: string | null;
+};
+
+type WishlistRow = {
+  product_id: string;
+  products: { title: string; image_url: string } | null;
+};
+
 export default function HomeScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Editorial state
+  const [editorial, setEditorial] = useState<EditorialRow | null>(null);
+  const [wishlistItem, setWishlistItem] = useState<WishlistRow | null>(null);
 
   const fetchRooms = useCallback(async () => {
     if (!user) {
@@ -49,18 +73,107 @@ export default function HomeScreen() {
     setLoading(false);
   }, [user?.id]);
 
+  const fetchEditorial = useCallback(async () => {
+    // Tier 1: real editorial row
+    const { data: editorialData } = await Promise.resolve(
+      supabase
+        .from("editorial_content")
+        .select("id, headline, body_text, image_url, cta_label, cta_url, archetype_filter")
+        .lte("published_at", new Date().toISOString())
+        .or("expires_at.is.null,expires_at.gt." + new Date().toISOString())
+        .order("published_at", { ascending: false })
+        .limit(1)
+        .single()
+    );
+
+    if (editorialData) {
+      setEditorial(editorialData);
+      setWishlistItem(null);
+      return;
+    }
+
+    setEditorial(null);
+
+    // Tier 2: wishlist fallback
+    if (user) {
+      const { data: wishData } = await Promise.resolve(
+        supabase
+          .from("wishlisted_products")
+          .select("product_id, products(title, image_url)")
+          .eq("user_id", user.id)
+          .is("removed_at", null)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single()
+      );
+      if (wishData?.products) {
+        setWishlistItem(wishData as unknown as WishlistRow);
+        return;
+      }
+    }
+
+    setWishlistItem(null);
+  }, [user?.id]);
+
   useEffect(() => {
     fetchRooms();
-  }, [fetchRooms]);
+    fetchEditorial();
+  }, [fetchRooms, fetchEditorial]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchRooms();
+    await Promise.all([fetchRooms(), fetchEditorial()]);
     setRefreshing(false);
-  }, [fetchRooms]);
+  }, [fetchRooms, fetchEditorial]);
 
   const hasRecommendations =
     rooms.length === 1 && rooms[0].room_analysis !== null;
+
+  function renderEditorialSlot() {
+    if (editorial) {
+      return (
+        <View style={styles.editorialSlot}>
+          <EditorialCard
+            id={editorial.id}
+            headline={editorial.headline}
+            bodyText={editorial.body_text ?? undefined}
+            imageUrl={editorial.image_url}
+            ctaLabel={editorial.cta_label}
+            ctaUrl={editorial.cta_url}
+            archetypeFilter={editorial.archetype_filter ?? undefined}
+          />
+        </View>
+      );
+    }
+
+    if (wishlistItem?.products) {
+      return (
+        <View style={styles.editorialSlot}>
+          <EditorialCard
+            headline={S.wishlistFallbackHeadline}
+            imageUrl={wishlistItem.products.image_url}
+            ctaLabel={S.wishlistFallbackCta}
+            ctaUrl=""
+            onPress={() => router.push("/(app)/products" as never)}
+          />
+        </View>
+      );
+    }
+
+    // Tier 3: quiet welcome
+    return (
+      <View style={styles.editorialSlot}>
+        <EditorialCard
+          headline={S.quietWelcomeHeadline}
+          bodyText={S.quietWelcomeBody}
+          imageUrl={FALLBACK_IMAGE}
+          ctaLabel={S.quietWelcomeCta}
+          ctaUrl=""
+          onPress={() => router.push("/(app)/products" as never)}
+        />
+      </View>
+    );
+  }
 
   if (loading) {
     return (
@@ -79,24 +192,39 @@ export default function HomeScreen() {
       </View>
 
       {rooms.length === 0 ? (
-        <View style={styles.emptyState}>
-          <DoorOpen size={64} color={colors.warm200} weight="light" />
-          <Text style={styles.emptyHeadline}>{S.emptyHeadline}</Text>
-          <Text style={styles.emptySubtext}>{S.emptySubtext}</Text>
-          <View style={styles.ctaWrapper}>
-            <Pressable
-              style={({ pressed }) => [styles.ctaPressable, { opacity: pressed ? 0.85 : 1 }]}
-              onPress={() => router.push("/(app)/room-setup" as never)}
-            >
-              <Text style={styles.ctaText}>{S.emptyCta}</Text>
-            </Pressable>
-          </View>
-        </View>
+        <FlatList
+          data={[]}
+          renderItem={null}
+          ListHeaderComponent={renderEditorialSlot()}
+          ListFooterComponent={
+            <View style={styles.emptyState}>
+              <DoorOpen size={64} color={colors.warm200} weight="light" />
+              <Text style={styles.emptyHeadline}>{S.emptyHeadline}</Text>
+              <Text style={styles.emptySubtext}>{S.emptySubtext}</Text>
+              <View style={styles.ctaWrapper}>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.ctaPressable,
+                    { opacity: pressed ? 0.85 : 1 },
+                  ]}
+                  onPress={() => router.push("/(app)/room-setup" as never)}
+                >
+                  <Text style={styles.ctaText}>{S.emptyCta}</Text>
+                </Pressable>
+              </View>
+            </View>
+          }
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          contentContainerStyle={styles.listContent}
+        />
       ) : (
         <FlatList
           data={rooms}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
+          ListHeaderComponent={renderEditorialSlot()}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -115,7 +243,10 @@ export default function HomeScreen() {
                 <Text style={styles.secondRoomText}>{S.secondRoomPrompt}</Text>
                 <View style={styles.ctaWrapper}>
                   <Pressable
-                    style={({ pressed }) => [styles.ctaPressable, { opacity: pressed ? 0.85 : 1 }]}
+                    style={({ pressed }) => [
+                      styles.ctaPressable,
+                      { opacity: pressed ? 0.85 : 1 },
+                    ]}
                     onPress={() => router.push("/(app)/room-setup" as never)}
                   >
                     <Text style={styles.ctaText}>{S.secondRoomCta}</Text>
@@ -140,12 +271,13 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
   },
   title: { ...typography.screenTitle, color: colors.ink },
+  editorialSlot: {
+    marginBottom: spacing.xl,
+  },
   emptyState: {
-    flex: 1,
     alignItems: "center",
     paddingHorizontal: spacing.xl,
-    justifyContent: "flex-start",
-    paddingTop: "40%",
+    paddingTop: spacing["4xl"],
   },
   emptyHeadline: {
     ...typography.body,
