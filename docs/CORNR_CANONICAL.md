@@ -1,7 +1,11 @@
 # Cornr Canonical Context
 
-**Last updated:** 7 April 2026 (Bridge Sprint complete; Section 6 SQL patched for INSERT policies, model_version, partial wishlist index, anon engagement event purge)
+**Last updated:** 7 April 2026 PM (canonical surgery: hybrid naming, trend layer, workflow rules, sprint spec updates)
 **Purpose:** Single source of truth for all strategic decisions, architecture choices, sprint plans, and workflow rules that postdate the v4 PDFs in project knowledge. Read this first in any new session. If anything below contradicts the PDFs, this file wins.
+
+## Recent updates
+
+**7 April 2026 PM session** — Hybrid archetype naming locked (personality + style territory paired, e.g. "The Curator · Warm Scandi"). The Dreamer renamed to The Nester (Settler as TestFlight Option B). Trend layer architecture decided: 65/35 stable-vs-trend split, trends live in a separate layer that filters through stable archetypes at recommendation time, never in archetype definitions themselves. New `trend_tags` column added to products table schema with GIN indexes. Sprint 3 T1 spec gained the trend layer with strict rationale-quality-not-trend-name rule. Two new workflow rules added to Section 10: recall-before-produce and provisional-until-proven. Share quote format changed for Sprint 2 T4. See Section 0 strategic decisions log for full entries.
 
 ---
 
@@ -97,6 +101,76 @@ Daryll commits to populating this weekly or biweekly. If editorial commitment sl
 
 **Source:** Sprint 2 strategic critique #2, 7 April 2026.
 
+### 7 April 2026 (PM) — Hybrid archetype naming
+
+Each archetype now carries a two-part name: a personality label (who you are) and a style territory (what your home looks like). The full set:
+
+| DB key | Display name | Style territory |
+|---|---|---|
+| curator | The Curator | Mid-Century Modern |
+| nester | The Nester | Coastal |
+| maker | The Maker | Industrial |
+| minimalist | The Minimalist | Japandi |
+| romantic | The Romantic | French Country |
+| storyteller | The Storyteller | Eclectic Vintage |
+| urbanist | The Urbanist | Urban Contemporary |
+
+The `dreamer` key is renamed to `nester` everywhere: database enum, `archetype_history`, `style_profiles.primary_archetype` / `secondary_archetype`, swipe scoring keys, tokens.ts colour map. Migration in Sprint 2 T1.
+
+**Display rule:** UI always shows the personality label ("The Curator"). The style territory appears once — on the archetype result reveal screen, as a subtitle below the personality label. Nowhere else. The personality label is what sticks; the territory is context, not identity.
+
+**Option B contingency:** If user testing shows ≥30% confusion between personality label and style territory, collapse to personality-only names (drop the territory subtitle) and add a one-line "Your style leans toward…" sentence in the archetype description instead. This requires no schema change, only a copy change.
+
+**Alternatives considered:** Style-territory-only names (e.g., "Mid-Century Modern" as the archetype name); personality-only names with no territory link; three-part names (personality + territory + era). All rejected — territory-only is generic, personality-only loses the style anchor, three-part is too much cognitive load.
+
+**Rationale:** Personality labels create emotional attachment (users identify as "a Curator", not as "Mid-Century Modern"). Style territories give the recommendation engine a concrete vocabulary for product matching. The two-part structure serves both retention (identity) and commerce (specificity).
+
+**Source:** Archetype naming critique, 7 April 2026.
+
+### 7 April 2026 (PM) — Recall-before-produce rule
+
+Before producing any strategic output (sprint prompt, critique, Mission Control, architecture decision), Claude must first state — from memory and this file — what's already been decided about the topic. If no prior decision exists, state that explicitly. Then produce.
+
+**Alternatives considered:** Relying on Claude's context window alone (no explicit recall step); adding a checklist of files to read per output type.
+
+**Rationale:** The single biggest source of wasted iterations is Claude producing something that contradicts a decision already recorded in this file or in memory. An explicit recall step catches 80%+ of these before they happen. It's 10 seconds of latency for 20 minutes of rework saved.
+
+**Source:** Workflow review, 7 April 2026.
+
+### 7 April 2026 (PM) — Provisional-until-proven rule
+
+Any strategic decision that hasn't been tested in a live build is marked **provisional**. Provisional decisions can be overridden by a single critique round. Proven decisions (tested, shipped, working) require a full critique at the same sizing tier as the original before they can be changed.
+
+**Alternatives considered:** All decisions equally weighted (no provisional/proven distinction); time-based graduation (decisions become "proven" after 7 days regardless of testing).
+
+**Rationale:** Early-stage decisions are cheap to change and should stay cheap. But once a decision has been built, tested, and shipped, the cost of changing it includes code rework. The bar for reversal should match the cost of reversal.
+
+**Source:** Workflow review, 7 April 2026.
+
+### 7 April 2026 (PM) — Share quote format change for Sprint 2 T4
+
+The archetype result share quote (Sprint 2 T4 deliverable) changes from a personality-only format to a format that includes the style territory:
+
+> "I'm The Curator — my home leans Mid-Century Modern. Find yours at cornr.co.uk"
+
+This replaces the previous v4 spec format which was personality-only. The share quote is the one place outside the reveal screen where the style territory appears, because shareability benefits from specificity.
+
+**Alternatives considered:** Personality-only share quote (the v4 spec); share quote with full archetype description.
+
+**Rationale:** "I'm The Curator" alone is intriguing but not informative enough to drive click-through from the recipient. Adding the territory gives the recipient a reason to take the quiz ("what's mine?"). A full description is too long for social sharing.
+
+**Source:** Archetype naming critique, 7 April 2026.
+
+### 7 April 2026 (PM) — Trend layer: 65/35 stable-vs-trend split
+
+Product recommendations use a 65/35 split: 65% of recommended products come from the user's stable archetype territory, 35% come from a "trend layer" that rotates seasonally. The trend layer is curated by Daryll quarterly (same cadence as the seasonal product refresh in Section 11).
+
+**Alternatives considered:** 100% archetype-stable recommendations (the v4 spec); algorithmic trend detection from engagement data; user-controlled trend preference slider.
+
+**Rationale:** Pure archetype recommendations produce a filter bubble. Users see the same aesthetic every session. The 65/35 split introduces controlled variety without undermining the archetype identity. 35% is high enough to feel fresh, low enough that the core archetype still dominates. Manual curation keeps it editorially coherent for v1; algorithmic trend detection can replace it in v2 when the engagement dataset is large enough.
+
+**Source:** Archetype naming critique, 7 April 2026.
+
 ---
 
 ## Section 1 — Personas (revised)
@@ -110,6 +184,24 @@ Three personas, all UK first-time buyers. Cornr serves all three from active hou
 **The Active Renovator** — Moved in 6–18 months ago. One room done, others waiting. Knows what they don't want, unsure what they do want. Medium urgency, growing confidence. Cornr serves with archetype-aware recommendations that respect existing pieces (`existing_categories`), and trades discovery for the next phase.
 
 **Persona priority for v1:** All three are first-class. New Mover is easiest to monetise short-term. Pre-Purchase Researcher is highest LTV and deepest data well. Active Renovator most likely to use trades. Build for all three.
+
+### Archetype mapping (hybrid naming)
+
+| DB key | Display name | Style territory | Accent colour |
+|---|---|---|---|
+| curator | The Curator | Mid-Century Modern | #B8860B |
+| nester | The Nester | Coastal | #5B9EA6 |
+| maker | The Maker | Industrial | #8B7355 |
+| minimalist | The Minimalist | Japandi | #9CAF88 |
+| romantic | The Romantic | French Country | #C9A9A6 |
+| storyteller | The Storyteller | Eclectic Vintage | #A67B5B |
+| urbanist | The Urbanist | Urban Contemporary | #708090 |
+
+**Display rule:** UI shows the personality label ("The Curator") everywhere. The style territory appears only on the archetype reveal screen as a subtitle. The share quote (Sprint 2 T4) also includes the territory.
+
+**Option B contingency:** If ≥30% user confusion in testing, drop the territory subtitle and replace with a "Your style leans toward…" sentence in the archetype description. No schema change required.
+
+**Note:** `dreamer` → `nester` rename requires a migration in Sprint 2 T1 (DB enum, archetype_history, style_profiles, swipe scoring keys, tokens.ts colour map).
 
 ---
 
@@ -208,7 +300,7 @@ Tables added 7 April 2026 in strategic foundation pack: `archetype_history`, `en
 | `style_profiles` | `id`, `user_id`, `primary_archetype`, `secondary_archetype`, `swipe_scores` JSONB, `is_anonymous`, `created_at` | Own row only |
 | `archetype_history` | `id`, `user_id`, `primary_archetype`, `secondary_archetype`, `swipe_scores` JSONB, `source` (initial/retake/admin), `recorded_at` | Own rows, append-only |
 | `rooms` | `id`, `user_id`, `room_type`, `display_name` (nullable), `budget_tier`, `room_analysis` JSONB (nullable), `archetype_at_recommendation`, `is_aspirational`, `occupancy_status`, `room_stage`, `existing_categories` | Own rooms only |
-| `products` | `id`, `title`, `image_url`, `retailer`, `affiliate_url`, `archetype_tags`, `room_tags`, `budget_tier`, `category`, `season` | Read-all auth users |
+| `products` | `id`, `title`, `image_url`, `retailer`, `affiliate_url`, `archetype_tags`, `room_tags`, `trend_tags`, `budget_tier`, `category`, `season` | Read-all auth users |
 | `wishlisted_products` | `id`, `user_id`, `product_id`, `room_id`, `created_at`, `removed_at` (soft delete) | Own rows only |
 | `places_cache` | `id`, `postcode_district`, `trade_type`, `results` JSONB, `cached_at` | Service role only |
 | `engagement_events` | `id`, `user_id` (nullable for anon), `event_type`, `event_data` JSONB, `occurred_at`, `retention_until`, `model_version` (nullable for AI events) | Own rows only |
@@ -313,6 +405,17 @@ SELECT cron.schedule(
   DELETE FROM engagement_events WHERE user_id IS NULL AND occurred_at < NOW() - INTERVAL '24 hours';
   $$
 );
+
+-- Sprint 3 prep (locked 7 April 2026 PM): trend layer on products table
+-- Adds trend_tags array for filtering recommendations by current trend features.
+-- See Section 0 strategic decisions log for the 65/35 stable-vs-trend rationale.
+
+ALTER TABLE products ADD COLUMN IF NOT EXISTS trend_tags TEXT[] DEFAULT '{}';
+CREATE INDEX IF NOT EXISTS products_trend_tags ON products USING GIN (trend_tags);
+
+-- While we're here: ensure GIN indexes on existing array columns for query performance
+CREATE INDEX IF NOT EXISTS products_archetype_tags ON products USING GIN (archetype_tags);
+CREATE INDEX IF NOT EXISTS products_room_tags ON products USING GIN (room_tags);
 ```
 
 ---
@@ -331,7 +434,28 @@ T13 → T11 → T12 merged in order. Three PRs, branches deleted, main synced. E
 
 **Prerequisite:** Bridge Sprint complete. All schema migrations applied. Engagement helper wired.
 
-T1–T5 unchanged from v4.
+T1–T3, T5 unchanged from v4.
+
+**T4 — Archetype Result screen share quote (REVISED)**
+
+**Share button (revised 7 April 2026 PM):** uses expo-sharing with the new hybrid format that pairs personality name with style territory and includes the archetype's essence line:
+
+> "I'm The [Personality] · [StyleTerritory]. [EssenceLine]. Find your home style on Cornr. cornr.co.uk"
+
+Worked example:
+
+> "I'm The Nester · Coastal. You make a place feel lived-in before you've unpacked a box. Find your home style on Cornr. cornr.co.uk"
+
+The essence line is the Newsreader-italic sentence from `src/content/archetypes.ts` — one of the four required components of every archetype description per the strategic brief. Until descriptions are written, the share button can use a placeholder essence line and ship; the placeholder gets swapped for the real essence line in a follow-up commit when descriptions land.
+
+PostHog `share_initiated` event payload now includes `style_territory` in addition to existing fields:
+
+    share_initiated {
+      primary_archetype: string,
+      style_territory: string,
+      secondary_archetype: string | null,
+      channel: string
+    }
 
 **T6 — Budget + Room Setup (REVISED)** — three-screen flow:
 
@@ -353,6 +477,43 @@ The `recommend-products` Edge Function prompt must:
 5. Rationale text NEVER invokes property_period claims. Describes visible product qualities only.
 6. property_period passed in as soft system-prompt nudge: "If the user's property period is provided, prefer products whose styling suits that era when other criteria are equal. Never mention the period in user-facing rationale."
 7. `model_version` set to `claude-haiku-4-5` in `engagement_events` for every recommendation generation
+
+**Trend layer (added 7 April 2026 PM — see Section 0 strategic decisions log)**
+
+The Edge Function gains a fifth-class input alongside the existing inputs:
+
+- **`trend_context`** — a structured trend feature list pre-filtered for this archetype, imported at Edge Function build time from `src/content/trends.ts`. Each entry includes: feature name (internal only, never user-facing), priority tier (P1 or P2), and `rationale_qualities` (the quality language the model uses in user-facing rationale text).
+
+The vocabulary file `src/content/trends.ts` is created during Sprint 3 prep. It is the SINGLE SOURCE OF TRUTH for the trend vocabulary — referenced from both the Edge Function (via import) and from Track C catalogue sourcing (via the Mission Control trend vocabulary tab, which mirrors the file contents). Any change to the vocabulary updates both at once.
+
+**Trend layer rules for the Haiku prompt:**
+
+1. Trend signal weighted at approximately 20–25% of recommendation relevance. Archetype is the primary driver; trends flavour but never dominate.
+2. Trend items are recommended for **accessory and accent positions only**, never for primary furniture. Primary furniture follows archetype identity alone. This protects the user from chasing trends on high-investment items they cannot affordably replace.
+3. Aspirational rooms (where `is_aspirational=true`) follow the same trend layer rules — the model still references current sensibility but in inspiration-led language rather than buy-next language.
+4. **Critical rule for rationale text (the rule that protects the app from dating):** the rationale must reference the *quality* a trend embodies, NEVER name the trend itself. The model uses the `rationale_qualities` field from the trend vocabulary, not the feature name.
+   - ✓ Correct: "Chosen because the warm walnut finish has the depth you're drawn to."
+   - ✗ Wrong: "Chosen because walnut is trending in 2026."
+   - ✓ Correct: "Chosen because the soft chalky limewash gives the room a quiet undertone."
+   - ✗ Wrong: "Chosen because limewash is having a moment."
+   The Haiku prompt explicitly instructs the model to avoid naming trends, era references, or any temporal language. Rationale text should read as timeless even when the underlying recommendation is trend-aware.
+5. The `model_version` field on `engagement_events` is set to `claude-haiku-4-5` for every recommendation generation, as already specified.
+
+**Revised input list for the Edge Function (replaces the existing 4-input list):**
+
+1. `archetype` (primary, from whitelist of 7 IDs)
+2. `secondary_archetype` (optional, may be null)
+3. `style_territory` (paired with archetype, e.g. "Warm Scandi")
+4. `room_type`, `budget_tier`, `room_stage`, `existing_categories`, `is_aspirational`
+5. `property_period` (optional, soft hint, never user-facing in rationale)
+6. **NEW:** `trend_context` — pre-filtered trend feature list for this archetype, imported from `src/content/trends.ts`
+
+**Input validation note for Sprint 3 T4:** the input whitelist must include archetype IDs, style_territory strings, and trend feature codes (the internal feature identifiers from `src/content/trends.ts`). This is a small additive change to the existing T4 whitelist work — no separate task needed.
+
+**PostHog payload changes for Sprint 3:**
+- `product_card_shown` payload gains `trend_tags` (the trend tags from the recommended product itself)
+- `product_link_clicked` payload gains `trend_tags`
+- `room_created` payload unchanged (no trend layer at room creation time)
 
 Full prompt template drafted at Sprint 3 T1 build time.
 
@@ -437,6 +598,20 @@ The v4 PDFs (Master Doc, Brand & Design System, Operations & Legal, Competitor A
 6. Use `/plan` before 2+ file tasks; `/compact` every 30–45 mins in Claude Code.
 7. Multi-persona critique required before any second fix attempt on a repeated bug.
 
+### Recall-before-produce rule
+
+Before launching any external research task, producing any new document, or running any multi-persona critique, Claude must first search past conversations and project knowledge for existing work on the same or overlapping questions. If prior work exists, Claude surfaces it, states what it already covers, and asks whether fresh work is still needed or whether the existing work can be built on. Default to *recall*, then *reuse*, then *produce*.
+
+Skip the recall step only when: (a) the user explicitly says "we haven't looked at this before", (b) the question is about current events or time-sensitive data, or (c) the task is a quick factual lookup under approximately 2 minutes.
+
+This rule exists because Cornr has accumulated substantial research (Glassette intelligence, March competitive review, archetype validation, taxonomy mapping, April trend research) that is easy to forget and expensive to reproduce.
+
+### Provisional-until-proven rule
+
+Every user-facing naming, copywriting, and taxonomy decision in Cornr v1 is provisional until tested against real user data. This includes archetype names and descriptions, style territory pairings, reveal screen copy, share quote templates, product rationale templates, button labels, and voice choices. These are hypotheses from evidence and research, not immutable commitments. TestFlight (Sprint 6) and the first 100 post-launch users are explicit review gates. If data says change it, we change it.
+
+This rule does NOT apply to: database schema, RLS policies, data model, security and consent flows, WCAG contrast rules, brand hard constraints from BDS v3 (palette, fonts, 90/10 rule), or any decision tagged "all settled, do not reopen" in Master Doc Section 2. Those are load-bearing; everything downstream of them flexes.
+
 ---
 
 ## Section 11 — Open Questions (live)
@@ -448,7 +623,10 @@ The v4 PDFs (Master Doc, Brand & Design System, Operations & Legal, Competitor A
 | Digital Home API costs at scale | Before v2 scoping | Budget £130–250/month for 1K active users |
 | Swipe card count: 12 or 15 | Sprint 2 build | Start 12, reduce if completion <45% |
 | Seasonal product refresh process | Before launch | Manual quarterly. 30 new replacing bottom 30. |
-| Archetype descriptions (7 new) | Before Sprint 2 T4 | Write fresh from BDS v3 voice guide |
+| Archetype descriptions (7 new) | Next claude.ai planning session | Strategic brief locked 7 April PM (4-component structure, present-tense rule, Barnum defence, yes-but-light trend touches). Hybrid names locked. Writing blocked on a focused planning session — not on additional decisions. |
+| Trend vocabulary refresh cadence (post-launch) | Sprint 6 launch prep | Quarterly review against Pinterest Predicts and John Lewis trend reports. Mid-quarter triggers, ownership, and re-tagging process all undefined. |
+| GTM / TikTok content strategy | Sprint 6 TestFlight in sight | Trend research surfaced strong signals (Dusk +42% YoY TikTok-first, 47% of UK 25–34s use TikTok for renovation inspiration). Worth a dedicated planning session at the right stage. |
+| EditorialCard content operationalisation | Sprint 6 launch prep | Format locked: "How [Archetype] homes are embracing [Trend]". Refresh cadence 2–4 weeks. Writer, sources, and weekly process all TBD. |
 
 **Resolved 7 April 2026:** archetype as primary mechanic; Pre-Purchase Researcher serving; v2 brand partnership data foundation. See Section 0.
 
