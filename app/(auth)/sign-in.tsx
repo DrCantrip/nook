@@ -33,10 +33,17 @@ export default function SignInScreen() {
   const [resetError, setResetError] = useState<string | null>(null);
   const [resetLoading, setResetLoading] = useState(false);
 
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const canSubmit = email.length > 0 && password.length > 0 && !loading;
 
   async function handleSignIn() {
     setError(null);
+
+    if (!emailValid) {
+      setError(S.emailInvalid);
+      return;
+    }
+
     setLoading(true);
     try {
       const { error: authError } = await signIn(email.trim(), password);

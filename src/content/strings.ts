@@ -1,6 +1,6 @@
 export const STRINGS = {
   welcome: {
-    title: "Cornr",
+    title: "cornr",
     subtitle: "Every corner, considered.",
     headline: "Find your home style in 60 seconds.",
     cta: "Get started",
@@ -35,6 +35,7 @@ export const STRINGS = {
     resetButton: "Send reset link",
     resetSuccess: "Check your email for a reset link.",
     backToSignIn: "Back to sign in",
+    emailInvalid: "Please enter a valid email address",
     genericError: "Something went wrong. Please try again.",
   },
   tabs: {
