@@ -50,19 +50,27 @@ All user input in AI prompts wrapped in <user_context></user_context>.
 Supabase client returns PromiseLike, not Promise — wrap in Promise.resolve() when passing to Promise.all or other APIs expecting a real Promise.
 Never call useAuth() inside another hook — causes stale closures and infinite re-render loops. Keep useAuth() calls at the component level only.
 
-## Design tokens
-primary-900 (#1A3A5C): primary CTA background, screen headings, active nav icon ONLY
-primary-600 (#3A6A9A): interactive text, links, secondary button borders ONLY
-primary-50 (#EBF2FA): badge backgrounds
-teal-bg (#F0FDFA) / teal-text (#134E4A): AI-generated content panels ONLY
-warmstone (#F5F4F0): screen background behind card lists
+## Typography rules (v4)
+- Three fonts via expo-font: Lora (display/serif), DM Sans (body/sans), Newsreader (accent italic)
+- Lora bundled at SemiBold (600) and Bold (700) ONLY — never use Lora at Regular weight
+- Rule: Serif (Lora) for editorial/headings. Sans (DM Sans) for functional/body. Newsreader for italic accent quotes only.
+- Hierarchy comes from font family, not colour — both headings and body use ink (#1A1814)
 
-## Typography
-Display: 34px/700/letterSpacing -0.5 — archetype name ONLY
-Screen title: 22px/600/letterSpacing -0.3 — one per screen
-Card heading: 17px/600
-Body: 16px/400/lineHeight 24
-Badge: 12px/600/uppercase/letterSpacing +0.4
+## Colour tokens (v4 warm palette)
+- ink #1A1814 — primary text, headings, wordmark (16.6:1 on cream, AAA)
+- cream #FAF7F3 — page background
+- white #FFFCF9 — card surface
+- accent #94653A — interactive text/borders/icons (4.7:1 on cream, AA-safe DEFAULT)
+- accent-surface #B28760 — filled button backgrounds ONLY (3.01:1 UI component on cream, never used for text)
+- warm-600 #6B6358 — secondary text (5.54:1 on cream)
+- warm-400 #948A7D — placeholders (3.18:1, large text only)
+- warm-200 #D4CBC0 — borders, disabled bg
+- warm-100 #EDE8E2 — skeleton/light card bg
+- Teal #F0FDFA bg + #134E4A text — AI rationale panels ONLY, never elsewhere
+- WCAG AA is a HARD RULE — every text colour passes 4.5:1 on its background, every UI boundary passes 3:1
+
+## Pre-commit hook (v4)
+A simple-git-hooks pre-commit hook runs npx tsc --noEmit before every commit. If TypeScript errors exist, the commit is blocked. This prevents the silent-TS-error class of bug from reaching main.
 
 ## Border radius
 Cards:16px | Buttons:10px | Badges:6px | Inputs:12px | Modal:20px top only

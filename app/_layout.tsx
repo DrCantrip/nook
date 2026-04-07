@@ -5,16 +5,18 @@ import { Slot, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useAuth } from "../src/hooks/useAuth";
 import { useStyleProfile } from "../src/hooks/useStyleProfile";
+import { useAppFonts } from "../src/hooks/useAppFonts";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { session, user, loading: authLoading } = useAuth();
   const { hasProfile, loading: profileLoading } = useStyleProfile(user);
+  const { fontsLoaded } = useAppFonts();
   const segments = useSegments();
   const router = useRouter();
 
-  const loading = authLoading || (!!session && profileLoading);
+  const loading = authLoading || !fontsLoaded || (!!session && profileLoading);
 
   useEffect(() => {
     if (loading) return;
