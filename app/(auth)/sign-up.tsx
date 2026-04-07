@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ArrowLeft } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
+import { supabase } from "../../src/lib/supabase";
 import { STRINGS } from "../../src/content/strings";
 import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
@@ -25,6 +26,7 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -46,11 +48,34 @@ export default function SignUpScreen() {
     setLoading(true);
     setSubmitted(true);
     try {
-      const { error: authError } = await signUp(email.trim(), password);
+      const { data, error: authError } = await signUp(email.trim(), password);
       if (authError) {
         setError(authError.message);
         return;
       }
+
+      const userId = data?.user?.id;
+      if (userId) {
+        try {
+          await Promise.resolve(
+            supabase
+              .from("users")
+              .update({ email_marketing_opt_in: marketingOptIn })
+              .eq("id", userId)
+          );
+          await Promise.resolve(
+            supabase.from("consent_events").insert({
+              user_id: userId,
+              event_type: "marketing_opt_in_at_signup",
+              consent_given: marketingOptIn,
+              consent_text: S.marketingOptIn,
+            })
+          );
+        } catch (e) {
+          console.warn("Failed to save marketing consent:", e);
+        }
+      }
+
       setSuccess(S.checkEmail);
     } catch {
       setError(S.genericError);
@@ -116,6 +141,23 @@ export default function SignUpScreen() {
               {ageConfirmed && <Text style={styles.checkmark}>✓</Text>}
             </View>
             <Text style={styles.checkboxLabel}>{S.ageCheckbox}</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.checkboxRow}
+            onPress={() => setMarketingOptIn((v) => !v)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: marketingOptIn }}
+          >
+            <View
+              style={[
+                styles.checkbox,
+                marketingOptIn ? styles.checkboxChecked : styles.checkboxUnchecked,
+              ]}
+            >
+              {marketingOptIn && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.checkboxLabel}>{S.marketingOptIn}</Text>
           </Pressable>
 
           <View style={styles.privacyRow}>

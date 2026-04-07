@@ -16,6 +16,7 @@ export const STRINGS = {
     signInLink: "Sign in",
     ageError: "You must be 18 or older to use Cornr",
     passwordHint: "At least 8 characters",
+    marketingOptIn: "Keep me updated with style tips and new finds",
     privacyPolicy: "By creating an account you agree to our",
     privacyPolicyLink: "Privacy Policy",
     privacyPolicyNotice: "Privacy policy will be available at cornr.co.uk/privacy before launch",
