@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
+import { capture } from "../../src/services/posthog";
 import { STRINGS } from "../../src/content/strings";
 import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
@@ -71,6 +72,7 @@ export default function SignUpScreen() {
               consent_text: S.marketingOptIn,
             })
           );
+          capture("signup_completed", { marketing_opt_in: marketingOptIn });
         } catch (e) {
           console.warn("Failed to save marketing consent:", e);
         }
