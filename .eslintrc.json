@@ -1,0 +1,18 @@
+{
+  "root": true,
+  "extends": ["expo"],
+  "overrides": [
+    {
+      "files": ["app/**/*.tsx", "app/**/*.ts", "src/components/**/*.tsx", "src/components/**/*.ts"],
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "Literal[value=/^#[0-9a-fA-F]{3,8}$/]",
+            "message": "Hex codes are banned in components. Import from src/theme/tokens.ts instead."
+          }
+        ]
+      }
+    }
+  ]
+}
