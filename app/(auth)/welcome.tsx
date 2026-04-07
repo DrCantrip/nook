@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { STRINGS } from "../../src/content/strings";
-import { COLORS } from "../../src/tokens/colors";
+import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
 const S = STRINGS.welcome;
 
@@ -25,28 +25,24 @@ export default function WelcomeScreen() {
         style={styles.gradient}
       />
 
-      {/* Full-screen container with manual safe area padding */}
       <View
-        cssInterop={false}
         style={[
           styles.container,
           { paddingTop: insets.top, paddingBottom: insets.bottom },
         ]}
       >
         {/* Top — branding */}
-        <View cssInterop={false} style={styles.topSection}>
+        <View style={styles.topSection}>
           <Text style={styles.wordmark}>{S.title}</Text>
           <Text style={styles.tagline}>{S.subtitle}</Text>
         </View>
 
         {/* Bottom — CTA area */}
-        <View cssInterop={false} style={styles.bottomSection}>
+        <View style={styles.bottomSection}>
           <Text style={styles.headline}>{S.headline}</Text>
 
-          {/* Button: white bg on outer View, press state on inner Pressable */}
-          <View cssInterop={false} style={styles.ctaWrapper}>
+          <View style={styles.ctaWrapper}>
             <Pressable
-              cssInterop={false}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 router.push("/(auth)/sign-up");
@@ -60,9 +56,7 @@ export default function WelcomeScreen() {
             </Pressable>
           </View>
 
-          {/* Sign in link */}
           <Pressable
-            cssInterop={false}
             onPress={() => router.push("/(auth)/sign-in")}
             style={({ pressed }) => [
               styles.signInPressable,
@@ -80,7 +74,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: colors.ink,
   },
   gradient: {
     position: "absolute",
@@ -98,31 +92,30 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   wordmark: {
+    fontFamily: "Lora-Bold",
     fontSize: 28,
     fontWeight: "700",
-    color: COLORS.white,
+    color: colors.white,
     letterSpacing: -0.5,
   },
   tagline: {
-    fontSize: 16,
-    fontWeight: "400",
+    ...typography.body,
     color: "rgba(255,255,255,0.8)",
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   bottomSection: {
-    paddingHorizontal: 20,
-    paddingBottom: 32,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing["3xl"],
   },
   headline: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: COLORS.white,
+    ...typography.sectionHeading,
+    color: colors.white,
     textAlign: "center",
   },
   ctaWrapper: {
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    marginTop: 16,
+    backgroundColor: colors.white,
+    borderRadius: radius.button,
+    marginTop: spacing.lg,
     overflow: "hidden",
   },
   ctaPressable: {
@@ -131,20 +124,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   ctaText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: COLORS.primary900,
-    letterSpacing: 0.2,
+    ...typography.cta,
+    color: colors.ink,
   },
   signInPressable: {
-    marginTop: 16,
+    marginTop: spacing.lg,
     alignItems: "center",
     justifyContent: "center",
     minHeight: 44,
-    paddingVertical: 12,
+    paddingVertical: spacing.md,
   },
   signInText: {
-    fontSize: 14,
+    ...typography.uiLabel,
     color: "rgba(255,255,255,0.7)",
     textAlign: "center",
   },
