@@ -1,15 +1,20 @@
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { STRINGS } from "../../src/content/strings";
+import { colors, spacing, typography } from "../../src/theme/tokens";
 
 export default function TradesScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-warmstone">
-      <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-[22px] font-semibold tracking-tight text-primary-900">
-          {STRINGS.tabs.trades}
-        </Text>
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.centered}>
+        <Text style={styles.title}>{STRINGS.tabs.trades}</Text>
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.cream },
+  centered: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: spacing.xl },
+  title: { ...typography.screenTitle, color: colors.ink },
+});
