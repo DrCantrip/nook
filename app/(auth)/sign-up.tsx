@@ -2,8 +2,10 @@ import { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
+  LayoutAnimation,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -11,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { ArrowLeft } from "phosphor-react-native";
+import { ArrowLeft, CaretDown, CaretUp } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
 import { capture } from "../../src/services/posthog";
@@ -21,6 +23,30 @@ import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
 const S = STRINGS.signUp;
 
+function WhyWeAskExpander({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <View style={styles.expanderContainer}>
+      <Pressable
+        style={styles.expanderTrigger}
+        onPress={() => {
+          LayoutAnimation.easeInEaseOut();
+          setExpanded((v) => !v);
+        }}
+      >
+        <Text style={styles.expanderLabel}>{S.whyWeAsk}</Text>
+        {expanded ? (
+          <CaretUp size={14} color={colors.accent} weight="light" />
+        ) : (
+          <CaretDown size={14} color={colors.accent} weight="light" />
+        )}
+      </Pressable>
+      {expanded && <Text style={styles.expanderBody}>{text}</Text>}
+    </View>
+  );
+}
+
 export default function SignUpScreen() {
   const router = useRouter();
   const { signUp } = useAuth();
@@ -29,6 +55,7 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const [audienceDataOptIn, setAudienceDataOptIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -62,25 +89,39 @@ export default function SignUpScreen() {
           await Promise.resolve(
             supabase
               .from("users")
-              .update({ email_marketing_opt_in: marketingOptIn })
+              .update({
+                email_marketing_opt_in: marketingOptIn,
+                audience_data_opt_in: audienceDataOptIn,
+              })
               .eq("id", userId)
           );
           await Promise.resolve(
-            supabase.from("consent_events").insert({
-              user_id: userId,
-              event_type: "marketing_opt_in_at_signup",
-              consent_given: marketingOptIn,
-              consent_text: S.marketingOptIn,
-            })
+            supabase.from("consent_events").insert([
+              {
+                user_id: userId,
+                event_type: "marketing_opt_in_at_signup",
+                consent_given: marketingOptIn,
+                consent_text: S.marketingOptIn,
+              },
+              {
+                user_id: userId,
+                event_type: "audience_data_opt_in_at_signup",
+                consent_given: audienceDataOptIn,
+                consent_text: S.audienceDataOptIn,
+              },
+            ])
           );
-          capture("signup_completed", { marketing_opt_in: marketingOptIn });
+          capture("signup_completed", {
+            marketing_opt_in: marketingOptIn,
+            audience_data_opt_in: audienceDataOptIn,
+          });
           recordEvent(data?.user ?? null, "signup_completed", {
             marketing_opt_in: marketingOptIn,
-            audience_data_opt_in: false,
+            audience_data_opt_in: audienceDataOptIn,
             source: "sign_up_screen",
           });
         } catch (e) {
-          console.warn("Failed to save marketing consent:", e);
+          console.warn("Failed to save consent:", e);
         }
       }
 
@@ -94,10 +135,7 @@ export default function SignUpScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <Pressable
-        style={styles.backButton}
-        onPress={() => router.back()}
-      >
+      <Pressable style={styles.backButton} onPress={() => router.back()}>
         <ArrowLeft size={24} color={colors.ink} />
       </Pressable>
 
@@ -105,7 +143,10 @@ export default function SignUpScreen() {
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.content}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
           <Text style={styles.title}>{S.title}</Text>
 
           <Text style={styles.label}>{S.emailLabel}</Text>
@@ -134,6 +175,7 @@ export default function SignUpScreen() {
           />
           <Text style={styles.hint}>{S.passwordHint}</Text>
 
+          {/* 18+ checkbox (required) */}
           <Pressable
             style={styles.checkboxRow}
             onPress={() => setAgeConfirmed((v) => !v)}
@@ -151,6 +193,7 @@ export default function SignUpScreen() {
             <Text style={styles.checkboxLabel}>{S.ageCheckbox}</Text>
           </Pressable>
 
+          {/* Marketing opt-in toggle */}
           <Pressable
             style={styles.checkboxRow}
             onPress={() => setMarketingOptIn((v) => !v)}
@@ -167,11 +210,36 @@ export default function SignUpScreen() {
             </View>
             <Text style={styles.checkboxLabel}>{S.marketingOptIn}</Text>
           </Pressable>
+          <WhyWeAskExpander text={S.marketingWhyWeAsk} />
 
+          {/* Audience data opt-in toggle */}
+          <Pressable
+            style={styles.checkboxRow}
+            onPress={() => setAudienceDataOptIn((v) => !v)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: audienceDataOptIn }}
+          >
+            <View
+              style={[
+                styles.checkbox,
+                audienceDataOptIn
+                  ? styles.checkboxChecked
+                  : styles.checkboxUnchecked,
+              ]}
+            >
+              {audienceDataOptIn && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.checkboxLabel}>{S.audienceDataOptIn}</Text>
+          </Pressable>
+          <WhyWeAskExpander text={S.audienceDataWhyWeAsk} />
+
+          {/* Privacy policy */}
           <View style={styles.privacyRow}>
             <Text style={styles.privacyText}>{S.privacyPolicy} </Text>
             <Pressable
-              onPress={() => Alert.alert(S.privacyPolicyLink, S.privacyPolicyNotice)}
+              onPress={() =>
+                Alert.alert(S.privacyPolicyLink, S.privacyPolicyNotice)
+              }
             >
               <Text style={styles.privacyLink}>{S.privacyPolicyLink}</Text>
             </Pressable>
@@ -190,7 +258,12 @@ export default function SignUpScreen() {
             onPress={handleSignUp}
             disabled={!canSubmit}
           >
-            <Text style={[styles.submitLabel, !canSubmit && styles.submitLabelDisabled]}>
+            <Text
+              style={[
+                styles.submitLabel,
+                !canSubmit && styles.submitLabelDisabled,
+              ]}
+            >
               {loading ? "Creating account..." : S.submitButton}
             </Text>
           </Pressable>
@@ -201,7 +274,7 @@ export default function SignUpScreen() {
               <Text style={styles.linkAccent}>{S.signInLink}</Text>
             </Pressable>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -218,7 +291,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "center",
   },
-  content: { flex: 1, justifyContent: "center", paddingHorizontal: spacing.xl },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing["3xl"],
+  },
   title: {
     ...typography.screenTitle,
     color: colors.ink,
@@ -248,7 +326,7 @@ const styles = StyleSheet.create({
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: spacing.lg,
+    marginBottom: spacing.sm,
     minHeight: 44,
   },
   checkbox: {
@@ -270,6 +348,31 @@ const styles = StyleSheet.create({
   },
   checkmark: { color: colors.white, fontSize: 12, fontWeight: "700" },
   checkboxLabel: { ...typography.body, color: colors.warm600, flex: 1 },
+  expanderContainer: {
+    marginBottom: spacing.lg,
+  },
+  expanderTrigger: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 36,
+    minHeight: 28,
+  },
+  expanderLabel: {
+    fontFamily: "DMSans-Medium",
+    fontSize: 13,
+    fontWeight: "500",
+    color: colors.accent,
+    marginRight: spacing.xs,
+  },
+  expanderBody: {
+    fontFamily: "DMSans-Regular",
+    fontSize: 13,
+    lineHeight: 18,
+    color: colors.warm600,
+    paddingLeft: 36,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+  },
   privacyRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -306,5 +409,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
   },
   linkText: { ...typography.body, color: colors.warm600 },
-  linkAccent: { ...typography.body, color: colors.accent, fontFamily: "DMSans-SemiBold" },
+  linkAccent: {
+    ...typography.body,
+    color: colors.accent,
+    fontFamily: "DMSans-SemiBold",
+  },
 });
