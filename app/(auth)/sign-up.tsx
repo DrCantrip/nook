@@ -4,6 +4,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -13,6 +14,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { STRINGS } from "../../src/content/strings";
+import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
 const S = STRINGS.signUp;
 
@@ -47,9 +49,6 @@ export default function SignUpScreen() {
         setError(authError.message);
         return;
       }
-      // Success — either new account (needs email confirmation) or existing
-      // account (Supabase sends reset email to prevent enumeration).
-      // Show the same safe message in both cases.
       setSuccess(S.checkEmail);
     } catch {
       setError(S.genericError);
@@ -59,31 +58,24 @@ export default function SignUpScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-warmstone">
-      {/* Back button */}
+    <SafeAreaView style={styles.safe}>
       <Pressable
-        className="ml-4 mt-2 min-w-[44px] min-h-[44px] items-start justify-center"
+        style={styles.backButton}
         onPress={() => router.back()}
-        style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
       >
-        <ArrowLeft size={24} color="#1A3A5C" />
+        <ArrowLeft size={24} color={colors.ink} />
       </Pressable>
 
       <KeyboardAvoidingView
-        className="flex-1"
+        style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View className="flex-1 justify-center px-6">
-          <Text className="text-[22px] font-semibold tracking-tight text-primary-900 mb-8">
-            {S.title}
-          </Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>{S.title}</Text>
 
-          {/* Email */}
-          <Text className="text-base text-primary-900 mb-1.5 font-medium">
-            {S.emailLabel}
-          </Text>
+          <Text style={styles.label}>{S.emailLabel}</Text>
           <TextInput
-            className="bg-white border border-gray-200 rounded-input px-4 py-3 text-base text-gray-900 mb-4"
+            style={styles.input}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -91,106 +83,70 @@ export default function SignUpScreen() {
             autoComplete="email"
             autoCorrect={false}
             placeholder={S.emailLabel}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.warm400}
           />
 
-          {/* Password */}
-          <Text className="text-base text-primary-900 mb-1.5 font-medium">
-            {S.passwordLabel}
-          </Text>
+          <Text style={styles.label}>{S.passwordLabel}</Text>
           <TextInput
-            className="bg-white border border-gray-200 rounded-input px-4 py-3 text-base text-gray-900 mb-1"
+            style={[styles.input, { marginBottom: spacing.xs }]}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
             autoCapitalize="none"
             autoComplete="password-new"
             placeholder={S.passwordLabel}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.warm400}
           />
-          <Text className="text-xs text-gray-400 mb-6">{S.passwordHint}</Text>
+          <Text style={styles.hint}>{S.passwordHint}</Text>
 
-          {/* Age checkbox */}
           <Pressable
-            className="flex-row items-center mb-4 min-h-[44px]"
+            style={styles.checkboxRow}
             onPress={() => setAgeConfirmed((v) => !v)}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: ageConfirmed }}
-            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
           >
             <View
-              className={`w-6 h-6 rounded-badge border-2 items-center justify-center mr-3 ${
-                ageConfirmed
-                  ? "bg-primary-900 border-primary-900"
-                  : "bg-white border-gray-300"
-              }`}
+              style={[
+                styles.checkbox,
+                ageConfirmed ? styles.checkboxChecked : styles.checkboxUnchecked,
+              ]}
             >
-              {ageConfirmed && (
-                <Text className="text-white text-xs font-bold">✓</Text>
-              )}
+              {ageConfirmed && <Text style={styles.checkmark}>✓</Text>}
             </View>
-            <Text className="text-base text-gray-700 flex-1">
-              {S.ageCheckbox}
-            </Text>
+            <Text style={styles.checkboxLabel}>{S.ageCheckbox}</Text>
           </Pressable>
 
-          {/* Privacy policy */}
-          <View className="flex-row flex-wrap mb-6">
-            <Text className="text-sm text-gray-500">{S.privacyPolicy} </Text>
+          <View style={styles.privacyRow}>
+            <Text style={styles.privacyText}>{S.privacyPolicy} </Text>
             <Pressable
               onPress={() => Alert.alert(S.privacyPolicyLink, S.privacyPolicyNotice)}
-              style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
             >
-              <Text className="text-sm font-semibold text-primary-600 underline">
-                {S.privacyPolicyLink}
-              </Text>
+              <Text style={styles.privacyLink}>{S.privacyPolicyLink}</Text>
             </Pressable>
           </View>
 
-          {/* Success */}
           {success && (
-            <View className="bg-white rounded-card p-4 mb-4">
-              <Text className="text-base text-primary-900 text-center">
-                {success}
-              </Text>
+            <View style={styles.successBox}>
+              <Text style={styles.successText}>{success}</Text>
             </View>
           )}
 
-          {/* Error */}
-          {error && (
-            <Text className="text-red-600 text-sm mb-4">{error}</Text>
-          )}
+          {error && <Text style={styles.errorText}>{error}</Text>}
 
-          {/* Submit */}
           <Pressable
-            className={`rounded-button py-3 items-center ${
-              canSubmit ? "bg-primary-900" : "bg-gray-300"
-            }`}
+            style={[styles.submitButton, !canSubmit && styles.submitDisabled]}
             onPress={handleSignUp}
             disabled={!canSubmit}
-            style={({ pressed }) => ({
-              opacity: pressed && canSubmit ? 0.85 : 1,
-            })}
           >
-            <Text
-              className={`text-base font-semibold ${
-                canSubmit ? "text-white" : "text-gray-500"
-              }`}
-            >
+            <Text style={[styles.submitLabel, !canSubmit && styles.submitLabelDisabled]}>
               {loading ? "Creating account..." : S.submitButton}
             </Text>
           </Pressable>
 
-          {/* Sign in link */}
-          <View className="flex-row justify-center mt-6">
-            <Text className="text-base text-gray-500">{S.hasAccount} </Text>
-            <Pressable
-              onPress={() => router.replace("/(auth)/sign-in")}
-              style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
-            >
-              <Text className="text-base font-semibold text-primary-600">
-                {S.signInLink}
-              </Text>
+          <View style={styles.linkRow}>
+            <Text style={styles.linkText}>{S.hasAccount} </Text>
+            <Pressable onPress={() => router.replace("/(auth)/sign-in")}>
+              <Text style={styles.linkAccent}>{S.signInLink}</Text>
             </Pressable>
           </View>
         </View>
@@ -198,3 +154,105 @@ export default function SignUpScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.cream },
+  flex: { flex: 1 },
+  backButton: {
+    marginLeft: spacing.lg,
+    marginTop: spacing.sm,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  content: { flex: 1, justifyContent: "center", paddingHorizontal: spacing.xl },
+  title: {
+    ...typography.screenTitle,
+    color: colors.ink,
+    marginBottom: spacing["3xl"],
+  },
+  label: {
+    ...typography.uiLabel,
+    color: colors.ink,
+    marginBottom: spacing.sm,
+  },
+  input: {
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.warm200,
+    borderRadius: radius.input,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    ...typography.body,
+    color: colors.ink,
+    marginBottom: spacing.lg,
+  },
+  hint: {
+    fontSize: 12,
+    color: colors.warm400,
+    marginBottom: spacing.xl,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing.lg,
+    minHeight: 44,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: radius.badge,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: spacing.md,
+  },
+  checkboxChecked: {
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
+  },
+  checkboxUnchecked: {
+    backgroundColor: colors.white,
+    borderColor: colors.warm200,
+  },
+  checkmark: { color: colors.white, fontSize: 12, fontWeight: "700" },
+  checkboxLabel: { ...typography.body, color: colors.warm600, flex: 1 },
+  privacyRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: spacing.xl,
+  },
+  privacyText: { ...typography.uiLabel, color: colors.warm600 },
+  privacyLink: {
+    ...typography.uiLabel,
+    color: colors.accent,
+    fontFamily: "DMSans-SemiBold",
+    textDecorationLine: "underline",
+  },
+  successBox: {
+    backgroundColor: colors.white,
+    borderRadius: radius.card,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  successText: { ...typography.body, color: colors.ink, textAlign: "center" },
+  errorText: { color: colors.error, fontSize: 14, marginBottom: spacing.lg },
+  submitButton: {
+    backgroundColor: colors.accentSurface,
+    borderRadius: radius.button,
+    minHeight: 52,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  submitDisabled: { backgroundColor: colors.warm200 },
+  submitLabel: { ...typography.cta, color: colors.white },
+  submitLabelDisabled: { color: colors.warm400 },
+  linkRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: spacing.xl,
+  },
+  linkText: { ...typography.body, color: colors.warm600 },
+  linkAccent: { ...typography.body, color: colors.accent, fontFamily: "DMSans-SemiBold" },
+});
