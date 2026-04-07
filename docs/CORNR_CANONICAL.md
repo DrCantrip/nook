@@ -171,6 +171,16 @@ Product recommendations use a 65/35 split: 65% of recommended products come from
 
 **Source:** Archetype naming critique, 7 April 2026.
 
+### 8 April 2026 — Master Doc v4 archived, canonical is sole source of truth
+
+The Cornr Master Document v4 PDF has been removed from project knowledge after its content was fully captured in this canonical document during the surgery passes of 7–8 April. The PDF file itself has been preserved in Google Drive at `Cornr/` for historical reference if ever genuinely needed.
+
+The Master Change Log April 2026 PDF has also been removed from project knowledge — its content (the rationale for the April 2026 rebrand and warm palette migration) is captured in Section 0 entries from 4 April 2026. The change log was historical noise once changes were applied.
+
+Going forward, this canonical is the only living document for Cornr v1 product decisions. The Brand & Design System v3 PDF, Operations & Legal v2 PDF, and Competitor Analysis v2 PDF remain in project knowledge as stable reference companions — they are not living documents and they are not authoritative if they conflict with this canonical.
+
+**Source:** 8 April 2026 PC session, completing the documentation arc opened on 7 April PM.
+
 ---
 
 ## Section 1 — Personas (revised)
@@ -649,6 +659,8 @@ This rule does NOT apply to: database schema, RLS policies, data model, security
 | Trend vocabulary refresh cadence (post-launch) | Sprint 6 launch prep | Quarterly review against Pinterest Predicts and John Lewis trend reports. Mid-quarter triggers, ownership, and re-tagging process all undefined. |
 | GTM / TikTok content strategy | Sprint 6 TestFlight in sight | Trend research surfaced strong signals (Dusk +42% YoY TikTok-first, 47% of UK 25–34s use TikTok for renovation inspiration). Worth a dedicated planning session at the right stage. |
 | EditorialCard content operationalisation | Sprint 6 launch prep | Format locked: "How [Archetype] homes are embracing [Trend]". Refresh cadence 2–4 weeks. Writer, sources, and weekly process all TBD. |
+| Project knowledge audit | Next iPhone train session | Audit remaining project knowledge files (Operations & Legal v2, Competitor Analysis v2, BDS v3, Glassette intelligence). Decide which stay as PDFs, which migrate to markdown in repo, which archive to Google Drive. Estimated 30 mins. |
+| BDS v3 → markdown migration | Pre-Sprint 6 launch prep | Convert BDS v3 from PDF in project knowledge to docs/BDS.md in repo. Includes the archetype accent table update with hybrid names paired with style territories (dreamer→nester rename). Tonight the PDF stays as-is — drift is low-risk because canonical Section 1 now has authoritative archetype names + hex colours. |
 
 **Resolved 7 April 2026:** archetype as primary mechanic; Pre-Purchase Researcher serving; v2 brand partnership data foundation. See Section 0.
 
