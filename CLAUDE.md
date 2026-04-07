@@ -6,6 +6,15 @@ Current task: T9
 Last completed: T8 Home screen shell
 Blocking issues: NONE
 
+## Staging test users (permanent — do not delete)
+
+These exist in Supabase staging (project tleoqtldxjlyufixeukz) for RLS verification. They are reused for every schema change that touches user-scoped tables. Do not recreate. Do not seed with realistic data. Never copy to production.
+
+- test-a@cornr.test → 0e675e05-63de-46a0-bdfb-cb101268bf3f
+- test-b@cornr.test → de7925d8-84f3-49f5-84b8-e6fe01543ef2
+
+Last RLS verification: 7 Apr 2026 (Prompt A, all 6 tables passed).
+
 ## Stack
 React Native + Expo SDK 54 (managed workflow). NEVER eject.
 expo-router v6 file-based navigation.
