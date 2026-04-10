@@ -34,17 +34,25 @@ function RootLayout() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === "(auth)";
-    const inOnboardingGroup = segments[0] === "(onboarding)";
+    const segment = segments[0];
 
     let target: string | null = null;
 
     if (!session) {
-      if (!inAuthGroup) target = "/(auth)/welcome";
+      // Only redirect if user is in a protected group
+      if (segment === "(app)" || segment === "(onboarding)") {
+        target = "/(auth)/welcome";
+      }
     } else if (!hasProfile) {
-      if (!inOnboardingGroup) target = "/(onboarding)/swipe";
+      // Session but no profile — need onboarding
+      if (segment === "(app)") {
+        target = "/(onboarding)/swipe";
+      }
     } else {
-      if (inAuthGroup || inOnboardingGroup) target = "/(app)/home";
+      // Fully authed — move past auth/onboarding if still there
+      if (segment === "(auth)" || segment === "(onboarding)") {
+        target = "/(app)/home";
+      }
     }
 
     if (!target) return;

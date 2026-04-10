@@ -82,6 +82,19 @@ export default function WelcomeScreen() {
             </Pressable>
           )}
           {triggerCrash && <CrashTest />}
+
+          {/* Dev-only 404 test trigger — remove before TestFlight */}
+          {__DEV__ && (
+            <Pressable
+              onPress={() => router.push("/this-route-does-not-exist")}
+              style={({ pressed }) => [
+                styles.signInPressable,
+                { opacity: pressed ? 0.85 : 1 },
+              ]}
+            >
+              <Text style={styles.signInText}>Dev: 404 Test</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </ImageBackground>
