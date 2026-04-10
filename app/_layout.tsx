@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Slot, useRouter, useSegments } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
+import { ErrorBoundary } from "../src/components/organisms/ErrorBoundary";
 import { initSentry, Sentry } from "../src/services/sentry";
 import { initPostHog } from "../src/services/posthog";
 import { useAuth } from "../src/hooks/useAuth";
@@ -61,7 +63,13 @@ function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary>
+        <Slot />
+      </ErrorBoundary>
+    </GestureHandlerRootView>
+  );
 }
 
 export default Sentry.wrap(RootLayout);

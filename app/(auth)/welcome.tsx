@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { CrashTest } from "../../src/components/organisms/__dev__/CrashTest";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { STRINGS } from "../../src/content/strings";
@@ -11,6 +13,7 @@ const S = STRINGS.welcome;
 export default function WelcomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const [triggerCrash, setTriggerCrash] = useState(false);
 
   return (
     <ImageBackground
@@ -65,6 +68,20 @@ export default function WelcomeScreen() {
           >
             <Text style={styles.signInText}>{S.signIn}</Text>
           </Pressable>
+
+          {/* Dev-only crash test trigger — remove before TestFlight */}
+          {__DEV__ && (
+            <Pressable
+              onPress={() => setTriggerCrash(true)}
+              style={({ pressed }) => [
+                styles.signInPressable,
+                { opacity: pressed ? 0.85 : 1 },
+              ]}
+            >
+              <Text style={styles.signInText}>Dev: Crash Test</Text>
+            </Pressable>
+          )}
+          {triggerCrash && <CrashTest />}
         </View>
       </View>
     </ImageBackground>
