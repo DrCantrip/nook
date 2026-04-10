@@ -31,6 +31,10 @@ export const colors = {
   tealBg: '#F0FDFA',
   tealText: '#134E4A',
 
+  // Swipe overlays
+  swipeOverlayLove: 'rgba(58, 126, 79, 0.35)',   // success at 35% — love overlay
+  swipeOverlayPass: 'rgba(172, 83, 66, 0.35)',   // error at 35% — pass overlay
+
   // Archetype accents
   archetype: {
     curator: '#8B6F5C',         // Warm Clay
@@ -75,5 +79,22 @@ export const typography = {
   quote: { fontFamily: 'NewsreaderItalic', fontSize: 16, lineHeight: 24 },
 } as const;
 
-export const tokens = { colors, spacing, radius, typography } as const;
+export const shadow = {
+  card: {
+    shadowColor: colors.ink,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  swipe: {
+    shadowColor: colors.ink,
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
+  },
+} as const;
+
+export const tokens = { colors, spacing, radius, typography, shadow } as const;
 export default tokens;
