@@ -1,9 +1,10 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Linking, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { Sentry } from '../../services/sentry';
 import { supabase } from '../../lib/supabase';
 import { ErrorScreenTemplate } from './ErrorScreenTemplate';
+import { openSupportReport } from '../../lib/support';
 
 type Props = {
   children: ReactNode;
@@ -63,13 +64,12 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   private reportCrash = () => {
-    const stack = this.state.error?.stack ?? 'No stack trace available';
-    const message = this.state.error?.message ?? 'Unknown';
-    const reportBody = `Crash report\n\nMessage: ${message}\n\nStack:\n${stack}`;
-
-    // TODO(T-RENAME): swap to hello@cornr.co.uk when Google Workspace is live in Sprint 4
-    const mailto = `mailto:daryll.cowan@gmail.com?subject=${encodeURIComponent('Cornr crash report')}&body=${encodeURIComponent(reportBody)}`;
-    Linking.openURL(mailto);
+    openSupportReport({
+      errorKey: 'genericUnknown',
+      stackTrace: this.state.error?.stack ?? 'No stack trace available',
+      componentStack: this.state.errorInfo?.componentStack ?? undefined,
+      additionalContext: `Message: ${this.state.error?.message ?? 'Unknown'}`,
+    });
   };
 
   render() {

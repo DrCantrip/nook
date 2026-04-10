@@ -95,6 +95,19 @@ export default function WelcomeScreen() {
               <Text style={styles.signInText}>Dev: 404 Test</Text>
             </Pressable>
           )}
+
+          {/* Dev-only network error test trigger — remove before TestFlight */}
+          {__DEV__ && (
+            <Pressable
+              onPress={() => router.push("/(auth)/dev-network-error")}
+              style={({ pressed }) => [
+                styles.signInPressable,
+                { opacity: pressed ? 0.85 : 1 },
+              ]}
+            >
+              <Text style={styles.signInText}>Dev: Network Error Test</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </ImageBackground>
