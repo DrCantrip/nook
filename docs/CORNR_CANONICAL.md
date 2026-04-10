@@ -22,6 +22,22 @@
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
 
+### 10 April 2026 — T2 blocked pending entry-point strategic critique; error handling tranche in progress
+
+Real-device testing of T1 SwipeCard on 10 April surfaced a deeper product question than originally scoped: does the user flow start with taste (current canonical, locked 7 April) or with room (user's actual mental model when they arrive with a specific problem)? The swipe deck without contextual chrome relies on implicit user faith, and the commerce engine downstream is inherently room-specific. Structural mismatch.
+
+**Status:** T1 SwipeCard committed to feature branch with mechanic working. T2 SwipeDeck is **blocked** pending a full Large/Strategic critique (10 personas, 3 rounds, per Section 9) running in a separate chat. T2 will not be started until the critique returns a locked decision on room-first vs taste-first entry point.
+
+**Concurrent work:** Error handling tranche in Launch Readiness has been promoted from backlog to active work this afternoon. Three tasks — LR-ERROR-BOUNDARY, LR-UNMATCHED-ROUTE, LR-ERROR-CONTENT — build out the branded error screen system that was identified as missing during T1 debugging (Unmatched Route default, LogBox defaults, no branded crash fallback). These tasks are insulated from the entry-point decision and can ship regardless of how the critique lands.
+
+**Open questions added to Section 11:**
+- Entry point question: room-first or taste-first? (Resolve via critique, today.)
+- v1 swipe deck image curation brief. (Resolve after entry point decision lands.)
+
+**Rationale:** Pausing a potentially-changing spec is cheaper than building to it and throwing work away. Error handling is a real launch blocker independent of any product flow decisions. Parallelising these two tracks maximises afternoon output without creating rework risk.
+
+**Source:** Phone testing session, 10 April 2026.
+
 ### 7 April 2026 — Constraint capture goes after the archetype reveal
 
 User constraints (room stage, existing categories, property period soft-hint) are captured at room setup, after the archetype reveal and signup. Never before.
@@ -661,6 +677,8 @@ This rule does NOT apply to: database schema, RLS policies, data model, security
 | EditorialCard content operationalisation | Sprint 6 launch prep | Format locked: "How [Archetype] homes are embracing [Trend]". Refresh cadence 2–4 weeks. Writer, sources, and weekly process all TBD. |
 | Project knowledge audit | Next iPhone train session | Audit remaining project knowledge files (Operations & Legal v2, Competitor Analysis v2, BDS v3, Glassette intelligence). Decide which stay as PDFs, which migrate to markdown in repo, which archive to Google Drive. Estimated 30 mins. |
 | BDS v3 → markdown migration | Pre-Sprint 6 launch prep | Convert BDS v3 from PDF in project knowledge to docs/BDS.md in repo. Includes the archetype accent table update with hybrid names paired with style territories (dreamer→nester rename). Tonight the PDF stays as-is — drift is low-risk because canonical Section 1 now has authoritative archetype names + hex colours. |
+| Entry point question: room-first or taste-first | Today via strategic critique | No default — needs panel decision before T2 can start |
+| v1 swipe deck image curation brief | After entry point decision | 12 photos mix — exact curation depends on critique outcome |
 
 **Resolved 7 April 2026:** archetype as primary mechanic; Pre-Purchase Researcher serving; v2 brand partnership data foundation. See Section 0.
 
