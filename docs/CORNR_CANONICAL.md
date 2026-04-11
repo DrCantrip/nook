@@ -1,6 +1,6 @@
 # Cornr Canonical Context
 
-**Last updated:** 7 April 2026 PM (canonical surgery: hybrid naming, trend layer, workflow rules, sprint spec updates)
+**Last updated:** 11 April 2026
 **Purpose:** Single source of truth for all strategic decisions, architecture choices, sprint plans, and workflow rules that postdate the v4 PDFs in project knowledge. Read this first in any new session. If anything below contradicts the PDFs, this file wins.
 
 ## Recent updates
@@ -37,6 +37,50 @@ Real-device testing of T1 SwipeCard on 10 April surfaced a deeper product questi
 **Rationale:** Pausing a potentially-changing spec is cheaper than building to it and throwing work away. Error handling is a real launch blocker independent of any product flow decisions. Parallelising these two tracks maximises afternoon output without creating rework risk.
 
 **Source:** Phone testing session, 10 April 2026.
+
+### 11 April 2026 — Trades deferred from v1; "Coming Soon" demand-capture tab
+
+The Google Places tradesperson directory is removed from v1. The Trades tab remains in bottom navigation but shows a "Coming Soon" screen with email capture for early access. Saves ~15h of build. Sprint 4 scope compressed accordingly.
+
+**Alternatives considered:** Ship thin Google Places wrapper with Gas Safe + Companies House badges (original v4 spec); remove Trades tab entirely.
+
+**Rationale:** Kano analysis classifies a Google Places wrapper as a potential Reverse feature — it returns the same results users get from their phone's search bar, creating a visible quality gap against the polished quiz and recommendation experience. The v1 value proposition is decision confidence through AI-powered personalisation; a commodity directory undermines this. A "Coming Soon" tab preserves the three-pillar narrative, captures demand signal (tab tap rate + email submissions), and saves build time for product catalogue curation and recommendation engine polish.
+
+**Source:** Multi-persona critique, 11 April 2026. Palazzo competitor review (1.0-star App Store rating from shipping features that don't deliver value). UK trades market research (word of mouth dominates at 64-70%, digital platform penetration 6-11%).
+
+### 11 April 2026 — Secondary archetype influences product 3 only
+
+When generating recommendations, products 1 and 2 are pure primary archetype. Product 3 (the stretch piece) may draw from either primary or secondary archetype. This prevents "Curator with a touch of Coastal" producing incoherent recommendations.
+
+**Alternatives considered:** Weighted blend across all 3 products (rejected — dilutes primary identity); secondary archetype in rationale text only (rejected — wastes the signal).
+
+**Rationale:** In real interior design, the "with a touch of" element appears in accessories and accents, not anchor pieces. The stretch piece is the natural home for secondary influence. An archetype adjacency map in `src/content/archetypes.ts` governs catalogue degradation when exact matches are thin.
+
+**Source:** Interior Designer + AI Critic critique, 11 April 2026.
+
+### 11 April 2026 — Seed data pattern adopted; Awin removed from critical path
+
+Sprint 3 builds against a seed product catalogue (~120+ products) with realistic data and placeholder affiliate URLs. A `source` column on the products table (`seed` | `awin` | `manual`) enables clean swap to real products when Awin approves. The seeding script lives in `tools/seed/` and uses the service role key. Seed products include intentional ambiguity (some single-archetype-tagged, some budget-edge) to stress-test recommendation quality.
+
+**Alternatives considered:** Wait for Awin approval before building Sprint 3 (rejected — 2-4 week external dependency on critical path, delays TestFlight by weeks).
+
+**Rationale:** The recommendation engine doesn't care whether affiliate URLs are real. The UI doesn't care whether products are purchasable. User testing doesn't care whether commission is tracked. Seed data unblocks Sprint 3, user testing, App Store screenshots, and the Dan Crow demo simultaneously.
+
+**Source:** Multi-persona critique, 11 April 2026.
+
+### 11 April 2026 — Financial model revised; MAU definition locked
+
+Revenue projections adjusted: Year 1 £10-35K (affiliate only), Year 2 £60-250K (affiliate + £30K brand partnerships + subscriptions + £5-10K data pilot), Year 3 £200-900K (all streams). Previous model overstated Year 2 brand partnerships (was £120K) and taste intelligence (was £20K).
+
+MAU defined as: users with at least one room who opened the app in the last 30 days. This excludes quiz-and-churn users and Pre-Purchase Researchers who haven't set up aspirational rooms. Outer-ring users (style-curious) contribute to quiz completions and viral distribution but not to MAU-based revenue calculations.
+
+**Source:** TAM/financial model research + multi-persona critique, 11 April 2026. BCG first-party data 2.9× uplift, RevenueCat lifestyle app benchmarks, Aldermore FTB furnishing data.
+
+### 11 April 2026 — Incorporation not blocking; TestFlight needs £79 only
+
+Individual Apple Developer account (£79/year) enables TestFlight without incorporation, D-U-N-S, or business email. Companies House incorporation (£50), domain (£5), and Workspace (£5/mo) are needed before Awin applications and public App Store submission but do not block development or TestFlight. Incorporate when affordable, ideally before Sprint 4.
+
+**Source:** App Store Submission Specialist + UK Startup Solicitor critique, 11 April 2026.
 
 ### 7 April 2026 — Constraint capture goes after the archetype reveal
 
@@ -497,26 +541,31 @@ PostHog `share_initiated` event payload now includes `style_territory` in additi
       channel: string
     }
 
-**T6 — Budget + Room Setup (REVISED)** — three-screen flow:
+**T6 — Budget + Room Setup (REVISED 11 April)** — three-screen flow:
 
 *Screen 1:* "Have you moved in yet?" — three SelectorCards setting `occupancy_status` and `is_aspirational`.
 *Screen 2:* Budget tier + room type (existing v4 spec).
-*Screen 3:* Room context briefing — `room_stage` selector and `existing_categories` checkboxes per Section 2 above.
+*Screen 3:* Room context briefing — `room_stage` selector, `existing_categories` checkboxes, and optional free-text "Describe what you're keeping" per checked category. Store as `existing_descriptions JSONB` on rooms table. Only appears when a category is checked. "Nothing yet" hides all text fields.
 
-Voice: briefing, not form. Newsreader italic for the briefing intro, DM Sans for everything functional. PostHog `room_created` event payload now includes all new fields. `engagement_events.recordEvent` called with same payload.
+Voice: briefing, not form. Newsreader italic for the briefing intro, DM Sans for everything functional. PostHog `room_created` event payload includes all new fields. `engagement_events.recordEvent` called with same payload.
 
 T7 unchanged.
 
-### Sprint 3 — AI Recommendations (T1 prompt structure locked)
+### Sprint 3 — AI Recommendations (T1 prompt structure locked, revised 11 April)
 
 The `recommend-products` Edge Function prompt must:
-1. Take inputs: archetype (primary), secondary archetype, room_type, budget_tier, property_period (optional, soft hint only), room_stage, existing_categories, is_aspirational
+1. Take inputs: archetype (primary), secondary archetype (blending rule: influences P3 only), room_type, budget_tier, property_period (optional, soft hint only), room_stage, existing_categories, existing_descriptions (optional free-text), is_aspirational, last 5 wishlisted products (title + category + archetype_tags as taste signal)
 2. Return exactly 3 products in stated priority order
-3. **Non-aspirational rooms:** first product = "buy next" given stage; second complements first; third = stretch piece within budget
-4. **Aspirational rooms:** all three = anchor pieces / inspiration, not "buy next" framing
-5. Rationale text NEVER invokes property_period claims. Describes visible product qualities only.
-6. property_period passed in as soft system-prompt nudge: "If the user's property period is provided, prefer products whose styling suits that era when other criteria are equal. Never mention the period in user-facing rationale."
-7. `model_version` set to `claude-haiku-4-5` in `engagement_events` for every recommendation generation
+3. **Products 1-2:** pure primary archetype. **Product 3:** may draw from secondary archetype.
+4. **Non-aspirational rooms:** first product = "buy next" given stage; second complements first; third = stretch piece within budget
+5. **Aspirational rooms:** all three = anchor pieces / inspiration, not "buy next" framing
+6. Rationale text NEVER invokes property_period claims. Describes visible product qualities only.
+7. property_period passed in as soft system-prompt nudge
+8. Wishlisted products framed as taste signal: "complement, don't duplicate"
+9. `model_version` set to `claude-haiku-4-5` in `engagement_events`
+10. **Catalogue degradation:** if fewer than 3 products match exact archetype + room + budget, widen to secondary archetype first, then adjacent archetypes per adjacency map in `src/content/archetypes.ts`, before returning fewer than 3
+11. **Failure taxonomy:** (a) timeout >10s — retry once, then curated fallback set; (b) malformed JSON — log to Sentry, curated fallback; (c) partial response (1-2 products) — show what we got; (d) rate limit — queue, 30s retry, curated fallback after 3 attempts
+12. **Curated fallback sets:** 3 pre-selected products per archetype × budget tier (21 sets, 63 products), created during catalogue curation
 
 **Trend layer (added 7 April 2026 PM — see Section 0 strategic decisions log)**
 
@@ -561,7 +610,7 @@ Full prompt template drafted at Sprint 3 T1 build time.
 
 Detailed task specs for Sprints 4–6 will be drafted when each sprint is reached. High-level scope:
 
-**Sprint 4 — Trades + Rename (~22h, Weeks 11–13).** Tradesperson discovery by postcode using Google Places. Companies House badge only. Browse-only, zero monetisation in v1. Full Cornr rebrand across all external services (T-RENAME-1 through T-RENAME-8): Supabase, GitHub, Expo, app.json, PostHog, Sentry, social handles, git commit email. Gate: Sprint 3 complete.
+**Sprint 4 — Rebrand, Polish & Trades Placeholder (REVISED 11 April, ~10h, Weeks 11–13).** T-RENAME-1 through T-RENAME-8 unchanged (external service rebranding). Trades tab: "Coming Soon" demand-capture screen replaces Google Places directory. Tab remains in bottom navigation (wrench icon). Screen shows: headline, one-line description of what's coming, email capture field. PostHog events: `trades_tab_tapped`, `trades_coming_soon_email_submitted`. ~2-3h build, replacing the original ~15h trades directory scope. Delete account flow (Apple Guideline 5.1.1v) unchanged — launch blocker. Gate: Sprint 3 complete.
 
 **Sprint 5 — Engagement: Push, Email, Delete (~18h, Weeks 14–15).** Push notification permission with pre-prompt screen after first room setup. Four notification triggers (seasonal refresh, second room nudge, wishlist reminder, new products). Global cap: max 2 per user per 7 days. Delete Account flow with two-step confirmation. Welcome email via Supabase Auth Hook. Password reset deep link. Gate: Sprint 4 complete.
 
@@ -660,6 +709,13 @@ Every user-facing naming, copywriting, and taxonomy decision in Cornr v1 is prov
 
 This rule does NOT apply to: database schema, RLS policies, data model, security and consent flows, WCAG contrast rules, brand hard constraints from BDS v3 (palette, fonts, 90/10 rule), or any decision listed in the "Settled product decisions — do not reopen" subsection of Section 2 below. Those are load-bearing; everything downstream of them flexes.
 
+### Standing rules (added 11 April 2026)
+
+8. The archetype result must visibly influence every subsequent screen the user encounters. If a user can use a feature without seeing how their archetype shapes it, the feature is incorrectly designed.
+9. Every new event type must fire to both PostHog AND `engagement_events` — never one without the other. Prevents analytics/data-asset drift.
+10. Any future web surface must share Supabase auth with the mobile app. No separate account systems.
+11. Every Claude.ai planning session that makes strategic decisions must end with: (a) a paste-ready canonical patch, and (b) a DECISIONS_LOG.md append. This is how decisions persist.
+
 ---
 
 ## Section 11 — Open Questions (live)
@@ -679,6 +735,9 @@ This rule does NOT apply to: database schema, RLS policies, data model, security
 | BDS v3 → markdown migration | Pre-Sprint 6 launch prep | Convert BDS v3 from PDF in project knowledge to docs/BDS.md in repo. Includes the archetype accent table update with hybrid names paired with style territories (dreamer→nester rename). Tonight the PDF stays as-is — drift is low-risk because canonical Section 1 now has authoritative archetype names + hex colours. |
 | Entry point question: room-first or taste-first | Today via strategic critique | No default — needs panel decision before T2 can start |
 | v1 swipe deck image curation brief | After entry point decision | 12 photos mix — exact curation depends on critique outcome |
+| Quiz-to-email conversion rate | Before launch email setup | Target 35-40% (Interact 2026 benchmark). Loops.so for delivery. |
+| Assembly/fitting as v2 trades entry point | v2 scoping | TaskRabbit-style light services connect to purchase moment. Blocked on knowing what users bought (affiliate data on retailer side). |
+| Awin sole trader acceptance | Before incorporation | Check if Awin accepts individual publisher accounts — may not need incorporation for affiliate applications. |
 
 **Resolved 7 April 2026:** archetype as primary mechanic; Pre-Purchase Researcher serving; v2 brand partnership data foundation. See Section 0.
 
@@ -691,6 +750,8 @@ This rule does NOT apply to: database schema, RLS policies, data model, security
 3. The relevant sprint section (Section 7) for whatever you're building next.
 4. Brand & Design System v3 PDF (in project knowledge) for component specs and visual rules.
 5. For anything not in this canonical: check git history first, then ask Daryll. The Master Doc v4 PDF has been archived to Google Drive (Cornr/Archive/Documents/) — retrieve from there only if historical context is genuinely needed.
+6. `docs/DECISIONS_LOG.md` — quick-scan for any decisions made since the canonical was last updated.
+7. `docs/operations/business-setup.md` — current status of incorporation, domain, Apple Developer, etc.
 
 If the remaining PDFs and this file disagree, **this file wins**.
 
