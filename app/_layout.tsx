@@ -3,6 +3,7 @@ import { ActivityIndicator, View } from "react-native";
 import { Slot, useRouter, useSegments } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
+import { ErrorBoundary } from "../src/components/organisms/ErrorBoundary";
 import { initSentry, Sentry } from "../src/services/sentry";
 import { initPostHog } from "../src/services/posthog";
 import { useAuth } from "../src/hooks/useAuth";
@@ -33,16 +34,25 @@ function RootLayout() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === "(auth)";
-    const inOnboardingGroup = segments[0] === "(onboarding)";
+    const segment = segments[0];
+
     let target: string | null = null;
 
     if (!session) {
-      if (!inAuthGroup) target = "/(auth)/welcome";
+      // Only redirect if user is in a protected group
+      if (segment === "(app)" || segment === "(onboarding)") {
+        target = "/(auth)/welcome";
+      }
     } else if (!hasProfile) {
-      if (!inOnboardingGroup) target = "/(onboarding)/swipe";
+      // Session but no profile — need onboarding
+      if (segment === "(app)") {
+        target = "/(onboarding)/swipe";
+      }
     } else {
-      if (inAuthGroup || inOnboardingGroup) target = "/(app)/home";
+      // Fully authed — move past auth/onboarding if still there
+      if (segment === "(auth)" || segment === "(onboarding)") {
+        target = "/(app)/home";
+      }
     }
 
     if (!target) return;
@@ -63,7 +73,9 @@ function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Slot />
+      <ErrorBoundary>
+        <Slot />
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }
