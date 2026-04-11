@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { Slot, useRouter, useSegments } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import { initSentry, Sentry } from "../src/services/sentry";
 import { initPostHog } from "../src/services/posthog";
@@ -34,7 +35,6 @@ function RootLayout() {
 
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboardingGroup = segments[0] === "(onboarding)";
-
     let target: string | null = null;
 
     if (!session) {
@@ -61,7 +61,11 @@ function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Slot />
+    </GestureHandlerRootView>
+  );
 }
 
 export default Sentry.wrap(RootLayout);

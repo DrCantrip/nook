@@ -65,6 +65,17 @@ export default function WelcomeScreen() {
           >
             <Text style={styles.signInText}>{S.signIn}</Text>
           </Pressable>
+
+          {/* TODO(T2): remove this dev link */}
+          <Pressable
+            onPress={() => router.push("/(auth)/dev-swipe")}
+            style={({ pressed }) => [
+              styles.signInPressable,
+              { opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
+            <Text style={styles.signInText}>🔧 Dev: Swipe Card</Text>
+          </Pressable>
         </View>
       </View>
     </ImageBackground>
