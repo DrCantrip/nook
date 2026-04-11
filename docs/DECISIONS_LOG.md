@@ -8,6 +8,14 @@
 
 ## Decisions
 
+2026-04-11: Onboarding flow restructured: 2 screens + post-recommendation refinement. journey_stage on users replaces occupancy_status on rooms.
+2026-04-11: FTB verification via home_status field on users. Enables Tier 2-3 brand reports.
+2026-04-11: Renters passively accommodated via journey_stage='renting'. Prompt adapts to freestanding/portable. Not actively marketed to.
+2026-04-11: Claude-native ML approach locked. Monthly prompt evolution + quarterly cohort analysis. No traditional ML infra until >50K users.
+2026-04-11: Category-level room sequencing in recommendation prompt. ROOM_SEQUENCES in src/content/rooms.ts. Product 1 from first unmet category.
+2026-04-11: Delivery tier on products table (days/weeks/made_to_order/long_lead). Truck icon on ProductCard.
+2026-04-11: Week 30 diagnostic sequence replaces hard pivot trigger. 6-step diagnostic before any model change.
+2026-04-11: Trades tab: branded screen with email capture + trades_waitlist table. Consent separate from marketing opt-in.
 2026-04-11: Trades deferred from v1 — "Coming Soon" demand-capture tab. Saves ~15h. Tab stays in nav for three-pillar narrative.
 2026-04-11: Seed data pattern adopted. `source` column (seed|awin|manual) on products table. Sprint 3 unblocked from Awin.
 2026-04-11: Financial model revised. Y2 brand partnerships £30K (was £120K). Y2 taste intelligence £5-10K (was £20K). Y1 £10-35K, Y2 £60-250K, Y3 £200-900K.

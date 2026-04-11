@@ -1,6 +1,6 @@
 # Cornr Canonical Context
 
-**Last updated:** 11 April 2026
+**Last updated:** 11 April 2026 (evening session — onboarding flow restructured, journey_stage replaces occupancy_status, home_status for FTB verification, delivery_tier + description + attribute_tags on products, trades_waitlist table, payload schema registry, Section 13 standing rules, Claude-native ML approach locked, room sequencing, Thread diagnostic sequence, renter accommodation, language bank produced)
 **Purpose:** Single source of truth for all strategic decisions, architecture choices, sprint plans, and workflow rules that postdate the v4 PDFs in project knowledge. Read this first in any new session. If anything below contradicts the PDFs, this file wins.
 
 ## Recent updates
@@ -21,6 +21,69 @@
 ## Section 0 — Strategic Decisions Log
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
+
+### 11 April 2026 — Onboarding flow restructured: 2 screens + post-recommendation refinement
+
+Room setup reduced from 3 screens to 2 screens before first recommendations, plus a post-recommendation refinement card. Driven by UX journey critique: 4 screens of friction between archetype reveal and first recommendation was too many.
+
+**New flow:** Reveal → Sign up → Screen 1 (journey_stage + home_status, adaptive) → Screen 2 (budget + room type) → First recommendations (defaulted room_stage) → Refinement card (existing_categories + existing_descriptions).
+
+**Key changes:**
+- `journey_stage VARCHAR(20)` on users table replaces `occupancy_status` on rooms. Values: `pre_purchase`, `new_0_3`, `settled_3_12`, `established`, `renting`.
+- `home_status VARCHAR(20)` on users table. Values: `first_time`, `experienced`, `renter`. Conditional — hidden when journey_stage is "renting".
+- `is_aspirational` on rooms derived from `journey_stage = 'pre_purchase'` at room creation time.
+- `room_stage` defaults from journey_stage (pre_purchase→scratch, new_0_3→scratch, settled_3_12→partial, established→polishing). Override available in refinement card.
+- `existing_categories` and `existing_descriptions` moved to post-first-recommendation refinement. Non-blocking — user can skip.
+
+**Rationale:** A slightly wrong first recommendation that arrives fast is better than a perfectly calibrated recommendation that arrives after 4 screens of questions. Progressive disclosure applied to the recommendation engine.
+
+**Source:** UX/UI/journey/brand critique, 11 April 2026 evening session.
+
+### 11 April 2026 — FTB verification via home_status field
+
+Brand partnership data thesis depends on knowing users are verified first-time buyers. Without explicit capture, "FTB audience data" is unverifiable. `home_status` field on users table enables Tier 2-3 brand reports.
+
+**Source:** Data discipline tear-down, 11 April 2026 evening session.
+
+### 11 April 2026 — Renters passively accommodated, not actively marketed to
+
+journey_stage includes "renting". Recommendation prompt adapts (freestanding, portable, no-drill items prioritised). Products tagged `renter_friendly` in attribute_tags. Marketing remains FTB-focused. Renters who later buy become FTBs with existing archetype and data.
+
+**Source:** Renter opportunity analysis, 11 April 2026 evening session.
+
+### 11 April 2026 — Claude-native ML approach: no traditional ML infrastructure
+
+Cornr treats Claude as both the recommendation engine and the performance analyst. Monthly prompt evolution loop (post-launch, ≥500 recommendation events). Quarterly anonymised cohort analysis for archetype calibration and brand reports. No traditional ML infrastructure planned until >50K users. API costs validated at <£5/month for the analysis pipeline.
+
+**Source:** AI/ML data architecture critique + financial model pricing check, 11 April 2026 evening session.
+
+### 11 April 2026 — Category-level room sequencing in recommendation prompt
+
+Product 1 comes from the first unmet category in a room-type-specific priority sequence. Sequences in `src/content/rooms.ts`. Sequences are provisional — validate with click data via quarterly Claude analysis.
+
+Living room: seating → tables → rug → lighting → art/decor. Bedroom: mattress → bedding → bed frame → lighting → storage. Kitchen: table/chairs → lighting → storage → textiles. Bathroom: storage → textiles → lighting → accessories. Home office: desk/chair → lighting → storage → art/decor.
+
+`CATEGORY_MAP` bridges user-facing labels (Big furniture, Soft furnishings, etc.) to sequencing category IDs.
+
+**Source:** "What to buy first" sequencing deep dive, 11 April 2026 evening session.
+
+### 11 April 2026 — Delivery tier on products table
+
+`delivery_tier VARCHAR(20)` with 4 values: `days`, `weeks`, `made_to_order`, `long_lead`. Display copy in `src/content/labels.ts`. Shown on ProductCard with Truck icon. Seed data defaults to `weeks` unless verified. `made_to_order` only when verifiably true.
+
+**Source:** MC impact assessment critique, 11 April 2026 evening session.
+
+### 11 April 2026 — Week 30 diagnostic sequence replaces hard pivot trigger
+
+If affiliate CTR is below target at Week 30, run diagnostic sequence before any model change: (1) check recommendation quality via Claude analysis, (2) check catalogue quality, (3) check click-through UX, (4) check wishlist-to-click ratio + implement remarketing, (5) check audience segmentation by persona, (6) only then consider model changes.
+
+**Source:** Thread cautionary tale deep dive, 11 April 2026 evening session.
+
+### 11 April 2026 — Trades tab: branded screen with email capture, not directory
+
+Replaces Google Places directory build (~15h saved). Single screen with tagline, description, email capture with purpose-specific micro-consent. `trades_waitlist` table with own retention rule. Consent separate from marketing opt-in.
+
+**Source:** MC impact assessment critique, 11 April 2026 evening session.
 
 ### 10 April 2026 — T2 blocked pending entry-point strategic critique; error handling tranche in progress
 
@@ -275,29 +338,52 @@ Three personas, all UK first-time buyers. Cornr serves all three from active hou
 
 ---
 
-## Section 2 — Room Context Capture (v1)
+## Section 2 — Onboarding & Room Context Capture (v1)
 
-At room setup, after budget selection, three additional fields are captured:
+After the archetype reveal and signup, users set up their first room in a streamlined 2-screen flow, followed by a post-recommendation refinement step.
 
-**1. `occupancy_status`** — "Have you moved in yet?" — three single-tap options:
-- "Yes, I'm settling in" → real room, postcode-derived `property_period` applied, full recommendation flow
-- "Not yet, I'm planning ahead" → aspirational room (`is_aspirational=true`), no postcode dependency, inspiration-led recommendation flow
-- "I'm renovating an existing space" → real room, `room_stage` pre-fills as `partial`
+### Screen 1 — "Let's find your first [Archetype] picks"
 
-**2. `room_stage`** — "Where are you with this room?" — three options:
-- `scratch` (starting from empty)
-- `partial` (have a few key pieces)
-- `polishing` (mostly furnished, just refining)
+Subtext: "so we can get your [Archetype name] picks right"
 
-**3. `existing_categories`** — "Anything you're keeping?" — six checkboxes plus "Nothing yet":
-- Big furniture
-- Soft furnishings
-- Lighting
-- Wall art / decor
-- Storage
-- Nothing yet (clears all other checkboxes when selected)
+Two adaptive questions using SelectorCard components:
 
-All three fields stored on the `rooms` table. All three passed into the Sprint 3 Haiku prompt. Frame as a *briefing*, not a *form* — copy treats this as Cornr getting better at serving the user, not Cornr making the user work.
+**1. `journey_stage`** (on users table) — "Where are you in your home journey?"
+
+Tenure question first (2 cards):
+- "I own (or I'm buying)" → shows timeline options
+- "I'm renting" → sets `journey_stage = 'renting'`, `home_status = 'renter'`, skips to Screen 2
+
+If owner/buyer, timeline question (4 cards):
+- "Still searching for my place" → `pre_purchase`
+- "Just got my keys" → `new_0_3`
+- "A few months in, getting sorted" → `settled_3_12`
+- "Settled in" → `established`
+
+**2. `home_status`** (on users table, conditional — only shown when not renting):
+- "Yes, it's my first home" → `first_time`
+- "I've owned before" → `experienced`
+
+### Screen 2 — Budget + Room Type (unchanged from v4 spec)
+
+### Post-Recommendation Refinement (appears after first recommendation set)
+
+Non-blocking card below recommendations: "Before we fine-tune — anything you're keeping in this [room_type]?"
+
+**`room_stage`** — defaulted from journey_stage, overridable:
+- pre_purchase → `scratch`
+- new_0_3 → `scratch`
+- settled_3_12 → `partial`
+- established → `polishing`
+- renting → `partial`
+
+**`existing_categories`** — six checkboxes plus "Nothing yet" (unchanged from original spec).
+
+**`existing_descriptions`** — optional free-text per checked category (B7). Store as `existing_descriptions JSONB` on rooms table.
+
+`is_aspirational` derived from `journey_stage = 'pre_purchase'` at room creation. All fields stored on rooms table except journey_stage and home_status which are on users table.
+
+Frame as *refinement*, not a form — copy treats this as Cornr getting more precise, not making the user work.
 
 ### Settled product decisions — do not reopen
 
@@ -344,11 +430,35 @@ Cornr captures first-party engagement data in its own database, mirroring critic
 3. **`editorial_content`** — canonical store for the Home tab editorial slot. Manually populated. Includes archetype filtering so future content can be archetype-targeted.
 
 **Schema additions to existing tables:**
-- `users`: `audience_data_opt_in BOOLEAN DEFAULT false`
-- `rooms`: `is_aspirational BOOLEAN DEFAULT false`, `occupancy_status VARCHAR(20)`, `room_stage VARCHAR(20)`, `existing_categories TEXT[]`
+- `users`: `audience_data_opt_in BOOLEAN DEFAULT false`, `journey_stage VARCHAR(20)`, `home_status VARCHAR(20)`
+- `rooms`: `is_aspirational BOOLEAN DEFAULT false`, `room_stage VARCHAR(20)`, `existing_categories TEXT[]`, `existing_descriptions JSONB`
+- `products`: `delivery_tier VARCHAR(20)`, `description TEXT`, `attribute_tags TEXT[]`
 - `wishlisted_products`: `removed_at TIMESTAMPTZ` (soft delete)
 
+**Note:** `occupancy_status` on rooms is REMOVED — replaced by `journey_stage` on users.
+
+**New table:**
+- `trades_waitlist`: `id UUID`, `email TEXT NOT NULL`, `consent_at TIMESTAMPTZ NOT NULL`, `retention_until TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '18 months')`
+
 All engagement event writes go through a single helper function: `src/services/engagement.ts → recordEvent(eventType, eventData)`. Called alongside PostHog `.capture()` calls in existing event handlers. No new event handlers needed.
+
+### Engagement Event Payload Schema Registry
+
+Every event type has a documented, consistent JSONB shape. No freeform blobs.
+
+| Event type | Payload schema |
+|---|---|
+| `signup_completed` | `{ journey_stage, home_status }` |
+| `archetype_assigned` | `{ primary, secondary, swipe_scores, swipe_decisions: [{image_id, direction, position, time_ms}] }` |
+| `room_created` | `{ room_type, budget_tier, journey_stage, is_aspirational }` |
+| `room_refined` | `{ room_id, room_stage, existing_categories, existing_descriptions }` |
+| `product_card_shown` | `{ product_id, archetype_context, room_id, room_type, position, is_aspirational, model_version }` |
+| `product_link_clicked` | `{ product_id, archetype_context, room_id, position, source }` |
+| `product_wishlisted` | `{ product_id, room_id, archetype_context }` |
+| `retake_started` | `{ previous_primary, previous_secondary }` |
+| `editorial_card_shown` | `{ content_id }` |
+| `editorial_card_clicked` | `{ content_id, cta_url }` |
+| `trades_waitlist_email_submitted` | `{ email_hash }` |
 
 ---
 
@@ -380,15 +490,16 @@ Tables added 7 April 2026 in strategic foundation pack: `archetype_history`, `en
 
 | Table | Key Columns | RLS |
 |---|---|---|
-| `users` | `id`, `email`, `postcode_district`, `push_token`, `daily_call_count`, `property_period`, `email_marketing_opt_in`, `audience_data_opt_in`, plus existing notification columns | Own row only |
+| `users` | `id`, `email`, `postcode_district`, `push_token`, `daily_call_count`, `property_period`, `email_marketing_opt_in`, `audience_data_opt_in`, `journey_stage`, `home_status`, plus existing notification columns | Own row only |
 | `style_profiles` | `id`, `user_id`, `primary_archetype`, `secondary_archetype`, `swipe_scores` JSONB, `is_anonymous`, `created_at` | Own row only |
 | `archetype_history` | `id`, `user_id`, `primary_archetype`, `secondary_archetype`, `swipe_scores` JSONB, `source` (initial/retake/admin), `recorded_at` | Own rows, append-only |
-| `rooms` | `id`, `user_id`, `room_type`, `display_name` (nullable), `budget_tier`, `room_analysis` JSONB (nullable), `archetype_at_recommendation`, `is_aspirational`, `occupancy_status`, `room_stage`, `existing_categories` | Own rooms only |
-| `products` | `id`, `title`, `image_url`, `retailer`, `affiliate_url`, `archetype_tags`, `room_tags`, `trend_tags`, `budget_tier`, `category`, `season` | Read-all auth users |
+| `rooms` | `id`, `user_id`, `room_type`, `display_name` (nullable), `budget_tier`, `room_analysis` JSONB (nullable), `archetype_at_recommendation`, `is_aspirational`, `room_stage`, `existing_categories`, `existing_descriptions` JSONB | Own rooms only |
+| `products` | `id`, `title`, `description`, `image_url`, `retailer`, `affiliate_url`, `archetype_tags`, `room_tags`, `trend_tags`, `budget_tier`, `category`, `season`, `delivery_tier`, `attribute_tags` | Read-all auth users |
 | `wishlisted_products` | `id`, `user_id`, `product_id`, `room_id`, `created_at`, `removed_at` (soft delete) | Own rows only |
 | `places_cache` | `id`, `postcode_district`, `trade_type`, `results` JSONB, `cached_at` | Service role only |
 | `engagement_events` | `id`, `user_id` (nullable for anon), `event_type`, `event_data` JSONB, `occurred_at`, `retention_until`, `model_version` (nullable for AI events) | Own rows only |
 | `editorial_content` | `id`, `headline`, `body_text`, `image_url`, `cta_label`, `cta_url`, `archetype_filter` (nullable), `published_at`, `expires_at` | Read-all auth, published & not expired only |
+| `trades_waitlist` | `id`, `email`, `consent_at`, `retention_until` | Insert for authenticated, select own only |
 
 **Default-deny RLS on every table. CASCADE DELETE on all user-linked FK constraints.**
 
@@ -500,6 +611,37 @@ CREATE INDEX IF NOT EXISTS products_trend_tags ON products USING GIN (trend_tags
 -- While we're here: ensure GIN indexes on existing array columns for query performance
 CREATE INDEX IF NOT EXISTS products_archetype_tags ON products USING GIN (archetype_tags);
 CREATE INDEX IF NOT EXISTS products_room_tags ON products USING GIN (room_tags);
+
+-- 11 Apr evening: journey_stage and home_status on users
+ALTER TABLE users ADD COLUMN IF NOT EXISTS journey_stage VARCHAR(20);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS home_status VARCHAR(20);
+
+-- 11 Apr evening: remove occupancy_status from rooms (replaced by journey_stage on users)
+-- Safe: only test-a and test-b staging accounts may have data. IF EXISTS handles missing column.
+ALTER TABLE rooms DROP COLUMN IF EXISTS occupancy_status;
+
+-- 11 Apr evening: existing_descriptions on rooms
+ALTER TABLE rooms ADD COLUMN IF NOT EXISTS existing_descriptions JSONB;
+
+-- 11 Apr evening: product enrichment fields
+ALTER TABLE products ADD COLUMN IF NOT EXISTS delivery_tier VARCHAR(20);
+ALTER TABLE products ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS attribute_tags TEXT[];
+CREATE INDEX IF NOT EXISTS products_attribute_tags ON products USING GIN(attribute_tags);
+
+-- 11 Apr evening: trades waitlist
+CREATE TABLE IF NOT EXISTS trades_waitlist (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  consent_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  retention_until TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '18 months')
+);
+ALTER TABLE trades_waitlist ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "trades_waitlist_insert_auth" ON trades_waitlist
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+-- No SELECT policy for regular users — admin/service_role only
+CREATE POLICY "trades_waitlist_select_service" ON trades_waitlist
+  FOR SELECT USING (auth.role() = 'service_role');
 ```
 
 ---
@@ -541,13 +683,28 @@ PostHog `share_initiated` event payload now includes `style_territory` in additi
       channel: string
     }
 
-**T6 — Budget + Room Setup (REVISED 11 April)** — three-screen flow:
+**T6 — Budget + Room Setup (REVISED 11 April)** — two-screen flow + post-recommendation refinement:
 
-*Screen 1:* "Have you moved in yet?" — three SelectorCards setting `occupancy_status` and `is_aspirational`.
-*Screen 2:* Budget tier + room type (existing v4 spec).
-*Screen 3:* Room context briefing — `room_stage` selector, `existing_categories` checkboxes, and optional free-text "Describe what you're keeping" per checked category. Store as `existing_descriptions JSONB` on rooms table. Only appears when a category is checked. "Nothing yet" hides all text fields.
+*Screen 1:* "Let's find your first [Archetype] picks" — adaptive journey_stage (tenure → timeline) + conditional home_status. SelectorCard pattern.
+*Screen 2:* Budget tier + room type (existing spec).
+*Post-recommendation refinement:* Non-blocking card after first recommendations. Room stage (defaulted from journey_stage, overridable) + existing_categories checkboxes + existing_descriptions free text.
 
-Voice: briefing, not form. Newsreader italic for the briefing intro, DM Sans for everything functional. PostHog `room_created` event payload includes all new fields. `engagement_events.recordEvent` called with same payload.
+Voice: briefing becoming refinement. Newsreader italic for the bridge intro, DM Sans for everything functional. PostHog `room_created` event fires after Screen 2. `room_refined` event fires when refinement card is submitted.
+
+### Sprint 3 additions from 11 April evening session
+
+Sprint 3 T1 prompt design must include:
+- `ROOM_SEQUENCES` category priority map in `src/content/rooms.ts`
+- `CATEGORY_MAP` bridging user-facing labels to sequencing IDs
+- Prompt instruction: product 1 from first unmet category in sequence
+- Prompt instruction: timing note when first product is long-lead delivery
+- Prompt instruction: renting journey_stage prioritises freestanding, portable items
+- Prompt caching: system prompt + product catalogue as cached prefix
+- Swipe decisions array in `archetype_assigned` event payload
+- `product_card_shown` payload per schema registry
+
+Sprint 3 T2 product card must include:
+- Delivery tier display (Truck icon + label from `src/content/labels.ts`)
 
 T7 unchanged.
 
@@ -757,4 +914,62 @@ If the remaining PDFs and this file disagree, **this file wins**.
 
 ---
 
-*End of canonical context. ~3,500 words. Replace this file in project knowledge whenever a strategic decision is made. Single source of truth.*
+## Section 13 — Standing Rules
+
+Consolidated rules that apply across all sprints and sessions. Each rule has a source and rationale.
+
+### Data & Brand Reports
+- **Brand reports filter on `audience_data_opt_in = true`.** Never include non-consented users in brand-facing analytics. (Source: MC assessment Round 2)
+- **Brand analytics count post-archetype-assignment behaviour only.** Pre-quiz browsing is internal calibration data, not reportable. (Source: item-first path critique)
+- **Demographics derived from postcode + ONS enrichment, NOT captured from users.** Data minimisation — no age/income fields. (Source: data tear-down Round 2)
+- **Y1 taste intelligence revenue = £0.** Data too thin to sell below 5K users. (Source: Thread deep dive Round 3)
+
+### Recommendations & AI
+- **Prompt caching:** system prompt + product catalogue as cached prefix in recommendation Edge Function. (Source: AI pricing analysis)
+- **Model routing:** Haiku for recommendations, Sonnet for analysis and prompt evolution. (Source: AI pricing analysis)
+- **Prompt evolution optimises for wishlist-to-click ratio, not raw CTR.** Decision confidence, not impulse. (Source: data tear-down Round 2)
+- **Manual spot-check before actioning Claude analysis findings.** Small data produces plausible-sounding noise. (Source: Claude-native ML critique Round 1)
+- **model_version string must change on every prompt evolution.** Enables before/after comparison. (Source: data tear-down)
+- **Prompt evolution plateau detection:** if 2 consecutive quarterly analyses produce no significant changes, the binding constraint has shifted to catalogue or model — act on that signal. (Source: AI critique Round 3)
+- **Room sequences are provisional.** Validate with click data via quarterly analysis. (Source: sequencing deep dive)
+
+### Products & Catalogue
+- **Seed product descriptions must be original** (written by Daryll or Claude), not copied from retailer sites. (Source: data tear-down Round 2)
+- **`made_to_order` delivery tier only when verifiably true.** Default to `weeks` or `long_lead`. (Source: MC assessment Round 3)
+- **Delivery tier labels in `src/content/labels.ts`**, not hardcoded in components. (Source: MC assessment Round 3)
+
+### Commercial & Growth
+- **Start brand conversations at 1,000 users, not 15,000.** Learn what brands want before building the product. (Source: Thread deep dive Round 4)
+- **Stay focused on UK FTBs.** No audience expansion until niche proven. Market to FTBs, serve everyone including renters. (Source: Thread deep dive + renter analysis)
+- **Week 30 diagnostic sequence:** 6 steps before any model pivot — (1) recommendation quality, (2) catalogue quality, (3) click-through UX, (4) wishlist remarketing, (5) audience segmentation, (6) only then model changes. (Source: Thread deep dive)
+- **Quiz-to-signup conversion ≥ 35%** — leading indicator of owned audience. Track from day one. (Source: Thread deep dive)
+- **Editorial return rate ≥ 10% MAU by month 6** — validates retention thesis. (Source: Thread deep dive)
+
+### Privacy & Legal
+- **Trades waitlist consent separate from marketing opt-in.** Purpose-specific, own retention rule (18 months or trades launch, whichever first). (Source: MC assessment Round 3)
+- **Privacy policy must cover:** journey stage, home status, business transfer clause for acquisition/administration. (Source: data tear-down + Thread deep dive)
+- **Check Anthropic inference_geo for EU data residency.** If available, use with 1.1x multiplier. (Source: AI pricing analysis)
+
+### AI-Native Feedback Loops
+- **Monthly prompt evolution** (post-launch, ≥500 rec events): feed recommendation performance to Claude, receive prompt improvement suggestions, review and apply. Founder task, not engineering task.
+- **Quarterly cohort analysis** (≥200 quiz completions): feed anonymised engagement data to Claude with k-anonymity (k≥5 on archetype + room_type), receive archetype calibration report, product performance analysis, catalogue recommendations. Output doubles as brand partnership data product.
+- **Anonymisation method for future training exports must be genuinely irreversible** (destroy salt). Document method before first export. (Source: GDPR critique)
+
+### Content & Voice
+- **Language bank** (`docs/content/cornr-language-bank.md`) is the register guide for all user-facing copy. Read before writing archetype descriptions, onboarding copy, recommendation rationale, or error states.
+- **Archetype descriptions** require taste vocabulary (materials, textures, colours, objects) in the sensory anchor component. Emotional resonance alone is insufficient.
+- **Escape hatch quiz pitch:** "Not sure this is your style? Find out in 2 minutes" — frames quiz as answering doubt, not unlocking a gate.
+- **Room setup tone:** "Tell us what you're working with" / "Before we fine-tune" — Cornr refining, not interrogating.
+
+### Future Features (noted, not built)
+- **Taste drift detection + prompted retake:** compare user's recent click/wishlist archetype_tags against assigned archetype. v2 feature, architecture ready. (Source: data tear-down)
+- **Decision confidence micro-survey:** post-click "How confident?" 1-5. Unique dataset. v2 measurement. (Source: data tear-down)
+- **Purchase confirmation (B8):** elevated to early v2 priority. Self-declared purchase data enables brand conversion reporting. (Source: data tear-down)
+- **Wishlist remarketing (sale alerts):** simplest version in late v1 or early v2. Refreshes affiliate cookie + creates return reason. (Source: Thread deep dive)
+- **RoomProgress molecule:** visual progress indicator, ships with purchased state. (Source: sequencing deep dive)
+- **ONS postcode district demographic lookup:** reference data table for brand report enrichment. ~2 hours data prep. (Source: data tear-down)
+- **Quiz prediction alignment:** compare pre-quiz browsing to post-quiz archetype. Add when escape hatch live 30 days + ≥50 conversions. (Source: item-first path)
+
+---
+
+*End of canonical context. Replace this file in project knowledge whenever a strategic decision is made. Single source of truth.*
