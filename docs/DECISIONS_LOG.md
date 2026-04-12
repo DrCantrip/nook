@@ -8,6 +8,38 @@
 
 ## Decisions
 
+## 12 April 2026 — Deep strategy session
+
+**Decisions locked this session:**
+
+1. **AI-native architecture as commercial moat** — Cornr runs on prompts not ML pipelines. Lead all external conversations (Dan deck, brand pitches, press) with the business story, not the technical story.
+
+2. **GTM Strategy v2** — 10-channel stack with realistic 6-month target of 1,900-5,300 users. Pinterest #1 organic (compounds over 6-12 months), TikTok #2 organic (front-loaded batch filming, week 8 kill gate), mortgage broker cards with realistic 100-150 user target. Reddit deprioritised. £100 paid budget: £50 Pinterest + £30 Vistaprint + £20 reserve.
+
+3. **Unit economics recalibrated** — Commission 4-5% blended (not 5-8%). Purchase conversion 4-8% (not 8-12%). Affiliate alone not fundable; brand partnership thesis validated via SheerLuxe comparable (~£14/subscriber/year at scale, £40M exit at 7.8× EBITDA).
+
+4. **Three-tier data retention model** — Individual engagement_events: 18 months. Aggregated segment counts (future aggregated_segments table): indefinite under legitimate interests. User profiles: until account deletion.
+
+5. **Sprint 3 T1 split into T1a-T1d** — Scaffolding+selection (5h), rationale generation (5h), validation+cache+fallback (4h), payload wiring (3h). Total 17h.
+
+6. **MC contribution proposal** — ~68 items tiered P0-P3. P0 ~30h must-have. P1 ~25-30h strong preference. P2 ~20h defer. P3 post-launch.
+
+7. **Seven new standing rules added to Section 13** — catalogue <500 items ceiling, TikTok front-loaded, GTM capacity cut order, brand pilot before 10K users, Dan meeting regardless of build state, Stale Pattern Gate on PDF-sourced facts, AI-native positioning leads external conversations.
+
+**Research completed this session:**
+- Unit Economics Validation (recalibrated commission, validated brand partnership thesis)
+- GTM Channel Validation (invalidated v1 claims, validated Pinterest + TikTok, £100 reality check)
+
+**Critique sessions completed:**
+- MC Impact Assessment (15 personas, 8 locked items)
+- Cold Start Critique (7 personas, 9 findings)
+- Discipline Gates (4 lenses, 7 findings)
+- Full Teardown (24 personas including Solution Architect, Prompt Engineer, Claude Code Specialist, AI-Native Business Owner, UX/UI Specialist, App Store Specialist, Data Analyst, Tester, TikTok/Social Media Manager, 3 rounds, 30 new findings)
+
+**Source:** Single session, 12 April 2026, claude.ai strategy conversation.
+
+---
+
 2026-04-11: Onboarding flow restructured: 2 screens + post-recommendation refinement. journey_stage on users replaces occupancy_status on rooms.
 2026-04-11: FTB verification via home_status field on users. Enables Tier 2-3 brand reports.
 2026-04-11: Renters passively accommodated via journey_stage='renting'. Prompt adapts to freestanding/portable. Not actively marketed to.

@@ -1,6 +1,9 @@
 # Cornr Canonical Context
 
-**Last updated:** 11 April 2026 (evening session — onboarding flow restructured, journey_stage replaces occupancy_status, home_status for FTB verification, delivery_tier + description + attribute_tags on products, trades_waitlist table, payload schema registry, Section 13 standing rules, Claude-native ML approach locked, room sequencing, Thread diagnostic sequence, renter accommodation, language bank produced)
+**Last updated:** 12 April 2026 (Deep strategy session: GTM v2 locked, unit economics recalibrated 4-5% commission, AI-native positioning as commercial moat, 24-persona teardown, 68-item MC contribution proposal P0-P3, three-tier data retention, Sprint 3 T1 split into T1a-T1d, 10 standing rules codified in Section 13)
+
+> **Reading this in project knowledge?** Project knowledge snapshots drift between Claude Code patches and manual re-uploads. If this file in project knowledge shows a "Last updated" date older than `docs/CORNR_CANONICAL.md` in the repo, the repo version is truth. Fresh sessions should flag the drift via the Stale Pattern Gate and work from memory + handover + the repo version read via Claude Code until project knowledge is re-uploaded.
+
 **Purpose:** Single source of truth for all strategic decisions, architecture choices, sprint plans, and workflow rules that postdate the v4 PDFs in project knowledge. Read this first in any new session. If anything below contradicts the PDFs, this file wins.
 
 ## Recent updates
@@ -21,6 +24,101 @@
 ## Section 0 — Strategic Decisions Log
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
+
+### 12 April 2026 — AI-native architecture is the commercial moat
+
+Cornr's Claude-native catalogue (~120 items, no retrieval pipeline, no vector DB, no embeddings) is a structural advantage, not an implementation detail. Product improvements ship as prompt updates, not ML pipeline retrains. Every user gets a personalised share insight generated at ~$0.001 per call — a unit economics profile no traditional recommendation platform can match.
+
+Positioning implication: the Dan deck and all brand partnership conversations lead with the business story ("Cornr personalises every user's share card with an insight unique to their swipe pattern, at negligible cost, because we're built on prompts not pipelines"), not the technical story ("We use Claude Haiku for recommendations"). The business story is the defensible moat. The technical story is a feature.
+
+**Alternatives considered:** Treating AI-native as a technical implementation detail (rejected — it's the commercial differentiator); leading with catalogue size or user count (rejected — neither is defensible at our stage).
+
+**Rationale:** Unit economics research validated that affiliate alone is not fundable at Cornr's scale (~£5-20/user/year). Brand partnerships and data asset are the fundable revenue lines, and both depend on Cornr being able to do things traditional platforms can't. The AI-native architecture is what makes those things possible. Surfacing it as a locked positioning decision prevents future sessions from treating it as optional framing.
+
+**Source:** 12 April teardown, AI-Native Business Owner persona + Dan Crow persona convergence.
+
+### 12 April 2026 — GTM Strategy v2 locks a 10-channel stack with realistic targets
+
+Validation research invalidated several v1 claims (r/FirstTimeBuyerUK likely doesn't exist under that name, r/HousingUK is 467K not 335K, r/UKPersonalFinance is 1.8M not 800K, "100 users from one Reddit post" is US B2B SaaS only, mortgage broker volume is 2-6 FTBs/broker/month not the inflated numbers previously assumed). GTM v2 locks the following channel priorities and realistic 6-month targets:
+
+1. Pinterest (organic + £50 promoted pins) — 500-1,500 users, 2-3h/week, start week 4, £50 paid
+2. TikTok organic — 300-1,000 users, 4-6h/week front-loaded in batch filming weeks 1-4, start week 8, £0
+3. Glassette/brand partnership cross-promo — 500-1,500 users, 1h for May meeting, £0
+4. Share viral loop (personalised cards) — 1.2x compound on all channels, built into product, £0
+5. Mortgage broker card distribution — 100-150 users, 1h/week from week 12, £30 for 500 Vistaprint cards
+6. Instagram Reels + Threads — 150-400 users, 2-3h/week blended with TikTok, £0
+7. PR (UK lifestyle press ladder: Sifted/TC UK → Stylist/Grazia → trade → national) — 200-600 users, 1h/week pitching, £0
+8. Build-in-public (X, IndieHackers) — 50-200 users, 30min/week from week 1, £0
+9. ASO + App Store conversion surface — 50-150/month post-launch, 2h one-time + 30min/month, £0
+10. Annual data report — 500-2,000 from first report, 15h one-time, £20 reserve
+
+Reddit deprioritised (20-50 users expected, no warmup investment). Apple Search Ads removed (requires $5K/month minimum). Realistic 6-month total: 1,900-5,300 users.
+
+£100 allocation locked: £50 Pinterest promoted pins (only paid channel where £100 produces measurable data at £0.08-1.30 CPC), £30 Vistaprint QR code cards (500 for broker test), £20 reserve for second Pinterest test or £30 Mumsnet non-member post for qualitative feedback.
+
+**Alternatives considered:** GTM v1 (higher targets of 3,350-10,100 users built on unvalidated Reddit claims and inflated broker volumes); paid-first approach (rejected, £100 cannot validate any paid channel except Pinterest).
+
+**Rationale:** Honest targets build credibility with Dan and future investors. Pinterest compounds (6-12 month content lifespan) making it uniquely suited to a 7h/week founder. TikTok has highest discovery upside but tight guardrails needed (week 8 kill gate at <500 followers). Reddit is structurally hostile to homeware promotion in target subreddits. Paid budget is concentrated where it can produce learning.
+
+**Source:** 12 April strategy session, GTM Channel Validation research + 24-persona teardown synthesis.
+
+### 12 April 2026 — Unit economics recalibrated, brand partnership thesis validated
+
+Research invalidated the v1 commission assumption (5-8% blended) and set new baselines:
+- Commission: 4-5% blended (Wayfair UK 7%, Heal's 6%, Dunelm 2%, B&Q 2%, John Lewis 3-5%, Amazon 5% with 24hr cookie, M&S 5%, Cox & Cox 1.2-4%). Deprioritise Amazon and John Lewis. Weight toward 30-day-cookie programmes.
+- Purchase conversion: 4-8% (not 8-12%)
+- AOV: £150-200 validated
+- Cornr revenue per user on v1 affiliate only: ~£5-20/year vs Stitch Fix $559/year active client — affiliate is not fundable as sole revenue line
+- SheerLuxe acquisition: £39.9M upfront on £12.6M revenue = ~£14 per email subscriber per year at scale, 70% returning brand partners. Validates brand partnership thesis as fundable revenue line.
+- Thread raised $30M+, reached 325K users, went into administration 2022 with no revenue data ever disclosed (cautionary tale: scale before unit economics)
+- Palazzo (Venus Williams AI quiz) pivoting B2B — no UK competitor occupies Cornr's position
+
+**Fundable thesis revised:** data asset and brand partnerships, not affiliate. Dan deck must lead with margin structure and brand partnership story, not volume.
+
+**Alternatives considered:** Sticking with v1 commission assumptions (rejected, not defensible to any investor who asks for the math).
+
+**Source:** 12 April Unit Economics Validation research.
+
+### 12 April 2026 — Three-tier data retention model
+
+Individual engagement_events retain for 18 months (existing canonical spec). Aggregated segment counts (per archetype × room_type × month rollups in a future `aggregated_segments` table) retain indefinitely under legitimate interests. User profiles (archetype, journey_stage, budget_tier) retain until account deletion.
+
+This resolves the tension between GDPR retention limits on individual events and the data asset value which requires longitudinal trends for year-over-year reporting.
+
+**Alternatives considered:** Extending individual event retention to 36+ months (rejected, disproportionate); losing all longitudinal signal after 18 months (rejected, destroys data asset value).
+
+**Rationale:** Aggregated rollups contain no personal data and can be justified under legitimate interests. Individual events remain subject to 18-month purge. Pipeline to build the rollup table is Sprint 4 or 5 priority, low urgency until brand partnership is active. DPIA flagged pre-brand-launch.
+
+**Source:** 12 April teardown round 2 (Data PM + GDPR DPO + Thread Analyst triangulation).
+
+### 12 April 2026 — Sprint 3 T1 splits into four sub-tasks
+
+The recommend-products Edge Function grew too large under the accumulated findings from MC Impact Assessment, Cold Start critique, and Discipline Gates. Split into:
+
+- **Sprint 3 T1a:** Edge Function scaffolding + products query + basic Haiku call with structured output (3 product IDs) + delivery_tier column and seed. ~5h.
+- **Sprint 3 T1b:** Rationale generation (second Haiku call, per-product natural language). Includes prompt branches for scratch/partial/aspirational, Position 1 constraint (never name kept category), rationale quality gate (material/texture/form + behavioural reference). ~5h.
+- **Sprint 3 T1c:** Response validation (ID-exists check, 2 retries, fallback) + cache layer in new `recommendation_cache` table keyed on (archetype, room_type, budget_tier, room_stage) with 7-day TTL + Haiku failure fallback serving from cache regardless of age. ~4h.
+- **Sprint 3 T1d:** Payload wiring — populate position, retailer, category, journey_stage, acquisition_source, model_version into engagement_events JSONB. Note: model_version column already exists from 7 April canonical; T1d populates it. ~3h.
+
+**Total Sprint 3 T1: ~17h** (previously estimated 8-10h in v4 spec).
+
+**Alternatives considered:** Single fat task (rejected, too complex for one Claude Code session); splitting into two (rejected, doesn't give enough checkpoint granularity).
+
+**Source:** 12 April teardown round 2 (Senior RN Engineer + Prompt Engineer + Solution Architect + Claude Code Specialist consensus).
+
+### 12 April 2026 — MC contribution proposal: 68 items tiered P0-P3
+
+The full strategy session produced a locked proposal for Mission Control v10 consisting of ~68 items across priority tiers P0-P3, sourced from: 8 MC Impact Assessment items, 9 Cold Start findings, 7 Discipline Gate findings, 14 GTM Strategy v2 items, 30 teardown findings.
+
+**P0 (~30h, must have for launch):** Share mechanic + personalised insight Edge Function, recommendation quality (Sprint 3 T1a-T1d), delivery_tier column and badge, mock-first validation (7 tests, 6 users, includes share flow end-to-end test and 24h identity attachment follow-up), Wayfair webview commission test moved to Sprint 3, waitlist landing page, share card visual design (expanded 2h→4-6h), TikTok content pre-creation (10-15 videos batch-filmed weeks 1-4), Haiku cache layer, rationale quality gate, Position 1 constraint.
+
+**P1 (~25-30h, strong preference):** Payload field additions (position, retailer, category, journey_stage, acquisition_source), engagement_events indexes for brand reporting, Pinterest content engine (7 archetype mood boards + 20-30 pins each), mortgage broker card test (Vistaprint + 3-5 brokers), TestFlight expansion to 10-15 users, App Store screenshot sequence specced.
+
+**P2 (~20h, defer if needed):** TikTok execution (weeks 8+), PR ladder, cohort analysis infrastructure in PostHog, aggregated_segments table + pipeline, brand partnership pilot at 2-5K users.
+
+**P3 (post-launch):** Annual UK FTB style data report, Instagram Reels expansion, v2 features (cross-retailer coordination, delivery confidence, spatial planning).
+
+**Source:** 12 April 24-persona teardown, 3 rounds, full synthesis.
 
 ### 11 April 2026 — Onboarding flow restructured: 2 screens + post-recommendation refinement
 
@@ -494,7 +592,7 @@ Tables added 7 April 2026 in strategic foundation pack: `archetype_history`, `en
 | `style_profiles` | `id`, `user_id`, `primary_archetype`, `secondary_archetype`, `swipe_scores` JSONB, `is_anonymous`, `created_at` | Own row only |
 | `archetype_history` | `id`, `user_id`, `primary_archetype`, `secondary_archetype`, `swipe_scores` JSONB, `source` (initial/retake/admin), `recorded_at` | Own rows, append-only |
 | `rooms` | `id`, `user_id`, `room_type`, `display_name` (nullable), `budget_tier`, `room_analysis` JSONB (nullable), `archetype_at_recommendation`, `is_aspirational`, `room_stage`, `existing_categories`, `existing_descriptions` JSONB | Own rooms only |
-| `products` | `id`, `title`, `description`, `image_url`, `retailer`, `affiliate_url`, `archetype_tags`, `room_tags`, `trend_tags`, `budget_tier`, `category`, `season`, `delivery_tier`, `attribute_tags` | Read-all auth users |
+| `products` | `id`, `title`, `description`, `image_url`, `retailer`, `affiliate_url`, `archetype_tags`, `room_tags`, `trend_tags`, `budget_tier`, `category`, `season`, `delivery_tier`, `attribute_tags`, `source` | Read-all auth users |
 | `wishlisted_products` | `id`, `user_id`, `product_id`, `room_id`, `created_at`, `removed_at` (soft delete) | Own rows only |
 | `places_cache` | `id`, `postcode_district`, `trade_type`, `results` JSONB, `cached_at` | Service role only |
 | `engagement_events` | `id`, `user_id` (nullable for anon), `event_type`, `event_data` JSONB, `occurred_at`, `retention_until`, `model_version` (nullable for AI events) | Own rows only |
@@ -642,6 +740,37 @@ CREATE POLICY "trades_waitlist_insert_auth" ON trades_waitlist
 -- No SELECT policy for regular users — admin/service_role only
 CREATE POLICY "trades_waitlist_select_service" ON trades_waitlist
   FOR SELECT USING (auth.role() = 'service_role');
+
+-- 12 April: delivery_tier badge support (Sprint 3 T1a, MC-IA-1)
+-- Column populated via seed script in T1a. Badge rendered on ProductCard at decision-time per TD-17.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS delivery_tier VARCHAR(20);
+ALTER TABLE products ADD COLUMN IF NOT EXISTS source VARCHAR(20) DEFAULT 'seed';
+
+-- 12 April: engagement_events functional indexes for brand reporting queries (TD-5)
+-- Indexes JSONB payload fields wired in Sprint 3 T1d. Empty until T1d ships.
+-- Query pattern: WHERE event_type = X AND event_data->>'archetype' = Y GROUP BY occurred_at
+-- Supabase RLS plans against functional indexes; verify query plans at brand reporting build time.
+CREATE INDEX IF NOT EXISTS engagement_events_type_archetype
+  ON engagement_events(event_type, (event_data->>'archetype'), occurred_at DESC);
+CREATE INDEX IF NOT EXISTS engagement_events_journey_stage
+  ON engagement_events((event_data->>'journey_stage'), occurred_at DESC);
+CREATE INDEX IF NOT EXISTS engagement_events_acquisition_source
+  ON engagement_events((event_data->>'acquisition_source'), occurred_at DESC);
+
+-- 12 April: recommendation_cache table for Sprint 3 T1c fallback layer
+CREATE TABLE IF NOT EXISTS recommendation_cache (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  cache_key TEXT NOT NULL UNIQUE,  -- format: archetype|room_type|budget_tier|room_stage
+  response JSONB NOT NULL,
+  model_version VARCHAR(50) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '7 days')
+);
+ALTER TABLE recommendation_cache ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "recommendation_cache_service_only" ON recommendation_cache
+  FOR ALL USING (auth.role() = 'service_role');
+CREATE INDEX IF NOT EXISTS recommendation_cache_key ON recommendation_cache(cache_key);
+CREATE INDEX IF NOT EXISTS recommendation_cache_expiry ON recommendation_cache(expires_at);
 ```
 
 ---
@@ -708,7 +837,7 @@ Sprint 3 T2 product card must include:
 
 T7 unchanged.
 
-### Sprint 3 — AI Recommendations (T1 prompt structure locked, revised 11 April)
+### Sprint 3 — AI Recommendations (T1 prompt structure locked, revised 11 April, split into T1a-T1d 12 April)
 
 The `recommend-products` Edge Function prompt must:
 1. Take inputs: archetype (primary), secondary archetype (blending rule: influences P3 only), room_type, budget_tier, property_period (optional, soft hint only), room_stage, existing_categories, existing_descriptions (optional free-text), is_aspirational, last 5 wishlisted products (title + category + archetype_tags as taste signal)
@@ -762,6 +891,29 @@ The vocabulary file `src/content/trends.ts` is created during Sprint 3 prep. It 
 - `room_created` payload unchanged (no trend layer at room creation time)
 
 Full prompt template drafted at Sprint 3 T1 build time.
+
+**12 April update: T1 splits into T1a-T1d.** The 7-point prompt spec above remains the design contract. T1b is where the rationale prompt branches (scratch/partial/aspirational) live, T1a/c/d handle everything else.
+
+**Sprint 3 T1a — Edge Function scaffolding (~5h):** Scaffold `recommend-products` Edge Function. Query products table filtered by budget_tier and archetype_tags. First Haiku call returns exactly 3 product IDs in priority order using structured output. Add `delivery_tier` and `source` columns to products table + seed delivery_tier values for existing catalogue. No rationale generation yet.
+
+**Sprint 3 T1b — Rationale generation (~5h):** Second Haiku call per product for natural language rationale. Uses the 7-point prompt spec above. Three prompt branches:
+- **Scratch (existing_categories is empty or "Nothing yet"):** no "working around existing pieces" language; anchor-first language.
+- **Partial:** reference existing_categories as context; Position 1 rationale NEVER names a kept category.
+- **Aspirational (is_aspirational=true):** all three products framed as anchor pieces / inspiration, no "buy next" framing.
+
+Rationale quality gate enforced in prompt:
+1. Material/texture/form reference (e.g., "warm walnut grain", "clean-line silhouette")
+2. Behavioural reference ("for the evenings you actually use this room")
+3. Never invoke property_period in user-facing rationale
+4. Never name trends
+
+Position-aware sequencing: Position 1 = "buy next" anchor purchase. Position 2 = complements position 1. Position 3 = stretch piece within budget.
+
+**Sprint 3 T1c — Validation, cache, fallback (~4h):** Response validation (check returned product IDs exist in products table, retry up to 2x on invalid response, fallback to cached response on second failure). Cache layer lives in new `recommendation_cache` table (see Section 6 SQL) keyed on `archetype|room_type|budget_tier|room_stage` with 7-day TTL. Cache miss = Haiku call; cache hit under 7 days = served from cache; Haiku failure = serve from cache regardless of age with warning log.
+
+**Sprint 3 T1d — Payload wiring (~3h):** Populate engagement_events JSONB payload: position (1/2/3), retailer, category, journey_stage, acquisition_source (captured on first session — new field, requires privacy policy update), model_version ("claude-haiku-4-5" — column already exists from 7 April canonical, T1d just populates it). Wire product_card_shown, product_link_clicked, product_wishlisted events. Verify PostHog receives same payload structure.
+
+**Total Sprint 3 T1: ~17h.**
 
 ### Sprints 4–6 — high-level summary
 
@@ -895,8 +1047,11 @@ This rule does NOT apply to: database schema, RLS policies, data model, security
 | Quiz-to-email conversion rate | Before launch email setup | Target 35-40% (Interact 2026 benchmark). Loops.so for delivery. |
 | Assembly/fitting as v2 trades entry point | v2 scoping | TaskRabbit-style light services connect to purchase moment. Blocked on knowing what users bought (affiliate data on retailer side). |
 | Awin sole trader acceptance | Before incorporation | Check if Awin accepts individual publisher accounts — may not need incorporation for affiliate applications. |
+| TikTok content batch filming | Week 4 | Pre-film 10-15 videos before channel launches week 8; batch session not sustained |
 
 **Resolved 7 April 2026:** archetype as primary mechanic; Pre-Purchase Researcher serving; v2 brand partnership data foundation. See Section 0.
+
+**Resolved 12 April 2026:** Commission rate recalibrated to 4-5% blended (research-backed); mortgage broker realistic volume (100-150 users over 6 months, not 1,200-3,600); Reddit deprioritised after subreddit claims invalidated; £100 paid budget allocated (£50 Pinterest + £30 Vistaprint + £20 reserve); Sprint 3 T1 architecture split into T1a-T1d; AI-native positioning locked as commercial moat. See Section 0 entries dated 12 April.
 
 ---
 
@@ -937,6 +1092,7 @@ Consolidated rules that apply across all sprints and sessions. Each rule has a s
 - **Seed product descriptions must be original** (written by Daryll or Claude), not copied from retailer sites. (Source: data tear-down Round 2)
 - **`made_to_order` delivery tier only when verifiably true.** Default to `weeks` or `long_lead`. (Source: MC assessment Round 3)
 - **Delivery tier labels in `src/content/labels.ts`**, not hardcoded in components. (Source: MC assessment Round 3)
+- **Catalogue size hard ceiling:** products table stays under 500 active rows until a retrieval architecture (vector DB or similar) is in place. Enforceable via CI check. The Claude-native full-catalogue-in-prompt approach breaks above ~500 items. (Source: 12 April Solution Architect review)
 
 ### Commercial & Growth
 - **Start brand conversations at 1,000 users, not 15,000.** Learn what brands want before building the product. (Source: Thread deep dive Round 4)
@@ -944,6 +1100,11 @@ Consolidated rules that apply across all sprints and sessions. Each rule has a s
 - **Week 30 diagnostic sequence:** 6 steps before any model pivot — (1) recommendation quality, (2) catalogue quality, (3) click-through UX, (4) wishlist remarketing, (5) audience segmentation, (6) only then model changes. (Source: Thread deep dive)
 - **Quiz-to-signup conversion ≥ 35%** — leading indicator of owned audience. Track from day one. (Source: Thread deep dive)
 - **Editorial return rate ≥ 10% MAU by month 6** — validates retention thesis. (Source: Thread deep dive)
+- **TikTok time budget is front-loaded:** weeks 1-4 batch-film 10-15 videos; weeks 5-8 post 3-5/week from the batch; week 8 gate — 500+ followers on Cornr account OR kill TikTok and redirect time to Pinterest and brokers. Never sustain 6h/week on TikTok without evidence it's working. (Source: 12 April Social Media Manager + Crisis Planner)
+- **GTM capacity cut order:** if post-launch GTM time exceeds 3h/week ongoing, cut channels in this order: Reddit first, Threads second, PR to quarterly (not monthly) third, Pinterest kept last. NEVER cut the share viral loop or mortgage broker maintenance. (Source: 12 April Crisis Planner)
+- **Brand partnership pilot before 10K users:** run the first brand partnership pilot at 2-5K users, not 10K. Thread scaled to 325K without validating monetisation and died. The Dan meeting in May is the forcing function. (Source: 12 April Thread Analyst + Dan Crow persona)
+- **Dan meeting happens regardless of build state:** if product isn't in TestFlight by May, the meeting still happens with mock-first data, illustrative Curator report, share card mockup, and revised timeline. Don't cancel for slippage. (Source: 12 April Crisis Planner + Dan Crow persona)
+- **AI-native positioning leads all external conversations:** Cornr runs on prompts, not ML pipelines. The business story (personalisation at negligible cost) leads Dan deck and brand partnership pitches, not the technical story. (Source: 12 April AI-Native Business Owner persona)
 
 ### Privacy & Legal
 - **Trades waitlist consent separate from marketing opt-in.** Purpose-specific, own retention rule (18 months or trades launch, whichever first). (Source: MC assessment Round 3)
@@ -969,6 +1130,10 @@ Consolidated rules that apply across all sprints and sessions. Each rule has a s
 - **RoomProgress molecule:** visual progress indicator, ships with purchased state. (Source: sequencing deep dive)
 - **ONS postcode district demographic lookup:** reference data table for brand report enrichment. ~2 hours data prep. (Source: data tear-down)
 - **Quiz prediction alignment:** compare pre-quiz browsing to post-quiz archetype. Add when escape hatch live 30 days + ≥50 conversions. (Source: item-first path)
+
+### Workflow & Source of Truth
+- **Stale Pattern Gate on PDF-sourced facts:** before stating any technical or design fact from a PDF (colours, framework choices, archetype IDs), check canonical and memory for updates. If canonical contradicts PDF, canonical wins. If memory contradicts canonical on recent changes, memory wins. (Source: 12 April project instructions update)
+- **Canonical patches include mandatory preflight checks.** Every canonical patch prompt for Claude Code must (a) read the current canonical first and verify exact-string targets exist before any find/replace, (b) check whether sections being created already exist and stop if they do, (c) print current state of any section being modified so drift is visible before edits land, (d) work on a dedicated branch (never on main), and (e) stop before commit, show diff, and wait for explicit "commit" approval. Patches that skip preflight are not paste-ready and must be rejected. (Source: 12 April session, after preflight detected drift between context snapshot and repo state on the canonical patch itself.)
 
 ---
 
