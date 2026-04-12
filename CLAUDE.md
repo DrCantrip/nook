@@ -101,10 +101,10 @@ Cards:16px | Buttons:10px | Badges:6px | Inputs:12px | Modal:20px top only
 NEVER same radius on all elements.
 
 ## Visual design rules
-All screens use warmstone (#F5F4F0) background unless white is needed for contrast.
+All screens use cream (#FAF7F3) background unless white is needed for contrast.
 Cards are white with 16px radius and subtle shadow (shadow-sm).
-Primary buttons: bg-primary-900, text-white, rounded-button, py-3.
-Secondary buttons: border border-primary-600, text-primary-600, rounded-button, py-3.
+Primary buttons: bg-ink (#1A1814), text-white, rounded-button, py-3.
+Secondary buttons: border border-accent (#94653A), text-accent (#94653A), rounded-button, py-3.
 Teal panels (AI content only): bg-teal-bg, text-teal-text, rounded-card, p-4.
 44pt minimum touch targets on all interactive elements.
 Before building any screen, read the relevant component spec from the UX Design Review (project knowledge). The UX Design Review overrides simplified specs in sprint prompts.
@@ -116,7 +116,7 @@ Do not use default values. Do not guess. Every number in the spec was chosen del
 
 ### The spec overrides everything
 If a sprint prompt says "add a button" without specifying height, the spec says 52px.
-If a sprint prompt says "primary colour" without a hex, the spec says #1A3A5C.
+If a sprint prompt says "primary colour" without a hex, the spec says ink (#1A1814).
 The UX Design Review (project knowledge) overrides simplified specs in sprint prompts.
 docs/DESIGN_SPECS.md is the local copy of those specs for Claude Code to reference.
 
@@ -151,3 +151,7 @@ Apply identical border-radius to all elements
 Run migration SQL on production without testing on staging first
 Use NativeWind className on full-screen ImageBackground layouts. Use StyleSheet.create + cssInterop={false} on every component. See docs/DESIGN_SPECS.md "NativeWind escape hatch rules".
 Put layout properties (flex, justifyContent, alignItems, minHeight, backgroundColor) inside Pressable style callbacks. Only opacity goes in the callback. Everything else in StyleSheet.create.
+
+## Build rules (added 12 April 2026)
+NativeWind is permanently removed (6 Apr). Use StyleSheet.create + src/theme/tokens.ts. No className, no cssInterop, no tw(). ESLint bans hex codes in components.
+expo-router v6: app/index.tsx is root entry. Auth guard is ALLOW-LIST only — protected groups (app) and (onboarding). Never deny-list.

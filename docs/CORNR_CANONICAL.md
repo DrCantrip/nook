@@ -243,6 +243,22 @@ Individual Apple Developer account (£79/year) enables TestFlight without incorp
 
 **Source:** App Store Submission Specialist + UK Startup Solicitor critique, 11 April 2026.
 
+### 12 April 2026 — Minimum catalogue size is 130 products, not fewer
+7 archetypes × 6 room types × 3 budget tiers = 126 cells. Every cell needs ≥1 product or the recommendation engine returns empty. Minimum launch catalogue: 130 products.
+**Source:** Multi-discipline panel, 12 April 2026.
+
+### 12 April 2026 — Recommendation prompt must randomize catalogue JSON order
+LLMs have position bias — items in the middle of a large JSON array are under-recommended. Randomize catalogue JSON order on every recommendation call.
+**Source:** Multi-discipline panel, 12 April 2026.
+
+### 12 April 2026 — Archetype score vector must be L2-normalized before prompt injection
+L2-normalize the 7-dimension score vector before passing to Claude. Without normalization, dimensions with larger raw ranges disproportionately influence selection.
+**Source:** Multi-discipline panel, 12 April 2026.
+
+### 12 April 2026 — Catalogue refresh cadence: 10 new, 10 retired per month post-launch
+Without rotation, users see the same 3 recommendations within 2–3 sessions. Standing rule: 10 new products added, 10 retired, every month post-launch.
+**Source:** Multi-discipline panel, 12 April 2026.
+
 ### 7 April 2026 — Constraint capture goes after the archetype reveal
 
 User constraints (room stage, existing categories, property period soft-hint) are captured at room setup, after the archetype reveal and signup. Never before.
@@ -990,8 +1006,7 @@ The Brand & Design System v3, Operations & Legal v2, and Competitor Analysis v2 
 
 ### Mission Control rules
 
-- Storage key: bump to `cornr-mc-v9` when first regenerated after this file is in place. (Bumping the version resets stored progress, so do it once and then leave it.)
-- Default ALL tasks to "todo" in JSX. Let `window.storage` override with saved state. Never hardcode tasks as "done".
+- Storage key: `cornr-mc-2026-04-12` (permanent — do not bump). Default ALL tasks to "todo" in JSX. Let `window.storage` override. Never hardcode "done".
 - MC prompts must be copy-paste ready with literal values. Never descriptions Claude Code has to interpret.
 
 ### Build quality rules (apply every session)
@@ -1048,6 +1063,9 @@ This rule does NOT apply to: database schema, RLS policies, data model, security
 | Assembly/fitting as v2 trades entry point | v2 scoping | TaskRabbit-style light services connect to purchase moment. Blocked on knowing what users bought (affiliate data on retailer side). |
 | Awin sole trader acceptance | Before incorporation | Check if Awin accepts individual publisher accounts — may not need incorporation for affiliate applications. |
 | TikTok content batch filming | Week 4 | Pre-film 10-15 videos before channel launches week 8; batch session not sustained |
+| Awin server-to-server postback | Before R-4 brand pilot | Brands need purchase data not just clicks |
+| Catalogue refresh post-launch | Before launch | 10 new/10 retired per month |
+| Claude model string audit | Before 19 April | All references must be claude-haiku-4-5 |
 
 **Resolved 7 April 2026:** archetype as primary mechanic; Pre-Purchase Researcher serving; v2 brand partnership data foundation. See Section 0.
 
