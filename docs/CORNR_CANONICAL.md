@@ -1065,7 +1065,7 @@ This rule does NOT apply to: database schema, RLS policies, data model, security
 | TikTok content batch filming | Week 4 | Pre-film 10-15 videos before channel launches week 8; batch session not sustained |
 | Awin server-to-server postback | Before R-4 brand pilot | Brands need purchase data not just clicks |
 | Catalogue refresh post-launch | Before launch | 10 new/10 retired per month |
-| Claude model string audit | Before 19 April | All references must be claude-haiku-4-5 |
+| Claude model string audit | Complete — verified b87c65e | All references confirmed claude-haiku-4-5 |
 
 **Resolved 7 April 2026:** archetype as primary mechanic; Pre-Purchase Researcher serving; v2 brand partnership data foundation. See Section 0.
 
