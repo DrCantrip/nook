@@ -25,6 +25,24 @@
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
 
+### 13 April 2026 — Period-property surfaces as visible reveal modifier (Option B from research)
+
+UK first-time buyer market analysis: ~100,000–120,000 FTBs per year buy pre-1945 housing stock (Victorian, Edwardian, Georgian, interwar/1930s), representing approximately 30–35% of the annual FTB cohort. Zero digital products serve this segment with styling guidance — total competitive vacuum across apps, quizzes, and tools. Cornr already collects `property_period` from EPC data at signup (canonical Section 7), so the data exists; the question was whether to surface it.
+
+**Decision: surface period as a visible one-sentence modifier on the reveal screen, beneath the archetype description.** 35 modifier sentences locked in `src/content/archetype-period-modifiers.ts` covering 7 archetypes × 5 property eras (georgian, victorian, edwardian, interwar, modern). For Welcome and Neutral pairings the modifier celebrates or acknowledges the match. For Tension and Dissonant pairings (Romantic × Modern is the only Dissonant cell) the modifier reframes the challenge as styling advice — never tells the user their taste is wrong.
+
+The reveal screen layout must include a slot for the period sentence, designed for graceful absence: renting users with no `property_period` see no slot at all, not a blank space.
+
+**Build cost:** ~12–15 hours total (S2-T4-PERIOD task in MC). Content is shipped; engineering is the period_suitability tags on products in Sprint 3 (~4h absorbed into existing tagging work) and the reveal screen layout slot (~1h into S2-T4 build).
+
+**Strategic positioning:** this is the strongest commercial differentiator Cornr has produced. "Cornr knows your home's era and tailors recommendations accordingly" is a claim no UK competitor can make and none will be able to make without Cornr's specific EPC pipeline. The Dan deck (DAN-1) leads with this positioning, not the archetype thesis.
+
+**Future option deferred:** Option D (period as a first-class dimension alongside archetype, with dual identity 7×5=35 reveal cells) is rejected for v1 on cost (40–60h) and content burden (35 unique reveal descriptions). Option D becomes the right call IF post-launch metrics show period-modified share cards drive 20%+ higher acquisition from period-property communities, OR Welcome pairings show 20%+ higher product CTR than Tension pairings. Not before.
+
+**Future option also deferred:** Option C (eighth archetype "The Preservationist" for users wanting period-faithful restoration) is rejected on grounds that period-property styling is a context, not a style — adding it as an archetype would cannibalise Storyteller and Romantic without serving the diverse range of styles period-property users actually want.
+
+**Source:** 13 April 2026 period-property research (~100K UK FTBs/year, zero competition, full compatibility matrix), 8-persona panel convergence, Daryll explicit decision to accept Sprint 2 scope expansion of ~10–12 hours and TestFlight delay of ~1.5–2 weeks in exchange for the differentiation.
+
 ### 12 April 2026 — AI-native architecture is the commercial moat
 
 Cornr's Claude-native catalogue (~120 items, no retrieval pipeline, no vector DB, no embeddings) is a structural advantage, not an implementation detail. Product improvements ship as prompt updates, not ML pipeline retrains. Every user gets a personalised share insight generated at ~$0.001 per call — a unit economics profile no traditional recommendation platform can match.
@@ -1152,6 +1170,27 @@ Consolidated rules that apply across all sprints and sessions. Each rule has a s
 ### Workflow & Source of Truth
 - **Stale Pattern Gate on PDF-sourced facts:** before stating any technical or design fact from a PDF (colours, framework choices, archetype IDs), check canonical and memory for updates. If canonical contradicts PDF, canonical wins. If memory contradicts canonical on recent changes, memory wins. (Source: 12 April project instructions update)
 - **Canonical patches include mandatory preflight checks.** Every canonical patch prompt for Claude Code must (a) read the current canonical first and verify exact-string targets exist before any find/replace, (b) check whether sections being created already exist and stop if they do, (c) print current state of any section being modified so drift is visible before edits land, (d) work on a dedicated branch (never on main), and (e) stop before commit, show diff, and wait for explicit "commit" approval. Patches that skip preflight are not paste-ready and must be rejected. (Source: 12 April session, after preflight detected drift between context snapshot and repo state on the canonical patch itself.)
+
+### Archetype description rewrite loop
+
+The seven archetype descriptions in `src/content/archetypes.ts` are v1 best-guess. The rewrite loop is the mechanism that turns "best guess" into "measurably improving."
+
+**Trigger:** After 100 quiz completions per archetype post-launch, compute three metrics for each archetype:
+- `wishlist_add_rate` (percentage of users with this primary archetype who add at least one product to wishlist within 7 days of reveal)
+- `share_initiated_rate` (percentage of users with this primary archetype who tap the share button on their reveal screen)
+- `retake_rate` (percentage of users with this primary archetype who retake the quiz within 30 days)
+
+**Threshold for rewrite queue:** any archetype more than 1 standard deviation below the mean across all 7 archetypes on ANY of these three metrics enters the rewrite queue. High retake rate is a negative signal (description didn't land); low wishlist and low share rate are negative signals (description failed to motivate engagement).
+
+**Rewrite mechanic:** when an archetype is rewritten, the `version` integer on its record in `src/content/archetypes.ts` bumps. The `engagement_events.archetype_version INTEGER` column logs which version each Haiku call consumed, enabling A/B comparison of rewrite v1 vs v2 against the same baseline metrics.
+
+**Cache invalidation:** because the S2-T4-INSIGHT Edge Function caches blended reveal text per user, and because blended reveals draw phrases from multiple archetypes, the cache key for each cached reveal MUST include the `archetype_version` of every archetype involved in the blend (primary + all secondaries with score ≥ 0.15). Composite key format: `insight:{userId}:{primaryId}v{version}:{secondaryId}v{version}:{...}`. When any archetype's version bumps, all cached reveals referencing that archetype invalidate automatically.
+
+**Rationale:** Cornr cannot know which descriptions will land before real users see them. The rewrite loop accepts that v1 is a starting point and builds the measurement infrastructure to make v2 evidence-based rather than gut-based. This rule explicitly authorises future Claude.ai sessions to rewrite descriptions in `src/content/archetypes.ts` when the metrics warrant it, without re-running the multi-persona panel critique each time — the panel work is locked for v1 only.
+
+**What this rule does NOT authorise:** wholesale rewrites of multiple archetypes simultaneously (only one at a time, to keep the A/B clean), changes to the three-layer schema (locked separately in Section 1), or changes to the seven canonical archetype IDs (locked in Section 1).
+
+**Source:** 13 April 2026 S2-T4-COPY writing session, 8-persona panel convergence on the principle that v1 best-guess descriptions need a measurable improvement path.
 
 ---
 
