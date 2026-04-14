@@ -1,7 +1,7 @@
 // TODO(cornr): manual sync until a build step is added — if you change one, change both.
-// Mirror file: supabase/functions/_shared/archetypes.ts (Deno runtime cannot import from src/).
-// When the second Edge Function is built (S3-T1A recommend-products), set up a build step to
-// generate the mirror from this canonical file instead.
+// Source of truth: src/content/archetypes.ts. This file exists because Deno Edge Functions
+// cannot import from src/. When S3-T1A recommend-products ships, set up a build step to
+// generate this file from the canonical src/content/archetypes.ts instead.
 
 /**
  * Cornr archetype content — seven records, three layers each.
