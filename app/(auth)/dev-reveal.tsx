@@ -57,7 +57,11 @@ export default function DevRevealScreen() {
   };
 
   const goBack = () => {
-    if (panelIndex <= 0) return;
+    if (panelIndex === 0) {
+      // On panel 0, "back" means leave the screen entirely.
+      router.back();
+      return;
+    }
     setPanelIndex(panelIndex - 1);
   };
 
@@ -92,7 +96,7 @@ export default function DevRevealScreen() {
             <Panel4ShareCard
               archetype={archetype}
               onShare={handleShare}
-              onDone={() => router.replace("/(auth)/welcome")}
+              onDone={() => router.back()}
             />
           </View>
         ) : (
@@ -108,12 +112,13 @@ export default function DevRevealScreen() {
               )}
             </View>
 
-            {/* Split tap targets: left 33% = back, right 67% = advance. */}
+            {/* Split tap targets: left 33% = back, right 67% = advance.
+                tapSplit leaves a 20px gutter on the left edge so the iOS
+                edge-swipe gesture can pass through to the navigator. */}
             <View style={styles.tapSplit}>
               <Pressable
                 onPress={goBack}
                 style={styles.tapBack}
-                disabled={panelIndex === 0}
                 accessibilityRole="button"
                 accessibilityLabel="Go back"
               />
@@ -124,21 +129,20 @@ export default function DevRevealScreen() {
                 accessibilityLabel="Advance to next panel"
               />
             </View>
-
-            {/* Back chevron on panels 1 and 2 only. */}
-            {(panelIndex === 1 || panelIndex === 2) && (
-              <Pressable
-                onPress={goBack}
-                style={styles.backChevron}
-                hitSlop={12}
-                accessibilityRole="button"
-                accessibilityLabel="Go back"
-              >
-                <CaretLeft size={20} weight="light" color={colors.white} />
-              </Pressable>
-            )}
           </View>
         )}
+
+        {/* Back chevron — rendered on every panel. Panel 0 → router.back();
+            panels 1-3 → decrement panelIndex via goBack. */}
+        <Pressable
+          onPress={goBack}
+          style={styles.backChevron}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <CaretLeft size={20} weight="light" color={colors.white} />
+        </Pressable>
 
         {/* TASK 5 — progress dots. Always rendered, on top of panel content. */}
         <View pointerEvents="none" style={styles.progressDots}>
@@ -374,7 +378,13 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   tapRegion: { flex: 1 },
   tapSplit: {
-    ...StyleSheet.absoluteFillObject,
+    // Leaves leftmost 20px uncovered so the iOS edge-swipe gesture reaches
+    // the navigator instead of being captured by the tapBack Pressable.
+    position: "absolute",
+    top: 0,
+    left: 20,
+    right: 0,
+    bottom: 0,
     flexDirection: "row",
   },
   tapBack: {
