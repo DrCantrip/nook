@@ -25,6 +25,18 @@
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
 
+### 15 April 2026 (PM) — Design system evolution: two-phase colour, archetype motifs, reveal resequencing
+
+90/10 rule replaced by two-phase colour system. Pre-archetype: 90/10 unchanged. Post-archetype: 80/15/5 (tinted neutral at 5%/8% + archetype identity elements at full colour + universal interactive unchanged). 7 pre-computed WCAG-verified tint values locked. AI teal deprecated for user-facing surfaces.
+
+7 archetype geometric motifs designed (v3). Consistent grammar: 48×48 viewBox, 2px stroke. Curator=viewfinder+golden spiral, Nester=concentric embrace, Maker=interlocking brackets, Minimalist=lower-left quarter-arc, Romantic=rotated ellipses, Storyteller=mixed shapes, Urbanist=rectangle+diagonal.
+
+Reveal flow identity-ownership problem diagnosed. 10 ranked interventions locked. Top 6 (~12-16h): evidence screen, panel resequencing, copy reframe, rarity framing, behavioural truth solo panel, user-image share card.
+
+Master app icon: ink background rejected, warm amber (#B28760) direction partially approved, needs character not geometry. Fresh session with Headspace research planned.
+
+**Source:** Deep research (identity systems, colour theory, app icon best practice), 22-persona reveal flow panel, 14-persona motif critique, 12-persona icon panel, 10-persona colour system review. All in claude.ai conversation 15 April evening.
+
 ### 15 April 2026 — Archetype visual identity system and reveal screen redesign
 
 Decision: parametric `archetypeTheme(id)` system in `src/theme/tokens.ts`. One function, seven palettes, identical component structure across all themed surfaces. Components never hardcode archetype-specific colours — they consume the returned `{ gradientStart, gradientMid, gradientEnd, accent, grainOpacity }` object.
