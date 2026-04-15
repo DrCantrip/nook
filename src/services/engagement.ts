@@ -45,15 +45,26 @@ type EventType =
   | 'product_wishlisted'
   | 'retake_started'
   | 'editorial_card_shown'
-  | 'editorial_card_clicked';
+  | 'editorial_card_clicked'
+  | 'reveal_shown'
+  | 'reveal_panel_changed'
+  | 'share_initiated';
 
 export function recordEvent(
   user: User | null,
   eventType: EventType,
   eventData: Record<string, unknown> = {}
 ): void {
-  // Extract optional model_version from payload
-  const { _modelVersion, ...cleanData } = eventData as { _modelVersion?: string } & Record<string, unknown>;
+  // Extract optional model_version and archetype_version from payload.
+  // Both live in dedicated columns, not in the JSONB event_data blob.
+  const {
+    _modelVersion,
+    _archetypeVersion,
+    ...cleanData
+  } = eventData as {
+    _modelVersion?: string;
+    _archetypeVersion?: number;
+  } & Record<string, unknown>;
 
   // Fire-and-forget. No await, no throw.
   void (async () => {
@@ -63,6 +74,7 @@ export function recordEvent(
         event_type: eventType,
         event_data: cleanData,
         model_version: _modelVersion ?? null,
+        archetype_version: _archetypeVersion ?? null,
       });
       if (error) {
         Sentry.captureMessage(`engagement_events insert failed: ${error.message}`, 'warning');

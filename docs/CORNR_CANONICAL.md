@@ -25,6 +25,18 @@
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
 
+### 14 April 2026 — S2-T4 reveal screen panel critique (8-persona panel including design systems, UX testing, security voices)
+
+Panel critique of `app/(onboarding)/result.tsx` after first implementation. Blockers identified and fixed in same commit: share card layout clipping on iPhone SE (9:16 aspect ratio dropped), nested Pressable on panel 4 (refactored out of advance-Pressable tree), gradient contrast (15% → 25%/35%), `.gitignore` supabase/.temp, fallback unit test (first test in the codebase, sets testing precedent).
+
+Strong fixes applied: panel 1 tap cooldown (1s), error-type field on fallback engagement event, typographic emphasis on behavioural truth within panel 2 (split prose from truth, 26pt delayed fade-in).
+
+Product decisions deferred to mock-first (BS2-T0): retake link on reveal screen (panel unanimous defer — existing Profile retake pattern exists, psychological argument against rejection-priming at commitment moment), panel structural restructure (defer to post-mock-first evidence).
+
+Two new Section 13 standing rules added: LLM prompt input sanitisation, archetype retake rate-limit enforcement (S2-T5 prerequisite).
+
+First Edge Function in codebase (S2-T4-INSIGHT, commit 99aeaaa) is now called from first real client code (result.tsx).
+
 ### 13 April 2026 — Period-property surfaces as visible reveal modifier (Option B from research)
 
 UK first-time buyer market analysis: ~100,000–120,000 FTBs per year buy pre-1945 housing stock (Victorian, Edwardian, Georgian, interwar/1930s), representing approximately 30–35% of the annual FTB cohort. Zero digital products serve this segment with styling guidance — total competitive vacuum across apps, quizzes, and tools. Cornr already collects `property_period` from EPC data at signup (canonical Section 7), so the data exists; the question was whether to surface it.
@@ -1191,6 +1203,25 @@ The seven archetype descriptions in `src/content/archetypes.ts` are v1 best-gues
 **What this rule does NOT authorise:** wholesale rewrites of multiple archetypes simultaneously (only one at a time, to keep the A/B clean), changes to the three-layer schema (locked separately in Section 1), or changes to the seven canonical archetype IDs (locked in Section 1).
 
 **Source:** 13 April 2026 S2-T4-COPY writing session, 8-persona panel convergence on the principle that v1 best-guess descriptions need a measurable improvement path.
+
+### LLM prompt input sanitisation (added 14 April 2026, post S2-T4 panel critique)
+
+Free-text user input must not flow into LLM prompts without explicit sanitisation and review. The S2-T4-INSIGHT Edge Function's blend prompt currently accepts only score vectors, archetype IDs (from a validated enum), and property_period (from a validated set of values) — zero free-text user input. This is the safe configuration and must be maintained.
+
+If a future feature captures free-text user input (e.g., open-ended responses, user-written descriptions, room notes), and that input is intended to flow into any LLM prompt, it requires:
+1. A dedicated sanitisation layer that strips prompt-injection attempts (role reassignment, instruction overrides, system message forgery)
+2. A size cap (max 200 chars per input field flowing into prompts)
+3. A panel critique before the feature ships, specifically to review the injection surface
+
+The reveal screen's blend prompt is the first such attack surface in Cornr. Protect the constraint.
+
+### Archetype retake rate-limit enforcement (added 14 April 2026, S2-T5 prerequisite)
+
+The archetype retake soft-cap (once per 30 days) must be enforced server-side via a database constraint or RLS policy — NOT via UI hiding alone. S2-T5 Profile retake implementation must include this enforcement from day one.
+
+Rationale: the archetype rewrite loop (Section 13 above) compares retake_rate across archetypes to decide which archetypes enter the rewrite queue. If retake_rate is inflated by users or automated clients spamming retakes through an insufficiently-protected entry point, the rewrite loop fires on false positives and archetypes get rewritten based on noise rather than real signal.
+
+Implementation: check `engagement_events` for rows where `user_id` matches, `event_type = 'archetype_retake_started'`, and `created_at > now() - interval '30 days'`. Reject the attempt server-side if the count exceeds 1. This check runs at the same layer where the retake action is performed — ideally an Edge Function rather than a client-side RPC, so the rate limit cannot be bypassed by crafting direct database calls.
 
 ---
 
