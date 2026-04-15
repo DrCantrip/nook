@@ -56,3 +56,6 @@ ios/Pods
 
 # Supabase CLI transient cache
 supabase/.temp/
+
+# Local machine launcher — not committed
+launch-claude.ps1
