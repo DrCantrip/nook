@@ -25,6 +25,37 @@
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
 
+### 15 April 2026 — Archetype visual identity system and reveal screen redesign
+
+Decision: parametric `archetypeTheme(id)` system in `src/theme/tokens.ts`. One function, seven palettes, identical component structure across all themed surfaces. Components never hardcode archetype-specific colours — they consume the returned `{ gradientStart, gradientMid, gradientEnd, accent, grainOpacity }` object.
+
+Seven CVD-reviewed palettes locked (gradientStart → gradientEnd character):
+- curator — amber-to-walnut: `#93662C` → `#6B4A2E`
+- nester — sand-to-sage: `#7E725A` → `#5A6F62`
+- maker — concrete-to-forge: `#766A5B` → `#3D3832`
+- minimalist — clay-to-stone: `#756E65` → `#8A7E70`
+- romantic — blush-to-burgundy: `#896D61` → `#7A5A5A`
+- storyteller — plum-to-oxblood: `#8A4A5A` → `#4A2838`
+- urbanist — graphite-to-ink: `#6B645C` → `#2D2A26`
+
+Graduated intensity model: reveal screen 100%, share card 100%, home tab ~40%, profile ~20%, everything else 0%. Non-themed screens keep the core semantic palette (ink/cream/accent).
+
+Typography drama on reveal: DM Sans Regular for context lines, Lora-SemiBold 48px for archetype name, NewsreaderItalic 28px for behavioural truth (largest text on screen). The truth is the product moment.
+
+Share card redesign: cornr wordmark at top, archetype name, style territory, behavioural truth as the headline (not the essence line), essence as secondary. No URL until App Store listing is live.
+
+Mercedes feedback (first real user, 15 April): identity hook landed ("ENTJ vibe"). Style territory lost ("MCM got a bit lost, mostly behavioural anecdote"). Known gap. Planned resolution: lookbook panel in Phase 3.
+
+Style territory gradient audit post-Mercedes: 5/7 miss the territory feel, 2/7 partial. Revised palettes researched but deferred — current palettes are provisional (provisional-until-proven rule applies). Full palette revision planned for Phase 2.
+
+Implementation: `expo-linear-gradient` (three colour stops at `[0, 0.45, 1]`), static SVG grain overlay (`src/components/atoms/GrainOverlay.tsx`, React.memo, `pointerEvents='none'`), existing fonts only. No `@shopify/react-native-skia` in v1 — it breaks the Expo Go QR workflow.
+
+CLAUDE.md design system section overhauled same session (commit `c8b8bd7`) to reflect the parametric theme approach, the graduated intensity model, and the reveal hero typography scale.
+
+Phases: P1 ~8h (colour/typography/share — this session). P2 ~6h (home and profile theming). P3 ~12h (lookbook content + palette revision).
+
+**Source:** 15 April 2026 implementation session, Mercedes user test, 15-persona visual review.
+
 ### 14 April 2026 — S2-T4 reveal screen panel critique (8-persona panel including design systems, UX testing, security voices)
 
 Panel critique of `app/(onboarding)/result.tsx` after first implementation. Blockers identified and fixed in same commit: share card layout clipping on iPhone SE (9:16 aspect ratio dropped), nested Pressable on panel 4 (refactored out of advance-Pressable tree), gradient contrast (15% → 25%/35%), `.gitignore` supabase/.temp, fallback unit test (first test in the codebase, sets testing precedent).
@@ -1204,6 +1235,14 @@ The seven archetype descriptions in `src/content/archetypes.ts` are v1 best-gues
 **What this rule does NOT authorise:** wholesale rewrites of multiple archetypes simultaneously (only one at a time, to keep the A/B clean), changes to the three-layer schema (locked separately in Section 1), or changes to the seven canonical archetype IDs (locked in Section 1).
 
 **Source:** 13 April 2026 S2-T4-COPY writing session, 8-persona panel convergence on the principle that v1 best-guess descriptions need a measurable improvement path.
+
+### Archetype colour must embody the style territory (R-14, added 15 April 2026)
+
+The Curator gradient should feel mid-century modern. The Nester gradient should feel coastal. If a gradient could belong to any archetype, it is wrong. Test: cover the archetype name and ask "which style is this?" The colour alone should suggest the answer. Applies to all archetype-themed surfaces — reveal, share card, home tint, profile badge. (Source: 15 April Mercedes user test + style territory gradient audit.)
+
+### Behavioural truth is the product (R-15, added 15 April 2026)
+
+Every design decision on the reveal screen must be tested against: does this make the behavioural truth MORE or LESS prominent? Visual craft that competes with the truth text for attention gets killed. The truth is what users screenshot, share, and remember 24 hours later. If a panel has a beautiful image that looks better than the truth, cut the image. If a gradient is striking enough to draw the eye away from the truth, desaturate it. (Source: 15 April reveal redesign session.)
 
 ### LLM prompt input sanitisation (added 14 April 2026, post S2-T4 panel critique)
 
