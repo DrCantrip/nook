@@ -18,7 +18,7 @@ Last RLS verification: 7 Apr 2026 (Prompt A, all 6 tables passed).
 ## Stack
 React Native + Expo SDK 54 (managed workflow). NEVER eject.
 expo-router v6 file-based navigation.
-NativeWind v4 + Tailwind CSS for styling.
+StyleSheet.create + src/theme/tokens.ts for styling. NativeWind permanently removed (6 Apr 2026).
 @tanstack/react-query for data fetching.
 Supabase (Pro, EU region) for auth, DB, Edge Functions.
 posthog-react-native for analytics (EU region Frankfurt).
@@ -28,13 +28,13 @@ phosphor-react-native for icons ONLY. NEVER @expo/vector-icons or Lucide.
 app/ — expo-router screens and layouts
 src/hooks/ — custom hooks (useAuth, useStyleProfile)
 src/content/strings.ts — ALL user-facing copy
-src/tokens/colors.ts — colour constants (reference only, use Tailwind classes)
+src/theme/tokens.ts — colour constants, spacing, shadows, archetypeTheme()
 src/lib/supabase.ts — Supabase client
 src/providers/ — context providers (QueryProvider, etc.)
 
 ## Critical rules
 NEVER use AsyncStorage for auth — use expo-secure-store (Keychain).
-NEVER hardcode any colour — use Tailwind tokens only.
+NEVER hardcode any colour — import from src/theme/tokens.ts only.
 NEVER hardcode any UI string — import from src/content/strings.ts.
 ALL API keys: Supabase Edge Function secrets ONLY. Never in .env or app code.
 JWT verified at top of EVERY Edge Function. Unauthenticated -> 401.
@@ -74,54 +74,132 @@ Tone by context:
 Supabase client returns PromiseLike, not Promise — wrap in Promise.resolve() when passing to Promise.all or other APIs expecting a real Promise.
 Never call useAuth() inside another hook — causes stale closures and infinite re-render loops. Keep useAuth() calls at the component level only.
 
-## Typography rules (v4)
-- Three fonts via expo-font: Lora (display/serif), DM Sans (body/sans), Newsreader (accent italic)
-- Lora bundled at SemiBold (600) and Bold (700) ONLY — never use Lora at Regular weight
-- Rule: Serif (Lora) for editorial/headings. Sans (DM Sans) for functional/body. Newsreader for italic accent quotes only.
-- Hierarchy comes from font family, not colour — both headings and body use ink (#1A1814)
+## Design System
 
-## Colour tokens (v4 warm palette)
-- ink #1A1814 — primary text, headings, wordmark (16.6:1 on cream, AAA)
-- cream #FAF7F3 — page background
-- white #FFFCF9 — card surface
-- accent #94653A — interactive text/borders/icons (4.7:1 on cream, AA-safe DEFAULT)
-- accent-surface #B28760 — filled button backgrounds ONLY (3.01:1 UI component on cream, never used for text)
-- warm-600 #6B6358 — secondary text (5.54:1 on cream)
-- warm-400 #948A7D — placeholders (3.18:1, large text only)
-- warm-200 #D4CBC0 — borders, disabled bg
-- warm-100 #EDE8E2 — skeleton/light card bg
-- Teal #F0FDFA bg + #134E4A text — AI rationale panels ONLY, never elsewhere
-- WCAG AA is a HARD RULE — every text colour passes 4.5:1 on its background, every UI boundary passes 3:1
+Read this section before generating any UI code. These rules override all defaults.
+
+### Philosophy
+Restraint over decoration. Every element earns its place. White space is confidence.
+Cornr should feel like a quality UK lifestyle editorial — Livingetc, Dezeen residential, a considered independent homeware brand. Not aspirational-to-the-point-of-unattainable. Warm, honest, unhurried.
+
+### Prohibited patterns — check before writing any component
+- Hex values in component files — ESLint will fail the build; import from tokens.ts
+- `boxShadow` or CSS shadow syntax — use shadow tokens from tokens.ts
+- Scale on press (`transform: [{ scale }]`) — use `activeOpacity: 0.85` only
+- Hover states, focus rings via CSS pseudo-selectors — this is React Native
+- Cool blues, purples, greys outside the warm palette below (exception: archetype theme gradients use territory-specific palettes from archetypeTheme())
+- Dark mode variants — not in scope for v1
+- Inline styles — use StyleSheet.create only
+- NativeWind, Tailwind, CSS-in-JS — permanently removed
+- @shopify/react-native-skia — not in v1; breaks Expo Go QR workflow
+
+### Styling pattern
+`StyleSheet.create` + `src/theme/tokens.ts`. No exceptions.
+Archetype-themed screens consume `archetypeTheme(id)` from tokens.ts — never hardcode archetype-specific colours in components.
+
+### Palette — semantic roles (non-themed screens)
+| Token          | Hex       | Use                                                         |
+|----------------|-----------|-------------------------------------------------------------|
+| ink            | #1A1814   | All text, headings, wordmark                                |
+| cream          | #FAF7F3   | List/home screen backgrounds                                |
+| white          | #FFFCF9   | Card surfaces, focus screens, inputs                        |
+| accent         | #94653A   | Interactive text, links, borders, icons, focus rings        |
+| accent-surface | #B28760   | PrimaryButton bg and filled interactive surfaces ONLY       |
+| warm-600       | #6B6358   | Secondary text, UI labels, form labels                      |
+| warm-400       | #948A7D   | Placeholders, inactive icons, inactive nav                  |
+| warm-200       | #D4CBC0   | Light borders, dividers, disabled button bg                 |
+| warm-100       | #EDE8E2   | Card backgrounds, skeleton loading                          |
+| teal-bg        | #F0FDFA   | AI rationale panel bg — ONLY when content source is AI      |
+| teal-text      | #134E4A   | AI rationale text — ONLY when content source is AI          |
+
+90/10 rule: ink + cream/white = 90% of every non-themed screen. Accent at 10% or less.
+
+WCAG AA is a hard rule: every text colour must pass 4.5:1 contrast on its background. Every UI boundary must pass 3:1. No exceptions.
+
+Teal means "AI generated this content." Never use teal for non-AI elements.
+
+### Archetype visual themes (themed screens: reveal, share card, profile badge)
+Defined in `src/theme/tokens.ts` via `archetypeTheme(id: ArchetypeId)`.
+Returns: gradientStart, gradientMid, gradientEnd, accent, grainOpacity.
+Full spec: see `cornr-brain/design/archetype-visual-identity.md` in the Obsidian vault.
+
+7 archetype IDs (canonical, locked): curator, nester, maker, minimalist, romantic, storyteller, urbanist.
+DEAD SET — never use: traditionalist, free_spirit, purist, dreamer, modernist.
+
+Graduated intensity model:
+- Reveal screen + share card: 100% archetype theming (full gradient, grain, archetype typography)
+- Home tab: ~40% (archetype-tinted header, coloured accents)
+- Profile: ~20% (archetype badge, colour ring)
+- All other screens: 0% — use the semantic palette above
+
+### Gradient rules
+LinearGradient is permitted ONLY on:
+1. Archetype reveal screen panels 1-4 (three-stop gradient from archetypeTheme)
+2. Share card background (same gradient)
+3. White-to-transparent fade at bottom of SwipeCard image
+4. Future archetype-themed surfaces per graduated intensity model
+
+Never use LinearGradient on non-themed screens. Never create gradients from hardcoded hex values — always consume archetypeTheme().
+
+### Typography — hierarchy from font family, not colour
+Both headings and body text use ink (#1A1814) on non-themed screens.
+On themed screens (reveal, share card), all text uses white (#FFFCF9).
+
+| Role              | Family       | Size | Weight     | Line-height | Tracking |
+|-------------------|-------------|------|------------|-------------|----------|
+| Display           | Lora        | 34px | 700        | 40px        | -0.5px   |
+| Screen title      | Lora        | 22px | 600        | 28px        | -0.3px   |
+| Card heading      | DM Sans     | 17px | 600        | 22px        | 0        |
+| Body              | DM Sans     | 16px | 400        | 24px        | 0        |
+| UI label          | DM Sans     | 14px | 500        | 20px        | 0        |
+| Badge/chip        | DM Sans     | 12px | 600        | 16px        | +0.4px   |
+| CTA label         | DM Sans     | 16px | 600        | —           | +0.2px   |
+| Editorial/essence | Newsreader  | 18px | 400 italic | 28px        | 0        |
+
+Reveal screen hero scale (overrides above on themed screens only):
+| Role              | Family          | Size | Weight     |
+|-------------------|----------------|------|------------|
+| Archetype name    | Lora           | 48px | 600 (SemiBold) |
+| Behavioural truth | NewsreaderItalic| 28px | 400 italic |
+| Style territory   | DM Sans        | 16px | 400        |
+| Period modifier   | NewsreaderItalic| 18px | 400 italic |
+
+Lora = editorial/heading signal. DM Sans = functional/body signal. Newsreader = essence lines,
+behavioural truths, and AI reveal copy only. The behavioural truth must be the LARGEST text on
+the reveal screen — it IS the product moment.
+
+### Radius — communicates element type, never uniform
+radius-badge: 6px · radius-button: 10px · radius-input: 12px · radius-card: 16px ·
+radius-modal: 20px top-only · radius-swipe: 20px
+
+### Shadows — tokens only
+shadow-card: opacity 0.06, radius 12, offset {0,1}, elevation 2
+shadow-swipe: opacity 0.12, radius 20, offset {0,8}, elevation 8
+Import from tokens.ts. Never write shadow values by hand in a component.
+
+### Spacing
+Screen horizontal margins: 20px. Screen top (below header): 24px. Screen bottom: 32px.
+Between major sections: 32px. Between related items: 20px. Card internal: 20px h, 16px v.
+Between cards in list: 12px gap.
+
+### Component behaviour
+- Pressable: `activeOpacity: 0.85` + `haptics.selectionAsync()` on every interactive element
+- Never use scale transform on press
+- Minimum touch target: 44x44pt on every Pressable
+- `accessibilityRole` and `accessibilityLabel` required on every interactive element (WCAG AA hard rule)
+
+### Grain overlay
+`src/components/atoms/GrainOverlay.tsx` — static SVG noise texture for archetype-themed screens.
+Props: `opacity` (from archetypeTheme().grainOpacity). Wrapped in React.memo, pointerEvents="none".
+Layer above gradient, below text. Only used on themed screens.
+
+### Icons
+`phosphor-react-native` only — never Lucide, Heroicons, or @expo/vector-icons.
+Weight: `light` default. `fill` for active nav, wishlisted heart, accreditation badges.
+Sizes: 20px in cards/lists · 24px for action buttons · 18px in badges. Never mix sizes in one component.
 
 ## Pre-commit hook (v4)
 A simple-git-hooks pre-commit hook runs npx tsc --noEmit before every commit. If TypeScript errors exist, the commit is blocked. This prevents the silent-TS-error class of bug from reaching main.
-
-## Border radius
-Cards:16px | Buttons:10px | Badges:6px | Inputs:12px | Modal:20px top only
-NEVER same radius on all elements.
-
-## Visual design rules
-All screens use cream (#FAF7F3) background unless white is needed for contrast.
-Cards are white with 16px radius and subtle shadow (shadow-sm).
-Primary buttons: bg-ink (#1A1814), text-white, rounded-button, py-3.
-Secondary buttons: border border-accent (#94653A), text-accent (#94653A), rounded-button, py-3.
-Teal panels (AI content only): bg-teal-bg, text-teal-text, rounded-card, p-4.
-44pt minimum touch targets on all interactive elements.
-Before building any screen, read the relevant component spec from the UX Design Review (project knowledge). The UX Design Review overrides simplified specs in sprint prompts.
-
-### MANDATORY: Read before building
-Before building or modifying ANY screen or component, read docs/DESIGN_SPECS.md.
-This file contains exact values for spacing, colours, typography, shadows, press states, and touch targets.
-Do not use default values. Do not guess. Every number in the spec was chosen deliberately.
-
-### The spec overrides everything
-If a sprint prompt says "add a button" without specifying height, the spec says 52px.
-If a sprint prompt says "primary colour" without a hex, the spec says ink (#1A1814).
-The UX Design Review (project knowledge) overrides simplified specs in sprint prompts.
-docs/DESIGN_SPECS.md is the local copy of those specs for Claude Code to reference.
-
-### Verify during /done
-The /done command includes a Design Spec Check step. It verifies spacing, colours, typography, touch targets, and press states against the spec. If anything doesn't match, fix it before committing.
 
 ## Navigation rules
 After adding or modifying any router.push() or router.replace() call, verify the target route file exists. Run: find app/ -name '*.tsx' to list all routes. If the target doesn't exist, stop and flag it — don't commit broken navigation.
@@ -137,7 +215,6 @@ Results sorted: rating DESC, review_count DESC.
 No messaging, no quotes, no booking. Call button (tel: link) only.
 
 ## DO NOT
-Use LinearGradient (except swipe card image fade)
 Import from @expo/vector-icons, Lucide, or Heroicons
 Hardcode any colour value
 Hardcode any copy string
@@ -149,7 +226,6 @@ Write "archetype" in any user-visible text
 Use activeOpacity other than 0.85
 Apply identical border-radius to all elements
 Run migration SQL on production without testing on staging first
-Use NativeWind className on full-screen ImageBackground layouts. Use StyleSheet.create + cssInterop={false} on every component. See docs/DESIGN_SPECS.md "NativeWind escape hatch rules".
 Put layout properties (flex, justifyContent, alignItems, minHeight, backgroundColor) inside Pressable style callbacks. Only opacity goes in the callback. Everything else in StyleSheet.create.
 
 ## Build rules (added 12 April 2026)
