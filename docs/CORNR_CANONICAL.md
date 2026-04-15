@@ -1024,6 +1024,7 @@ The critique becomes theatre when (a) all personas agree in Round 1, (b) synthes
 4. Ask "Does this match?" and WAIT for confirmation.
 5. NEVER regenerate Mission Control or produce prompts until status is confirmed.
 6. If status seems wrong, search past chats before assuming.
+7. Launch Claude Code with vault using `C:\Projects\Nook\launch-claude.ps1` — this loads both the repo and `C:\Users\Skcar\Documents\cornr-brain` as working directories.
 
 ### Document update rule
 
