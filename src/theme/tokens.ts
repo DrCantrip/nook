@@ -96,5 +96,42 @@ export const shadow = {
   },
 } as const;
 
+// ── Archetype reveal themes ──────────────────────────────────────────────
+// Each archetype has its own gradient + accent palette for the reveal screen.
+// gradientStart values were darkened from the original research spec where
+// needed so white text (#FFFCF9) passes WCAG AA (4.5:1) across the full
+// gradient. Contrast margins per archetype documented in commit history.
+
+export type ArchetypeThemeId =
+  | 'curator'
+  | 'nester'
+  | 'maker'
+  | 'minimalist'
+  | 'romantic'
+  | 'storyteller'
+  | 'urbanist';
+
+export type ArchetypeTheme = {
+  gradientStart: string;
+  gradientMid: string;
+  gradientEnd: string;
+  accent: string;
+  grainOpacity: number;
+};
+
+const ARCHETYPE_THEMES: Record<ArchetypeThemeId, ArchetypeTheme> = {
+  curator:     { gradientStart: '#93662C', gradientMid: '#A67B3D', gradientEnd: '#6B4A2E', accent: '#D4A24E', grainOpacity: 0.04 },
+  nester:      { gradientStart: '#7E725A', gradientMid: '#7D9A8B', gradientEnd: '#5A6F62', accent: '#89A896', grainOpacity: 0.05 },
+  maker:       { gradientStart: '#766A5B', gradientMid: '#6E6256', gradientEnd: '#3D3832', accent: '#B87F4A', grainOpacity: 0.07 },
+  minimalist:  { gradientStart: '#756E65', gradientMid: '#A69E90', gradientEnd: '#8A7E70', accent: '#A09080', grainOpacity: 0.02 },
+  romantic:    { gradientStart: '#896D61', gradientMid: '#B08888', gradientEnd: '#7A5A5A', accent: '#C4908A', grainOpacity: 0.05 },
+  storyteller: { gradientStart: '#8A4A5A', gradientMid: '#6A3A48', gradientEnd: '#4A2838', accent: '#A85A6A', grainOpacity: 0.10 },
+  urbanist:    { gradientStart: '#6B645C', gradientMid: '#4D4842', gradientEnd: '#2D2A26', accent: '#9A8E82', grainOpacity: 0.03 },
+};
+
+export function archetypeTheme(id: string): ArchetypeTheme {
+  return ARCHETYPE_THEMES[id as ArchetypeThemeId] ?? ARCHETYPE_THEMES.curator;
+}
+
 export const tokens = { colors, spacing, radius, typography, shadow } as const;
 export default tokens;
