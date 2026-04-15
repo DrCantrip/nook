@@ -119,6 +119,19 @@ export default function WelcomeScreen() {
               <Text style={styles.signInText}>Dev: Network Error Test</Text>
             </Pressable>
           )}
+
+          {/* Dev-only reveal screen preview — remove before TestFlight */}
+          {__DEV__ && (
+            <Pressable
+              onPress={() => router.push("/(auth)/dev-reveal")}
+              style={({ pressed }) => [
+                styles.signInPressable,
+                { opacity: pressed ? 0.85 : 1 },
+              ]}
+            >
+              <Text style={styles.signInText}>Dev: Reveal</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </ImageBackground>
