@@ -25,6 +25,18 @@
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
 
+### 15 April 2026 (late PM) — Colour system revision: terracotta shift + territory-authentic archetype colours
+
+Accent palette shifted from 2025 mocha-brown (hue ~29°) toward 2026 terracotta (hue ~16-21°), backed by Lick and Farrow & Ball 2025-2026 UK paint trend data. accent #94653A→#9E5F3C, accent-surface #B28760→#BE7458, accent-light #E8D4BC→#F0D8C0, accent-dark #9B7350→#965E40. All WCAG ratios maintained or improved. Error shifted redder (#AC5342→#A84B42) for 16.1° hue separation from warmer accent.
+
+Icon background established as dedicated token #C4785A (warm terracotta), separate from accent-surface. Icon concept: "cornr" serif wordmark nested inside organic corner mark on terracotta background.
+
+Four archetype colours revised for style territory authenticity: Curator #2E5A4B→#5C6B4A (teal→olive, MCM fix), Nester #4A7C8A→#5A8A94 (warmer coastal), Storyteller #7A6B4A→#8A6550 (khaki→warm sienna), Urbanist #5A5A6B→#5E5A68 (warmer slate). Maker, Minimalist, Romantic unchanged. Archetype versions bumped for changed archetypes.
+
+CVD policy added: archetype colour is never the sole differentiator. Name, motif, and typography always co-present.
+
+**Source:** 22-persona panel critique in claude.ai, Lick/Farrow & Ball 2025-2026 colour trend research, Headspace design principles deep dive. All in claude.ai conversation 15 April late evening.
+
 ### 15 April 2026 (PM) — Design system evolution: two-phase colour, archetype motifs, reveal resequencing
 
 90/10 rule replaced by two-phase colour system. Pre-archetype: 90/10 unchanged. Post-archetype: 80/15/5 (tinted neutral at 5%/8% + archetype identity elements at full colour + universal interactive unchanged). 7 pre-computed WCAG-verified tint values locked. AI teal deprecated for user-facing surfaces.
@@ -509,13 +521,13 @@ Three personas, all UK first-time buyers. Cornr serves all three from active hou
 
 | DB key | Display name | Style territory | Accent colour |
 |---|---|---|---|
-| curator | The Curator | Mid-Century Modern | #B8860B |
-| nester | The Nester | Coastal | #5B9EA6 |
-| maker | The Maker | Industrial | #8B7355 |
-| minimalist | The Minimalist | Japandi | #9CAF88 |
-| romantic | The Romantic | French Country | #C9A9A6 |
-| storyteller | The Storyteller | Eclectic Vintage | #A67B5B |
-| urbanist | The Urbanist | Urban Contemporary | #708090 |
+| curator | The Curator | Mid-Century Modern | #5C6B4A |
+| nester | The Nester | Coastal | #5A8A94 |
+| maker | The Maker | Industrial | #B87F4A |
+| minimalist | The Minimalist | Japandi | #A09080 |
+| romantic | The Romantic | French Country | #C4908A |
+| storyteller | The Storyteller | Eclectic Vintage | #8A6550 |
+| urbanist | The Urbanist | Urban Contemporary | #5E5A68 |
 
 **Display rule:** UI shows the personality label ("The Curator") everywhere. The style territory appears only on the archetype reveal screen as a subtitle. The share quote (Sprint 2 T4) also includes the territory.
 
@@ -659,7 +671,7 @@ One editorial card on the Home tab. Image-led, headline overlay, single CTA. Man
 - Image at top, gradient overlay (ink-toned, `rgba(26,24,20,0.55)` to transparent) covering bottom 40% of image
 - Headline overlays the gradient in Lora 22px/600 white, with 20px padding
 - Below image: optional `bodyText` in DM Sans 16px/400 ink, 16px padding
-- Below body: `ctaLabel` as `GhostLink` with accent (#94653A) highlight on the action verb
+- Below body: `ctaLabel` as `GhostLink` with accent (#9E5F3C) highlight on the action verb
 - Press: `activeOpacity 0.85` + `haptic-light`. Whole card pressable.
 - a11y: `accessibilityRole="link"`, label from headline + ctaLabel
 
@@ -1274,6 +1286,30 @@ The archetype retake soft-cap (once per 30 days) must be enforced server-side vi
 Rationale: the archetype rewrite loop (Section 13 above) compares retake_rate across archetypes to decide which archetypes enter the rewrite queue. If retake_rate is inflated by users or automated clients spamming retakes through an insufficiently-protected entry point, the rewrite loop fires on false positives and archetypes get rewritten based on noise rather than real signal.
 
 Implementation: check `engagement_events` for rows where `user_id` matches, `event_type = 'archetype_retake_started'`, and `created_at > now() - interval '30 days'`. Reject the attempt server-side if the count exceeds 1. This check runs at the same layer where the retake action is performed — ideally an Edge Function rather than a client-side RPC, so the rate limit cannot be bypassed by crafting direct database calls.
+
+---
+
+## Section 14 — Design System
+
+### 14.1 Two-Phase Colour System
+
+Pre-archetype screens: 90/10 rule (90% cream, 10% colour) unchanged.
+
+Post-archetype screens: 80/15/5 system:
+- 80% tinted neutral: archetype colour at 5% opacity on page background, 8% on section backgrounds
+- 15% archetype identity elements: motif, name, rationale badges at full archetype colour
+- 5% universal interactive: accent buttons and links, unchanged from pre-archetype
+
+Pre-computed tint hex values (WCAG verified):
+- Curator (#5C6B4A): page #F2F0EA, section #EDEBE5
+- Nester (#5A8A94): page #F2F1EE, section #EDEEEB
+- Maker (#B87F4A): page #F7F1EB, section #F5EDE5
+- Minimalist (#A09080): page #F6F2ED, section #F3EFEA
+- Romantic (#C4908A): page #F7F2EE, section #F6EFEB
+- Storyteller (#8A6550): page #F4EFEA, section #F1EBE5
+- Urbanist (#5E5A68): page #F2EFEC, section #EDEAE7
+
+CVD policy: archetype colour is never the sole differentiator. Name, motif, and typography hierarchy always co-present.
 
 ---
 

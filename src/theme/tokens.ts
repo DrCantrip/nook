@@ -14,17 +14,17 @@ export const colors = {
   cream: '#FAF7F3',          // Page background
   white: '#FFFCF9',          // Card surface
 
-  // Accent
-  accent: '#94653A',         // Interactive text/borders/icons (4.7:1 on cream, AA-safe DEFAULT)
-  accentSurface: '#B28760',  // Filled button bg ONLY — never used for text
-  accentLight: '#E8D4BC',    // Tint backgrounds
-  accentDark: '#9B7350',     // Pressed states
+  // Accent — terracotta shift 15 Apr late PM (Lick/F&B 2026 trend data)
+  accent: '#9E5F3C',         // Interactive text/borders/icons
+  accentSurface: '#BE7458',  // Filled button bg ONLY — never used for text
+  accentLight: '#F0D8C0',    // Tint backgrounds
+  accentDark: '#965E40',     // Pressed states
 
   // Semantic
   success: '#3A7E4F',
   warning: '#8E6B26',
   warningLight: '#FDF3E3',
-  error: '#AC5342',
+  error: '#A84B42',          // 16.1° hue separation from terracotta accent
   info: '#4A6E8E',
 
   // AI content (only place teal is allowed)
@@ -34,17 +34,6 @@ export const colors = {
   // Swipe overlays
   swipeOverlayLove: 'rgba(58, 126, 79, 0.35)',   // success at 35% — love overlay
   swipeOverlayPass: 'rgba(172, 83, 66, 0.35)',   // error at 35% — pass overlay
-
-  // Archetype accents
-  archetype: {
-    curator: '#8B6F5C',         // Warm Clay
-    traditionalist: '#7A6B5C',  // Warm Walnut
-    free_spirit: '#C47A4A',     // Burnt Sienna
-    purist: '#7A8B82',          // Sage Grey
-    maker: '#5C6B6B',           // Aged Steel
-    dreamer: '#B07A8B',         // Dusky Rose
-    modernist: '#4A6B7A',       // Storm Blue
-  },
 } as const;
 
 export const spacing = {
@@ -119,14 +108,15 @@ export type ArchetypeTheme = {
   grainOpacity: number;
 };
 
+// Gradient stops are manually tuned per archetype — do not auto-derive from accent.
 const ARCHETYPE_THEMES: Record<ArchetypeThemeId, ArchetypeTheme> = {
-  curator:     { gradientStart: '#93662C', gradientMid: '#A67B3D', gradientEnd: '#6B4A2E', accent: '#D4A24E', grainOpacity: 0.04 },
-  nester:      { gradientStart: '#7E725A', gradientMid: '#7D9A8B', gradientEnd: '#5A6F62', accent: '#89A896', grainOpacity: 0.05 },
+  curator:     { gradientStart: '#93662C', gradientMid: '#A67B3D', gradientEnd: '#6B4A2E', accent: '#5C6B4A', grainOpacity: 0.04 },
+  nester:      { gradientStart: '#7E725A', gradientMid: '#7D9A8B', gradientEnd: '#5A6F62', accent: '#5A8A94', grainOpacity: 0.05 },
   maker:       { gradientStart: '#766A5B', gradientMid: '#6E6256', gradientEnd: '#3D3832', accent: '#B87F4A', grainOpacity: 0.07 },
   minimalist:  { gradientStart: '#756E65', gradientMid: '#A69E90', gradientEnd: '#8A7E70', accent: '#A09080', grainOpacity: 0.02 },
   romantic:    { gradientStart: '#896D61', gradientMid: '#B08888', gradientEnd: '#7A5A5A', accent: '#C4908A', grainOpacity: 0.05 },
-  storyteller: { gradientStart: '#8A4A5A', gradientMid: '#6A3A48', gradientEnd: '#4A2838', accent: '#A85A6A', grainOpacity: 0.10 },
-  urbanist:    { gradientStart: '#6B645C', gradientMid: '#4D4842', gradientEnd: '#2D2A26', accent: '#9A8E82', grainOpacity: 0.03 },
+  storyteller: { gradientStart: '#8A4A5A', gradientMid: '#6A3A48', gradientEnd: '#4A2838', accent: '#8A6550', grainOpacity: 0.10 },
+  urbanist:    { gradientStart: '#6B645C', gradientMid: '#4D4842', gradientEnd: '#2D2A26', accent: '#5E5A68', grainOpacity: 0.03 },
 };
 
 export function archetypeTheme(id: string): ArchetypeTheme {

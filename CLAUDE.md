@@ -93,6 +93,8 @@ Cornr should feel like a quality UK lifestyle editorial — Livingetc, Dezeen re
 - NativeWind, Tailwind, CSS-in-JS — permanently removed
 - @shopify/react-native-skia — not in v1; breaks Expo Go QR workflow
 
+Icon background uses dedicated token #C4785A (warm terracotta). Separate from accent-surface — used only for the app icon asset, not in runtime UI.
+
 ### Styling pattern
 `StyleSheet.create` + `src/theme/tokens.ts`. No exceptions.
 Archetype-themed screens consume `archetypeTheme(id)` from tokens.ts — never hardcode archetype-specific colours in components.
@@ -103,8 +105,8 @@ Archetype-themed screens consume `archetypeTheme(id)` from tokens.ts — never h
 | ink            | #1A1814   | All text, headings, wordmark                                |
 | cream          | #FAF7F3   | List/home screen backgrounds                                |
 | white          | #FFFCF9   | Card surfaces, focus screens, inputs                        |
-| accent         | #94653A   | Interactive text, links, borders, icons, focus rings        |
-| accent-surface | #B28760   | PrimaryButton bg and filled interactive surfaces ONLY       |
+| accent         | #9E5F3C   | Interactive text, links, borders, icons, focus rings        |
+| accent-surface | #BE7458   | PrimaryButton bg and filled interactive surfaces ONLY       |
 | warm-600       | #6B6358   | Secondary text, UI labels, form labels                      |
 | warm-400       | #948A7D   | Placeholders, inactive icons, inactive nav                  |
 | warm-200       | #D4CBC0   | Light borders, dividers, disabled button bg                 |

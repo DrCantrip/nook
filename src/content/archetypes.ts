@@ -100,8 +100,9 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'curator',
     displayName: 'The Curator',
     styleTerritory: 'Mid-Century Modern',
-    accentColour: '#B8860B',
-    version: 1,
+    // Must match ARCHETYPE_THEMES[key].accent in tokens.ts
+    accentColour: '#5C6B4A',
+    version: 2,
     styleCard: {
       formalTerritory: 'Mid-Century Modern',
       eraAnchor: '1950s–1960s Scandinavian and American design',
@@ -153,8 +154,8 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'nester',
     displayName: 'The Nester',
     styleTerritory: 'Coastal',
-    accentColour: '#5B9EA6',
-    version: 1,
+    accentColour: '#5A8A94',
+    version: 2,
     styleCard: {
       formalTerritory: 'Coastal',
       eraAnchor: 'contemporary New England and UK seaside vernacular',
@@ -206,7 +207,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'maker',
     displayName: 'The Maker',
     styleTerritory: 'Industrial',
-    accentColour: '#8B7355',
+    accentColour: '#B87F4A',
     version: 1,
     styleCard: {
       formalTerritory: 'Industrial',
@@ -259,7 +260,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'minimalist',
     displayName: 'The Minimalist',
     styleTerritory: 'Japandi',
-    accentColour: '#9CAF88',
+    accentColour: '#A09080',
     version: 1,
     styleCard: {
       formalTerritory: 'Japandi',
@@ -312,7 +313,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'romantic',
     displayName: 'The Romantic',
     styleTerritory: 'French Country',
-    accentColour: '#C9A9A6',
+    accentColour: '#C4908A',
     version: 1,
     styleCard: {
       formalTerritory: 'French Country',
@@ -365,8 +366,8 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'storyteller',
     displayName: 'The Storyteller',
     styleTerritory: 'Eclectic Vintage',
-    accentColour: '#A67B5B',
-    version: 1,
+    accentColour: '#8A6550',
+    version: 2,
     styleCard: {
       formalTerritory: 'Eclectic Vintage',
       eraAnchor: 'cross-period vintage — nothing uniform, everything with provenance',
@@ -418,8 +419,8 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'urbanist',
     displayName: 'The Urbanist',
     styleTerritory: 'Urban Contemporary',
-    accentColour: '#708090',
-    version: 1,
+    accentColour: '#5E5A68',
+    version: 2,
     styleCard: {
       formalTerritory: 'Urban Contemporary',
       eraAnchor: 'late 20th to early 21st century architectural modernism',

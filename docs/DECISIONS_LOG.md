@@ -8,6 +8,12 @@
 
 ## Decisions
 
+### 15 April 2026 (late PM) — Colour system revision v2: terracotta shift
+
+Accent palette shifted from mocha-brown toward terracotta based on UK paint trend data (Lick 2026 edit, F&B Naperon/Scallop, Pantone Mocha Mousse moving out). Four accent tokens, error token, and icon-bg token updated. Four archetype colours revised for territory authenticity (curator, nester, storyteller, urbanist). Three unchanged (maker, minimalist, romantic). CVD policy: colour never sole differentiator. BDS v3 PDF to be removed from project knowledge (Daryll action, not code).
+
+---
+
 ## 12 April 2026 — Deep strategy session
 
 **Decisions locked this session:**
