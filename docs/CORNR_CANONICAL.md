@@ -2,9 +2,9 @@
 
 **Last updated:** 12 April 2026 (Deep strategy session: GTM v2 locked, unit economics recalibrated 4-5% commission, AI-native positioning as commercial moat, 24-persona teardown, 68-item MC contribution proposal P0-P3, three-tier data retention, Sprint 3 T1 split into T1a-T1d, 10 standing rules codified in Section 13)
 
+<!-- CONTRACT-VERSION: 1 -->
 <!-- CANONICAL-SHA: 23a4461 -->
 <!-- LAST-SYNCED-PK: 23a4461 -->
-<!-- LAST-SYNCED-AT: 2026-04-18T22:00:00Z -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
 
@@ -1316,6 +1316,16 @@ Source: 16 April 2026 22-voice adversarial panel (Nia, Priya).
 Minimum 10 new products and 10 retired products per month post-launch. Without refresh, users see the same three products within two to three sessions, which fires the dead-app kill risk. Refresh tracked via the `products.refresh_cohort` column. Applies from TestFlight onward.
 
 Source: 16 April 2026 22-voice adversarial panel (Marcus).
+
+### Session-start drift check (R-18)
+
+Before producing any canonical-dependent work in a session, run `bash scripts/drift/check.sh`.
+
+- Exit 0: proceed.
+- Exit 2: drift detected, resolve before continuing (re-upload canonical to Project Knowledge, bump stamp in a follow-up commit).
+- Exit 1: script error, investigate.
+
+The script compares declared SHAs only. It cannot verify PK contents. Also confirm manually: the most recent PK upload happened after the last CANONICAL-SHA bump. If unsure, re-upload.
 
 ---
 
