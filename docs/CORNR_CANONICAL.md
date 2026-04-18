@@ -1287,6 +1287,30 @@ Rationale: the archetype rewrite loop (Section 13 above) compares retake_rate ac
 
 Implementation: check `engagement_events` for rows where `user_id` matches, `event_type = 'archetype_retake_started'`, and `created_at > now() - interval '30 days'`. Reject the attempt server-side if the count exceeds 1. This check runs at the same layer where the retake action is performed — ideally an Edge Function rather than a client-side RPC, so the rate limit cannot be bypassed by crafting direct database calls.
 
+### Colour must embody territory (R-14)
+
+Archetype accent colours must be researched against UK retail evidence (John Lewis, Neptune, Farrow & Ball, Annie Sloan, Cox & Cox, House of Hackney) and reflect the style territory, not generic palette logic. Generic earth-tone gradients are a failure mode — Mercedes test, 15 April. CVD policy: colour is never the sole differentiator; name, motif, and typography are always co-present. Palette revisions require the CVD review gate before merge.
+
+Source: 15 April 2026 design session.
+
+### Behavioural truth is the product (R-15)
+
+Every archetype surface (reveal description, share card, recommendation rationale) must include a specific, embarrassingly-true behavioural observation — the "how did it know that?" moment. Abstract style labels without behavioural truth fail the voice gate. This rule governs archetype copy writing, rationale template construction, and share card headline selection.
+
+Source: 15 April 2026 design session (Mercedes feedback triggered the codification).
+
+### Prompt caching is economic discipline (R-16)
+
+Every Haiku call uses `cache_control: {type: "ephemeral"}` on the system prompt and the catalogue JSON block. Without caching, API costs triple and Sprint 3 unit economics go negative. Cache behaviour verified via the presence of `cache_read_input_tokens` in the response on warm calls. Non-negotiable for the recommend-products Edge Function.
+
+Source: 16 April 2026 22-voice adversarial panel (Nia, Priya).
+
+### Catalogue refresh cadence (R-17)
+
+Minimum 10 new products and 10 retired products per month post-launch. Without refresh, users see the same three products within two to three sessions, which fires the dead-app kill risk. Refresh tracked via the `products.refresh_cohort` column. Applies from TestFlight onward.
+
+Source: 16 April 2026 22-voice adversarial panel (Marcus).
+
 ---
 
 ## Section 14 — Design System
