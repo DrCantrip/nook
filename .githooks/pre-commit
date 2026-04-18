@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Pre-commit hook: enforce the canonical drift-detection contract (KI-01).
+#
+# docs/CORNR_CANONICAL.md carries a CANONICAL-SHA stamp that declares the
+# commit against which Project Knowledge is in sync. Any commit that
+# modifies the canonical must also bump that stamp. Otherwise the repo
+# and PK go out of sync silently and future drift checks fire on stale
+# baselines.
+#
+# Escape hatch: `git commit --no-verify` for genuine exceptions only.
+
+set -euo pipefail
+
+CANONICAL="docs/CORNR_CANONICAL.md"
+
+# Is the canonical in the staged diff?
+if ! git diff --cached --name-only | grep -qx "$CANONICAL"; then
+  exit 0
+fi
+
+# Canonical is staged. Did the stage add a CANONICAL-SHA line?
+# '^\+[^+]' matches added content lines while excluding the '+++' diff header.
+if git diff --cached -- "$CANONICAL" | grep -E '^\+[^+]' | grep -q 'CANONICAL-SHA:'; then
+  exit 0
+fi
+
+# Canonical staged, SHA not bumped. Block.
+cat >&2 <<'MSG'
+
+─── canonical drift-detection contract (KI-01) ─────────────────────────
+
+Detected:  docs/CORNR_CANONICAL.md is staged, but the CANONICAL-SHA line
+           is not in the staged diff.
+
+Why blocked:
+  The canonical carries a <!-- CANONICAL-SHA: ... --> stamp that
+  declares which commit Project Knowledge is in sync with. Every commit
+  that modifies the canonical must bump that stamp in the same commit,
+  or the repo and PK drift apart silently.
+
+How to fix:
+  Update the <!-- CANONICAL-SHA: ... --> line in docs/CORNR_CANONICAL.md
+  to the SHA this commit will produce, stage it, and re-commit. The
+  LAST-SYNCED-PK line stays on the old SHA until PK is re-uploaded.
+
+Escape hatch:
+  If this change genuinely should not bump the SHA, run:
+      git commit --no-verify
+  Use sparingly — --no-verify is for exceptions, not the default path.
+
+────────────────────────────────────────────────────────────────────────
+MSG
+exit 1
