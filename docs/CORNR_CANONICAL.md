@@ -2,6 +2,12 @@
 
 **Last updated:** 12 April 2026 (Deep strategy session: GTM v2 locked, unit economics recalibrated 4-5% commission, AI-native positioning as commercial moat, 24-persona teardown, 68-item MC contribution proposal P0-P3, three-tier data retention, Sprint 3 T1 split into T1a-T1d, 10 standing rules codified in Section 13)
 
+<!-- CANONICAL-SHA: 23a4461 -->
+<!-- LAST-SYNCED-PK: 23a4461 -->
+<!-- LAST-SYNCED-AT: 2026-04-18T22:00:00Z -->
+
+> Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
+
 > **Reading this in project knowledge?** Project knowledge snapshots drift between Claude Code patches and manual re-uploads. If this file in project knowledge shows a "Last updated" date older than `docs/CORNR_CANONICAL.md` in the repo, the repo version is truth. Fresh sessions should flag the drift via the Stale Pattern Gate and work from memory + handover + the repo version read via Claude Code until project knowledge is re-uploaded.
 
 **Purpose:** Single source of truth for all strategic decisions, architecture choices, sprint plans, and workflow rules that postdate the v4 PDFs in project knowledge. Read this first in any new session. If anything below contradicts the PDFs, this file wins.
