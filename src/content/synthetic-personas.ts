@@ -1,31 +1,70 @@
 /**
- * Synthetic persona fixtures for Cornr archetype scoring + Haiku recommendation
- * evaluation.
+ * Synthetic personas — SP-1 Part A (landed 18 April 2026)
  *
- * Purpose
- * ───────
- * Interface specification for Sprint 3 T1A's recommend-products Edge Function,
- * AND test data for deterministic surfaces (scorer, catalogue sanitiser, eval
- * harness in SP-1B). Fixtures are authored against current ArchetypeId union
- * (7 archetypes, locked 13 Apr) and the materials/qualities lexicons in
- * archetypes.ts.
+ * Fixture set for archetype scoring and Haiku recommendation eval. Per
+ * canonical Section 0 (18 Apr entry) and R-19: these fixtures are interface
+ * specification for Sprint 3 T1A, not just test data. Passing the synthetic
+ * eval (Part B, lands with S3-T1A) means the code works as specified. It
+ * does NOT mean the product works for real users — PL-MOCK-FIRST gate
+ * remains canonical and non-negotiable.
  *
- * Normalisation
- * ─────────────
- * score_vector values are PRE-normalisation — raw 0-1 per archetype. The
- * scorer's responsibility is to normalise (L1 in v1; preserves probability-
- * mass semantics). Tests assert normalisation yields sum ≈ 1.
+ * Authored against ArchetypeId (7 archetypes, locked 13 Apr) and the
+ * materials/qualities lexicons in src/content/archetypes.ts.
  *
- * Expected-output derivation (mirrored in tests)
- * ──────────────────────────────────────────────
- *   primary      = argmax(score_vector)
- *   secondary    = second-argmax if > 0.3 else null
- *   confidence   = 'high'   if (top1 - top2) > 0.20
- *                  'medium' if (top1 - top2) > 0.10
- *                  'low'    otherwise
+ * ─── Expected-output derivation (mirrored in tests) ───────────────────
  *
- * Extend carefully: fixtures are interface-spec, not test data. Adding a new
- * fixture without bumping `version` risks silent drift when S3-T1A lands.
+ *   primary    = argmax(score_vector)
+ *   secondary  = second-argmax if > 0.3 else null
+ *   confidence = 'high'   if (top1 - top2) > 0.20
+ *                'medium' if (top1 - top2) > 0.10
+ *                'low'    otherwise
+ *
+ * Extend carefully: fixtures are interface-spec, not test data. Adding a
+ * new fixture without bumping `version` risks silent drift when S3-T1A
+ * lands.
+ *
+ * ─── Deviations from original spec ────────────────────────────────────
+ *
+ * L1 normalisation, not L2:
+ *   The spec said "divide by L2 norm, sum to 1" which is mathematically
+ *   ill-formed — L2 normalisation produces unit vectors (magnitude 1),
+ *   not sum-1 vectors. L1 normalisation (divide by sum of absolute
+ *   values) produces sum-1 and is what the scorer downstream needs.
+ *   score_vector values are PRE-normalisation — raw 0-1 per archetype.
+ *   Tests assert L1.
+ *
+ * journey_stage simplification:
+ *   Canonical Section 2 defines 5 values (pre_purchase | new_0_3 |
+ *   settled_3_12 | established | renting). Fixtures use a 3-value
+ *   simplification (pre-purchase | new_mover | renovator) because the
+ *   Haiku rationale prompt treats time-since-completion splits as a
+ *   single mode. Mapping utility at src/lib/journey-stage-mapping.ts
+ *   handles the translation. When SP-1B wires the harness, mapping is
+ *   used; no fixture rewrite needed.
+ *
+ * Blend confidence gap:
+ *   Fixtures authored with top-2 gap ≈ 0.15 (not "within 0.1" as the
+ *   spec wording suggested), so the internal-consistency test passes
+ *   the 'medium' confidence assertion under the derivation rule above
+ *   (medium if gap > 0.1).
+ *
+ * ─── Coverage ─────────────────────────────────────────────────────────
+ *
+ * See evals/COVERAGE.md for the paragraph-per-fixture coverage map.
+ *
+ * 20 hand-authored primary fixtures:
+ *   7 archetype anchors           (high confidence)
+ *   3 high-risk blends            (medium confidence: curator/min,
+ *                                  nester/rom, maker/urb)
+ *   2 low-confidence flat         (no dim > 0.45)
+ *   2 aspirational-room           (primary archetype + room chip tension)
+ *   2 pure-aspirational           (pre-purchase, no rooms)
+ *   2 near-boundary               (ambiguous edges, gap ≈ 0.02)
+ *   2 budget-tension              (Mercedes-shaped realistic v1 users)
+ *
+ * Programmatic blend helper (generateBlendFixture) covers all archetype
+ * pairs without hand-authoring each — scorer-level internal consistency
+ * only, not Haiku behaviour assertions.
  *
  * Source: 18 April 2026 synthetic persona research + three LARGE panels.
  */
