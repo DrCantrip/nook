@@ -3,7 +3,7 @@
 **Last updated:** 12 April 2026 (Deep strategy session: GTM v2 locked, unit economics recalibrated 4-5% commission, AI-native positioning as commercial moat, 24-persona teardown, 68-item MC contribution proposal P0-P3, three-tier data retention, Sprint 3 T1 split into T1a-T1d, 10 standing rules codified in Section 13)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: e3548f5 -->
+<!-- CANONICAL-SHA: 0786742 -->
 <!-- LAST-SYNCED-PK: e3548f5 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
@@ -30,6 +30,26 @@
 ## Section 0 — Strategic Decisions Log
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
+
+### 18 April 2026 — Synthetic persona strategy locked; SP-1 split into Part A (now) and Part B (with S3-T1A)
+
+Deep research landed 18 April ("Synthetic Personas for Cornr: Data Model and Haiku Validation Strategy"). Three LARGE panel critiques followed (10 personas, then 12 personas extended with senior engineer/tester/data analyst/data scientist/Claude Code explorer/LLM expert/strategy/security/user researcher/Mercedes-proxy/interior designer/pre-purchase researcher, then 13 personas adding strategy/design/solution engineer/architect/data engineer/UX/data scientist/commercial/finance/TAM/devops/Claude Code expert).
+
+Claude Code's repo-state diagnostic caught that the `recommend-products` Edge Function is Sprint 3 T1A and unbuilt. Building a promptfoo harness against a non-existent prompt is waste. Scope split:
+
+**Part A (SP-1, landed):** `synthetic-personas.ts` (20 hand-authored primary fixtures including 2 budget-tension representing Mercedes-shaped real v1 users), `synthetic-personas.adversarial.ts` (8 fixtures one-per-failure-mode), `catalogue-sanitise.ts` (pure library + unit test exercising adversarial fixtures), `evals/COVERAGE.md` (paragraph per fixture explaining the edge it tests), `.claude/commands/eval-haiku.md` (stub), `.claude/commands/eval-haiku-status.md`.
+
+**Part B (SP-1B, parked):** promptfoo harness, Sonnet LLM-as-judge Barnum swap-test, sanitiser wire-up into the Edge Function.
+
+**Reframing:** fixtures are interface specification, not just test data. S3-T1A's Haiku prompt must satisfy the fixtures' `expected_haiku_behaviour` contracts. This makes SP-1 architectural infrastructure rather than QA infrastructure.
+
+**Commercial implication:** defensible archetype methodology underpins v2 brand partnership credibility. When a partner eventually pays for access to Curator-segmented audiences, the methodology behind archetype assignment must be defensible. Synthetic fixture coverage is the first evidence of that.
+
+**TAM future-state:** current 20 fixtures represent the 370K UK FTB core. 8M decorator ring and 15M+ style-curious ring not represented — when v2 brand partnerships expand audience scope, fixture coverage needs revisiting (~5-7 additional fixtures for decorator-not-buyer profiles).
+
+R-19 added to Section 13: synthetic personas supplement, never substitute, real-user validation.
+
+Supersedes any prior synthetic persona artefact (per R-9).
 
 ### 15 April 2026 (late PM) — Colour system revision: terracotta shift + territory-authentic archetype colours
 
@@ -1326,6 +1346,14 @@ Before producing any canonical-dependent work in a session, run `bash scripts/dr
 - Exit 1: script error, investigate.
 
 The script compares declared SHAs only. It cannot verify PK contents. Also confirm manually: the most recent PK upload happened after the last CANONICAL-SHA bump. If unsure, re-upload.
+
+### Synthetic personas supplement, never substitute, real-user validation (R-19)
+
+Synthetic persona fixtures (`src/content/synthetic-personas*.ts`) define the interface specification that Sprint 3 T1A must satisfy AND validate deterministic code surfaces (archetype scoring, catalogue sanitisation, specific failure modes). Passing the synthetic eval (Part B, lands with S3-T1A) means the code works as specified. It does NOT mean the product works for real users.
+
+The mock-first 6-naive-user gate (PL-MOCK-FIRST) remains canonical and non-negotiable. PL-MOCK-FIRST depends on SP-1 — synthetic eval is prerequisite, not substitute. Under deadline pressure, the temptation is to treat synthetic pass as sufficient. This rule exists to prevent that.
+
+Source: 18 April 2026 synthetic personas deep research + three LARGE panels (10, 12, 13 personas) + Claude Code repo-state diagnostic that caught missing `recommend-products` infrastructure.
 
 ---
 

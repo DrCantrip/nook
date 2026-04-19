@@ -1,6 +1,20 @@
 // Jest setup — shared mocks for Cornr test suite.
 // First test lands 14 April 2026 (S2-T4 reveal screen fallback path).
 
+// Expo SDK 54 winter runtime polyfill clashes with jest-expo in Node.
+// Stub the module so lazy-inits in installGlobal.ts (structuredClone,
+// __ExpoImportMetaRegistry) don't require files outside jest's scope
+// when pure-TS test files load.
+jest.mock("expo/src/winter/runtime.native", () => ({
+  __esModule: true,
+  default: {},
+}));
+(globalThis as unknown as { __ExpoImportMetaRegistry?: unknown }).__ExpoImportMetaRegistry = {};
+if (typeof (globalThis as any).structuredClone !== "function") {
+  (globalThis as any).structuredClone = (v: unknown) =>
+    JSON.parse(JSON.stringify(v));
+}
+
 jest.mock("./src/lib/supabase", () => ({
   supabase: {
     from: jest.fn(),

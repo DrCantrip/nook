@@ -8,15 +8,20 @@ import { render, waitFor } from "@testing-library/react-native";
 import ResultScreen from "../app/(onboarding)/result";
 import { supabase } from "../src/lib/supabase";
 
-// FIXME(test-env): jest-expo preset + Expo SDK 54 winter runtime clash when
-// ResultScreen is rendered — expo's import.meta.registry initialisation fires
-// during test setup and the component tree unmounts before findByText resolves.
-// Test scaffolding is correct (peer deps pinned, supabase/router/reanimated/sentry
-// mocked, archetype_history + users table mocks in place, Edge Function mocked
-// to reject). Fix requires either: (a) additional mock for expo winter runtime,
-// (b) custom jest environment that stubs the runtime before module load, or
-// (c) refactor ResultScreen to defer imports that pull in sentry. Deferred to
-// a dedicated testing-infrastructure task. Test stays in the file as a marker.
+// FIXME(test-env): The previous winter-runtime blocker is RESOLVED by the
+// jest.mock of expo/src/winter/runtime.native in jest.setup.ts (landed in
+// SP-1A). The test itself now passes the findByText assertion. However,
+// ResultScreen's async effect in result.tsx continues firing setState after
+// the test component unmounts, producing an unhandled-promise rejection on
+// node exit:
+//   [Error: Unable to find node on an unmounted component.
+//    Screen is no longer attached. Check your test for "findBy*" or
+//    "waitFor" calls that have not been awaited.]
+// Jest reports 1 passed / 1 total but the process exits 1 — CI would fail.
+// Fix requires either: (a) wrap the findByText + assertion in act() and
+// explicitly await, (b) add an unmount teardown that cancels the in-flight
+// effect, or (c) guard setState on a mounted ref in result.tsx itself.
+// None of those are in SP-1A scope. Staying skipped.
 describe.skip("ResultScreen fallback path", () => {
   beforeEach(() => {
     jest.clearAllMocks();
