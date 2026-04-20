@@ -105,7 +105,7 @@ export const errorCopy: Record<ErrorCopyKey, ErrorCopy> = {
   // Responsibility signal: "yet" implies temporary state, not permanent failure.
   recommendationEmpty: {
     title: 'Nothing quite fits yet',
-    body: "We couldn't find the right pieces for this room at this budget yet. Try widening your range, or come back later — we add new finds regularly.",
+    body: "We couldn't find the right pieces for this room at this budget yet. Try widening your range, or come back later. We add new finds regularly.",
     primaryAction: { label: 'Adjust budget', intent: 'home' },
     secondaryAction: { label: 'Take me home', intent: 'home' },
   },
@@ -114,7 +114,7 @@ export const errorCopy: Record<ErrorCopyKey, ErrorCopy> = {
   // Responsibility signal: "this one's on us" — explicit ownership of fault.
   quizSaveFailed: {
     title: "Couldn't save that one",
-    body: "Your swipes are still here — this one's on us. One more go should do it.",
+    body: "Your swipes are still here. This one's on us. One more go should do it.",
     primaryAction: { label: 'Try again', intent: 'retry' },
   },
 
@@ -140,7 +140,7 @@ export const errorCopy: Record<ErrorCopyKey, ErrorCopy> = {
   // Responsibility signal: "your wishlist is safe" reassures, "didn't land" is neutral.
   wishlistSyncFailed: {
     title: "Couldn't save that piece",
-    body: "Your wishlist is safe — this one just didn't land. Try the heart again.",
+    body: "Your wishlist is safe. This one just didn't land. Try the heart again.",
     primaryAction: { label: 'Got it', intent: 'dismiss' },
   },
 
@@ -149,7 +149,7 @@ export const errorCopy: Record<ErrorCopyKey, ErrorCopy> = {
   // "Out walking the dog" is a Geordie phrase — intentional voice moment.
   imageLoadFailed: {
     title: 'Out walking the dog',
-    body: "This one couldn't make it through — the rest of your recommendations are fine.",
+    body: "This one couldn't make it through. The rest of your recommendations are fine.",
     primaryAction: { label: 'Got it', intent: 'dismiss' },
   },
 };

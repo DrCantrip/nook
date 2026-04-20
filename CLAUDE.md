@@ -56,6 +56,27 @@ curated, bespoke, journey, unlock, stunning, AI-powered, discover (not as nav la
 Preferred phrases — reach for these where natural:
 "Chosen because..." (AI rationale prefix), "Your [archetype] style", "Every corner, considered.", "find your Cornr", "feels like you", "picked for you", "your space, your story"
 
+### R-26 — LLM fingerprint patterns (check before committing user-facing copy)
+
+Run manually before committing any src/content/ or errors.ts / legal.ts changes:
+
+  grep -rn " — " src/content/ supabase/functions/_shared/
+  grep -rnE "\b(the move|vibe|iconic|honestly)\b" src/content/
+
+Expected: empty. If hits, fix or justify case-by-case.
+
+Also check for negation-reframe with abstract pairs (judgment, not regex):
+  "X isn't Y — it's Z" or "X isn't Y. It's Z."
+  where X and Y are abstract nouns.
+
+BANNED: spaced em-dash " — " in user-facing strings. Replace with full stop, comma, colon, or rewrite. Unspaced em-dash for compound modifiers ("mid-century—influenced") is allowed but rare; usually a comma works.
+
+BANNED: negation-reframe pattern when both sides are abstract nouns. Banned in essence lines regardless. Allowed once per piece if concrete-payoff test passes (named thing, concrete detail).
+
+Register-adjacent phrases also banned: "a contrast move", "the honest-contrast move" (same family as "the move").
+
+Full-spec voice-check script deferred to its own task; the manual grep precedent above is authoritative until then.
+
 Error state rules (all four must hold):
 1. Explain what happened in plain language
 2. Say what to do next

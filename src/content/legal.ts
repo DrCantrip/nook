@@ -6,7 +6,7 @@ Cornr ("we", "us", "our") is committed to protecting your privacy. This policy e
 
 What we collect
 - Email address and password (to create your account)
-- Postcode district (to find local tradespeople — we never store your full address)
+- Postcode district (to find local tradespeople; we never store your full address)
 - Style preferences (your swipe choices during the style quiz)
 - Room information (room type, budget tier, and style preferences you provide)
 

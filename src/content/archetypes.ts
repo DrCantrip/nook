@@ -144,9 +144,9 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
       ],
     },
     description: {
-      essenceLine: "You're drawn to the long view — a few things held, framed, kept.",
+      essenceLine: "You're drawn to the long view: a few things held, framed, kept.",
       observationParagraph:
-        "Your home takes its time. You'd rather live with a wall you haven't hung yet than fill it fast. The things you own tend to have been made by someone, chosen once, kept on purpose. Empty space isn't missing — it's the room you're leaving for the right thing to arrive.",
+        "Your home takes its time. You'd rather live with a wall you haven't hung yet than fill it fast. The things you own tend to have been made by someone, chosen once, kept on purpose. You're comfortable with a room that isn't finished.",
       sensoryAnchor:
         'Low morning sun on an oiled wooden arm, worn smooth where hands have rested.',
       behaviouralTruth:
@@ -293,7 +293,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     description: {
       essenceLine: 'You want to see how a thing is held together.',
       observationParagraph:
-        "Your home shows its working. You can see how things are held together — the joints, the fixings, the grain of the wood. Nothing's hidden behind a gloss. You've got a project on the go most of the time, and the half-finished one in the corner isn't a problem — it's the next thing to do.",
+        "Your home shows its working. You can see how things are held together: the joints, the fixings, the grain of the wood. Nothing's hidden behind a gloss. You've got a project on the go most of the time, and the half-finished one in the corner is next weekend's work.",
       sensoryAnchor:
         'The heft of raw oak, the smell of beeswax, a drill finding its bite.',
       behaviouralTruth:
@@ -370,7 +370,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     description: {
       essenceLine: "You'd rather one good thing than four almost-right ones.",
       observationParagraph:
-        "Your home is quieter than most. The surfaces stay clear because clear is what you want, not because you haven't got round to it. You put things away the same day you get them. An empty wall isn't unfinished — it's doing its job. You'd wait a year for the right chair and not mind waiting.",
+        "Your home is quieter than most. The surfaces stay clear because clear is what you want, not because you haven't got round to it. You put things away the same day you get them. An empty wall is doing its job. You'd wait a year for the right chair and not mind waiting.",
       sensoryAnchor:
         'A bare wooden surface, late sun, the sound of a house with nothing humming.',
       behaviouralTruth:
@@ -447,11 +447,11 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     description: {
       essenceLine: 'Where most people stop adding, you keep going.',
       observationParagraph:
-        "Your home is layered. Where other people pick a colour, you pick a colour family — five pinks, three florals, a gingham to tie it together. A room isn't done when the furniture's in. It's done when the lampshade's scalloped, the cushion's pleated, and there's a fringe on something that didn't need one.",
+        "Your home is layered. Where other people pick a colour, you pick a colour family: five pinks, three florals, a gingham to tie it together. A room isn't done when the furniture's in. It's done when the lampshade's scalloped, the cushion's pleated, and there's a fringe on something that didn't need one.",
       sensoryAnchor:
         'Afternoon light through a softly patterned curtain, tea in a chipped cup.',
       behaviouralTruth:
-        "You'll defend the scalloped lampshade to anyone who finds your flat too much — and not apologise once.",
+        "You'll defend the scalloped lampshade to anyone who finds your flat too much. And you won't apologise once.",
       motifTooltip: 'Soft repetition, layered until it sings.',
       userLexicon: [
         'layered', 'sweet', 'pretty', 'a bit of pattern',
@@ -526,7 +526,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     description: {
       essenceLine: 'Every thing in your home comes with a story you know.',
       observationParagraph:
-        "Your home accumulates. A Turkish rug sits next to a Welsh blanket next to a photo of someone's great-aunt — no visual plan, just meaning. You bring things back from house clearances. You pair mismatched figurines because one was your nan's and the other needed a friend. A room is never done, because a life isn't either.",
+        "Your home accumulates. A Turkish rug sits next to a Welsh blanket next to a photo of someone's great-aunt. No visual plan, just meaning. You bring things back from house clearances. You pair mismatched figurines because one was your nan's and the other needed a friend. A room is never done, because a life isn't either.",
       sensoryAnchor:
         'The papery smell of old books, a kettle on a hob, afternoon rain at the window.',
       behaviouralTruth:
@@ -605,11 +605,11 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     description: {
       essenceLine: "You'd rather one decisive choice than a room of quieter ones.",
       observationParagraph:
-        "Your home is now. The colour on the ceiling is the colour you saw last week and wanted. The sofa you're sitting on won't be there in three years. You read what came out this morning. Every room has one thing that makes the rest look obvious — and that thing is the point.",
+        "Your home is now. The colour on the ceiling is the colour you saw last week and wanted. The sofa you're sitting on won't be there in three years. You read what came out this morning. In every room, one thing makes the rest look obvious. That's the point.",
       sensoryAnchor:
         'Low light on a lacquered surface, a record playing, a cold glass in hand.',
       behaviouralTruth:
-        "You'll defend the chartreuse ceiling with the phrase — it's just paint — and mean exactly the opposite.",
+        "You'll defend the chartreuse ceiling with the phrase 'it's just paint' and mean exactly the opposite.",
       motifTooltip: 'Where the grid meets a sharper line.',
       userLexicon: [
         'now', 'current', "this year's", 'I saw it and',

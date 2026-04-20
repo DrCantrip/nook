@@ -3,6 +3,9 @@
  *
  * Produced: 13 April 2026, S2-T4-PERIOD task.
  * Source: 13 April period-property research, compatibility matrix Section 2.
+ * R-26 pass: 20 April 2026 late evening. Em-dashes stripped, register-adjacent
+ * phrases from the banned "move" idiom family replaced with plain alternatives.
+ * See CLAUDE.md R-26 section for the full banned list.
  *
  * Used by S2-T4 reveal screen, displayed below the archetype description as
  * a single sentence acknowledging the user's property era. property_period
@@ -18,7 +21,8 @@
  * users), the reveal screen omits this slot entirely — designed for graceful
  * absence.
  *
- * Voice gate: same banned-words list as Layer 2 descriptions.
+ * Voice gate: same banned-words list as Layer 2 descriptions. R-26 applies:
+ * no spaced em-dashes, no abstract negation-reframes, no banned register.
  * Each sentence ~15-25 words.
  */
 
@@ -37,15 +41,15 @@ export const PERIOD_MODIFIERS: Record<ArchetypeId, Record<PropertyPeriod, string
   // ─────────────────────────────────────────────────────────
   curator: {
     georgian:
-      "Your Georgian home's high ceilings and proportioned rooms welcome considered Mid-Century pieces — restraint meeting restraint, two centuries apart.",
+      "Your Georgian home's high ceilings and proportioned rooms welcome considered Mid-Century pieces: restraint meeting restraint, two centuries apart.",
     victorian:
-      "Your Victorian home is one of the most sought-after backdrops for Mid-Century — clean teak silhouettes against ornate plasterwork is the move.",
+      "Your Victorian home is one of the most sought-after backdrops for Mid-Century: clean teak silhouettes against ornate plasterwork works here.",
     edwardian:
-      "Your Edwardian home's bay windows and picture rails were made for Mid-Century furniture — natural light, warm wood, breathing room between pieces.",
+      "Your Edwardian home's bay windows and picture rails were made for Mid-Century furniture: natural light, warm wood, breathing room between pieces.",
     interwar:
-      "Your 1930s home is a near-perfect match for Mid-Century — these rooms were built for the proportions, the parquet, the warm-grain woods you're drawn to.",
+      "Your 1930s home is a near-perfect match for Mid-Century. These rooms were built for the proportions, the parquet, the warm-grain woods you're drawn to.",
     modern:
-      "Mid-Century furniture was designed for rooms exactly like yours — compact, light, and built for living rather than performing.",
+      "Mid-Century furniture was designed for rooms exactly like yours: compact, light, and built for living rather than performing.",
   },
 
   // ─────────────────────────────────────────────────────────
@@ -53,15 +57,15 @@ export const PERIOD_MODIFIERS: Record<ArchetypeId, Record<PropertyPeriod, string
   // ─────────────────────────────────────────────────────────
   nester: {
     georgian:
-      "Your Georgian home's tall sash windows and pale proportions love the Coastal palette — soft, light-filled, never trying too hard.",
+      "Your Georgian home's tall sash windows and pale proportions love the Coastal palette: soft, light-filled, never trying too hard.",
     victorian:
-      "Your Victorian home can carry the Coastal style with a few adjustments — pale rugs over darker boards, soft layers against the deeper wood.",
+      "Your Victorian home can carry the Coastal style with a few adjustments: pale rugs over darker boards, soft layers against the deeper wood.",
     edwardian:
-      "Your Edwardian home's lighter palette and bay windows take to Coastal naturally — woven texture, pale wood, the unfussed look you're after.",
+      "Your Edwardian home's lighter palette and bay windows take to Coastal naturally: woven texture, pale wood, the unfussed look you're after.",
     interwar:
-      "Your 1930s home's open layouts and bay windows were made for Coastal — pale and soft, never stiff, lived-in by design.",
+      "Your 1930s home's open layouts and bay windows were made for Coastal: pale and soft, never stiff, lived-in by design.",
     modern:
-      "Your home's clean lines work for Coastal as long as you lean into texture — woven, knitted, layered cotton — to keep it from feeling spare.",
+      "Your home's clean lines work for Coastal as long as you lean into texture: woven, knitted, layered cotton keeps it from feeling spare.",
   },
 
   // ─────────────────────────────────────────────────────────
@@ -69,15 +73,15 @@ export const PERIOD_MODIFIERS: Record<ArchetypeId, Record<PropertyPeriod, string
   // ─────────────────────────────────────────────────────────
   maker: {
     georgian:
-      "Industrial style in a Georgian home is a contrast move — channel the workshop aesthetic through hardware and finishes rather than large-scale furniture.",
+      "Industrial style in a Georgian home works as contrast: channel the workshop aesthetic through hardware and finishes rather than large-scale furniture.",
     victorian:
-      "Your Victorian home is the natural backdrop for Industrial — exposed brick, dark boards, high ceilings that can carry weight without feeling crowded.",
+      "Your Victorian home is the natural backdrop for Industrial: exposed brick, dark boards, high ceilings that can carry weight without feeling crowded.",
     edwardian:
-      "Your Edwardian home's solid bones can take Industrial pieces — leather, metal, reclaimed timber against the original woodwork.",
+      "Your Edwardian home's solid bones can take Industrial pieces: leather, metal, reclaimed timber against the original woodwork.",
     interwar:
-      "Industrial style loves volume — in your 1930s home, channel it through dark hardware, leather, and visible craft rather than large workshop furniture.",
+      "Industrial style loves volume. In your 1930s home, channel it through dark hardware, leather, and visible craft rather than large workshop furniture.",
     modern:
-      "Industrial in a modern home is about materials more than scale — raw concrete, blackened metal, leather worn the right way over time.",
+      "Industrial in a modern home is about materials more than scale: raw concrete, blackened metal, leather worn the right way over time.",
   },
 
   // ─────────────────────────────────────────────────────────
@@ -85,15 +89,15 @@ export const PERIOD_MODIFIERS: Record<ArchetypeId, Record<PropertyPeriod, string
   // ─────────────────────────────────────────────────────────
   minimalist: {
     georgian:
-      "Your Georgian home's symmetry and tall ceilings give Japandi the breathing room it needs — restraint becomes the architecture, not the furniture.",
+      "Your Georgian home's symmetry and tall ceilings give Japandi the breathing room it needs: restraint becomes the architecture, not the furniture.",
     victorian:
-      "Your Victorian home can carry Japandi if you let the original features speak — strip back the rest, let the cornicing become the decoration.",
+      "Your Victorian home can carry Japandi if you let the original features speak: strip back the rest, let the cornicing become the decoration.",
     edwardian:
-      "Your Edwardian home's bay windows and pale plaster are the natural backdrop for Japandi — soft light, original woodwork, almost nothing else.",
+      "Your Edwardian home's bay windows and pale plaster are the natural backdrop for Japandi: soft light, original woodwork, almost nothing else.",
     interwar:
-      "Your 1930s home's clean modernist lines were already heading toward Japandi — pale wood, low horizon, the discipline of less.",
+      "Your 1930s home's clean modernist lines were already heading toward Japandi: pale wood, low horizon, the discipline of less.",
     modern:
-      "Your home is the most natural backdrop for Japandi — clean walls, simple proportions, surfaces that hold stillness without working at it.",
+      "Your home is the most natural backdrop for Japandi: clean walls, simple proportions, surfaces that hold stillness without working at it.",
   },
 
   // ─────────────────────────────────────────────────────────
@@ -101,15 +105,15 @@ export const PERIOD_MODIFIERS: Record<ArchetypeId, Record<PropertyPeriod, string
   // ─────────────────────────────────────────────────────────
   romantic: {
     georgian:
-      "Your Georgian home is one of the most natural backdrops for French Country — proportions, plasterwork, and patina meeting their own century.",
+      "Your Georgian home is one of the most natural backdrops for French Country: proportions, plasterwork, and patina meeting their own century.",
     victorian:
-      "Your Victorian home wears Romantic style well — layered textiles, faded wallpaper, candlelight against the original cornicing.",
+      "Your Victorian home wears Romantic style well: layered textiles, faded wallpaper, candlelight against the original cornicing.",
     edwardian:
-      "Your Edwardian home can carry Romantic style with a slightly lighter touch — softened florals, aged brass, the patina that doesn't perform.",
+      "Your Edwardian home can carry Romantic style with a slightly lighter touch: softened florals, aged brass, the patina that doesn't perform.",
     interwar:
-      "French Country flourishes in homes with grandeur — in your 1930s home, lean into the lighter side: softened linen, aged brass, patina without weight.",
+      "French Country flourishes in homes with grandeur. In your 1930s home, lean into the lighter side: softened linen, aged brass, patina without weight.",
     modern:
-      "French Country grew up in older homes — in yours, lean into the lighter, simpler version: linen, soft florals, candlelight, never ornate.",
+      "French Country grew up in older homes. In yours, lean into the lighter, simpler version: linen, soft florals, candlelight, never ornate.",
   },
 
   // ─────────────────────────────────────────────────────────
@@ -117,15 +121,15 @@ export const PERIOD_MODIFIERS: Record<ArchetypeId, Record<PropertyPeriod, string
   // ─────────────────────────────────────────────────────────
   storyteller: {
     georgian:
-      "Your Georgian home gives Eclectic Vintage strong bones to play against — picture rails, fireplaces, proportions that hold a mismatch by design.",
+      "Your Georgian home gives Eclectic Vintage strong bones to play against: picture rails, fireplaces, proportions that hold a mismatch by design.",
     victorian:
-      "Your Victorian home is the natural backdrop for Eclectic Vintage — gallery walls on picture rails, layered rugs, the room as a collected story.",
+      "Your Victorian home is the natural backdrop for Eclectic Vintage: gallery walls on picture rails, layered rugs, the room as a collected story.",
     edwardian:
-      "Your Edwardian home's original features give Eclectic Vintage somewhere to land — bay windows for displays, picture rails for art, fireplaces as anchors.",
+      "Your Edwardian home's original features give Eclectic Vintage somewhere to land: bay windows for displays, picture rails for art, fireplaces as anchors.",
     interwar:
-      "Your 1930s home can take Eclectic Vintage with a few anchors — a strong fireplace, a feature wall, picture rails added if the room needs them.",
+      "Your 1930s home can take Eclectic Vintage with a few anchors: a strong fireplace, a feature wall, picture rails added if the room needs them.",
     modern:
-      "Eclectic Vintage in a modern home needs you to bring the architecture — feature walls, salvaged details, deliberate anchor pieces to hang the story on.",
+      "Eclectic Vintage in a modern home needs you to bring the architecture: feature walls, salvaged details, deliberate anchor pieces to hang the story on.",
   },
 
   // ─────────────────────────────────────────────────────────
@@ -133,14 +137,14 @@ export const PERIOD_MODIFIERS: Record<ArchetypeId, Record<PropertyPeriod, string
   // ─────────────────────────────────────────────────────────
   urbanist: {
     georgian:
-      "Urban Contemporary in a Georgian home is the honest-contrast move — clean architectural pieces against the period proportions, no apology needed.",
+      "Urban Contemporary in a Georgian home works as honest contrast: clean architectural pieces against the period proportions, no apology needed.",
     victorian:
-      "Urban Contemporary in a Victorian home is a confident contrast — keep the period features, let the modern furniture hold its own line against them.",
+      "Urban Contemporary in a Victorian home is a confident contrast. Keep the period features, let the modern furniture hold its own line against them.",
     edwardian:
-      "Your Edwardian home can carry Urban Contemporary as deliberate contrast — period architecture, contemporary composition, neither competing with the other.",
+      "Your Edwardian home can carry Urban Contemporary as deliberate contrast: period architecture, contemporary composition, neither competing with the other.",
     interwar:
-      "Your 1930s home's modernist roots take Urban Contemporary naturally — clean lines on clean lines, the architecture quietly agreeing with the furniture.",
+      "Your 1930s home's modernist roots take Urban Contemporary naturally: clean lines on clean lines, the architecture quietly agreeing with the furniture.",
     modern:
-      "Your home is the most natural backdrop for Urban Contemporary — composed silhouettes, clean edges, the architecture and the furniture speaking the same language.",
+      "Your home is the most natural backdrop for Urban Contemporary: composed silhouettes, clean edges, the architecture and the furniture speaking the same language.",
   },
 };
