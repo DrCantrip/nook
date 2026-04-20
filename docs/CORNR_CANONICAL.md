@@ -3,8 +3,8 @@
 **Last updated:** 12 April 2026 (Deep strategy session: GTM v2 locked, unit economics recalibrated 4-5% commission, AI-native positioning as commercial moat, 24-persona teardown, 68-item MC contribution proposal P0-P3, three-tier data retention, Sprint 3 T1 split into T1a-T1d, 10 standing rules codified in Section 13)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: 97f5524 -->
-<!-- LAST-SYNCED-PK: 7d332e0 -->
+<!-- CANONICAL-SHA: c4a3ffb -->
+<!-- LAST-SYNCED-PK: c4a3ffb -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
 
