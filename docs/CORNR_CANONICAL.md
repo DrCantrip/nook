@@ -1,10 +1,10 @@
 # Cornr Canonical Context
 
-**Last updated:** 12 April 2026 (Deep strategy session: GTM v2 locked, unit economics recalibrated 4-5% commission, AI-native positioning as commercial moat, 24-persona teardown, 68-item MC contribution proposal P0-P3, three-tier data retention, Sprint 3 T1 split into T1a-T1d, 10 standing rules codified in Section 13)
+**Last updated:** 20 April 2026 (evening — archetype v3 content shipped on main as 6d3e127, R-24 two-layer lexicon semantics added to Section 13, 20 April morning entry kept for brief-lock history)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: c4a3ffb -->
-<!-- LAST-SYNCED-PK: c4a3ffb -->
+<!-- CANONICAL-SHA: 54bdac5 -->
+<!-- LAST-SYNCED-PK: 54bdac5 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
 
