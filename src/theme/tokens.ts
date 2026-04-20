@@ -66,6 +66,9 @@ export const typography = {
   badge: { fontFamily: 'DMSans-SemiBold', fontSize: 12, letterSpacing: 0.4, lineHeight: 16 },
   cta: { fontFamily: 'DMSans-SemiBold', fontSize: 16, letterSpacing: 0.2, lineHeight: 20 },
   quote: { fontFamily: 'NewsreaderItalic', fontSize: 16, lineHeight: 24 },
+  essence: { fontFamily: 'NewsreaderItalic', fontSize: 22, lineHeight: 29 },
+  behaviouralTruth: { fontFamily: 'Lora-SemiBold', fontSize: 22, lineHeight: 28 },
+  observation: { fontFamily: 'DMSans-Regular', fontSize: 16, lineHeight: 24 },
 } as const;
 
 export const shadow = {
