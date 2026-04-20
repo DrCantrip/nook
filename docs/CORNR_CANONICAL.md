@@ -1,9 +1,9 @@
 # Cornr Canonical Context
 
-**Last updated:** 20 April 2026 (evening — archetype v3 content shipped on main as 6d3e127, R-24 two-layer lexicon semantics added to Section 13, 20 April morning entry kept for brief-lock history)
+**Last updated:** 20 April 2026 (late evening — fallback reveal copy shipped on main as 4907e4d, dual-file mirror to supabase/functions/_shared/; archetype v3 ship and R-24 retained from prior evening entry)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: 54bdac5 -->
+<!-- CANONICAL-SHA: dd57853 -->
 <!-- LAST-SYNCED-PK: 54bdac5 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
