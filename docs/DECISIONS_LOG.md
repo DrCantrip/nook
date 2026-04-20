@@ -8,6 +8,16 @@
 
 ## Decisions
 
+### 20 April 2026 (evening) — Archetype v3 content shipped to main
+
+Seven archetype descriptions in four-component structure (essence, observation, sensoryAnchor, behaviouralTruth) plus motifTooltip and userLexicon shipped to src/content/archetypes.ts and its Deno mirror supabase/functions/_shared/archetypes.ts. Merged to main as 6d3e127 after fresh-head review and 10-voice panel (convergence: 10/10 ship as-is). Voice gate clean; tsc clean; mirror parity byte-identical on all new content.
+
+Content is marked provisional pending mock-first user-test validation. Per-archetype version integers bumped; adjacency, apologise/defend splits, and quality/user lexicon coverage tracked in the content itself rather than here.
+
+Follow-ups captured in the accompanying Section 0 entry: (1) mirror accentColour drift on 7/7 archetypes in Edge Function file, anchored to 6d3e127 for later sync commit, (2) MF-IDENTITY test-script additions (essence read-on pull, Minimalist/Urbanist adjacent-read comparison, userLexicon mirror-read sensitivity), (3) R-24 composition spec deferred to S3-T1A precondition.
+
+---
+
 ## 2026-04-20 — Archetype writing brief + design integration + palette candidate
 
 ### Decisions locked

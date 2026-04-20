@@ -31,6 +31,18 @@
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
 
+### 20 April 2026 (evening) — Archetype v3 content shipped; lexicon architecture formalised as R-24
+
+Seven archetype descriptions v3 landed on main as 6d3e127. Four-component structure per the morning's writing brief (essence, observation, sensoryAnchor, behaviouralTruth), plus motifTooltip and userLexicon. Type definition on Description gained motifTooltip: string and userLexicon: string[] as additive-only changes (no renames, preserves every other field). Per-archetype version integers bumped. Merged fast-forward after fresh-head review and 10-voice ship-or-revise panel (convergence 10/10 ship).
+
+Content is provisional-awaiting-mock-first. Panels exhaustive to date (20 voices twice, 11 voices twice, 5 voices once across 20 April writing session, plus 10 voices this evening on ship-or-revise) but empirical validation with real first-time buyers has not run. The MF-IDENTITY script for mock-first gains three questions derived from the ship panel: (1) does the essence line make you want to read more of the description, (2) a compare-read between Minimalist ("one good thing vs four almost-right ones") and Urbanist ("one decisive choice vs a room of quieter ones") essences to test whether the "You'd rather X than Y" grammar echo reads as twinning or as differentiation, (3) whether any userLexicon phrase reads as "the app is quoting me back to myself" rather than "the app gets me."
+
+Lexicon architecture formalised as R-24 in Section 13. qualityLexicon and userLexicon are user-face (inform Haiku's register and voice-matching in recommendation rationale); materialLexicon is engine-face (informs retrieval filtering against product catalogue tags). The distinction matters because S3-T1A's Haiku prompt consumes all three in different roles, and conflating them produces drift at prompt-composition time.
+
+Follow-up: pre-existing accentColour drift on 7/7 archetypes in supabase/functions/_shared/archetypes.ts is confirmed not functionally consumed by the Edge Function today, but breaks the standing dual-file invariant. Trivial sync commit pending; anchored to 6d3e127 so it can be picked up without archaeology. KI-05 candidate (pre-commit hook validating Description and StyleCard region parity between main file and mirror) captured in MC for drift-loop closure.
+
+Source: 20 April 2026 evening — 10-voice ship-or-revise panel on merge decision, canonical patch approach, and R-24 framing. Convergence 10/10 ship with five non-blocking follow-ups (four landed in this entry, one landed in the merge prompt as git status --short pre-step).
+
 ### 20 April 2026 — Archetype writing brief locked; reveal is a two-experience screen; palette revision candidate pending mock-first
 
 Three multi-persona critiques on 20 April (20 voices, 10 voices, 8 voices) on behavioural research for archetype descriptions generated 38 conditions governing the writing session. Conditions consolidated in docs/strategy/archetype-writing-brief.md.
@@ -1388,6 +1400,20 @@ Source: 20 April 2026 quiz-edge-case critique.
 Each archetype's essence line must evoke its visual motif compositionally. Motif reads as illustration of the essence; essence reads as translation of the motif. Integration at the compositional level, not layout level only.
 
 Source: 20 April 2026 design-integration critique.
+
+### Two-layer lexicon semantics for archetype content (R-24)
+
+Archetype Description objects carry two lexicon fields that serve the user-face LLM layer, and one that serves the engine-face layer. They are not interchangeable.
+
+qualityLexicon and userLexicon are user-face. qualityLexicon supplies the vocabulary Haiku draws from when composing recommendation rationale text; userLexicon supplies the phrases users recognise as their own when reading archetype copy. Both inform voice and register in user-visible output.
+
+materialLexicon is engine-face. It supplies tagged-material terms that filter against product catalogue attributes during retrieval. It never surfaces as user-visible copy.
+
+S3-T1A's Haiku prompt composition must treat these layers distinctly: user-face layers populate the system prompt register guide; engine-face layers populate retrieval filters. Conflating them produces drift between the voice a user experiences on the reveal screen and the voice Haiku produces on the recommendation screen.
+
+Full composition spec deferred to S3-T1A precondition. This rule fixes the semantics so the composition spec can be written against a stable abstraction.
+
+Source: 20 April 2026 evening — 10-voice ship-or-revise panel.
 
 ---
 
