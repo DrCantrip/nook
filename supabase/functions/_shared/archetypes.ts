@@ -102,7 +102,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'curator',
     displayName: 'The Curator',
     styleTerritory: 'Mid-Century Modern',
-    accentColour: '#B8860B',
+    accentColour: '#5C6B4A',
     version: 3,
     styleCard: {
       formalTerritory: 'Mid-Century Modern',
@@ -174,7 +174,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'nester',
     displayName: 'The Nester',
     styleTerritory: 'Coastal',
-    accentColour: '#5B9EA6',
+    accentColour: '#5A8A94',
     version: 3,
     styleCard: {
       formalTerritory: 'Coastal',
@@ -248,7 +248,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'maker',
     displayName: 'The Maker',
     styleTerritory: 'Industrial',
-    accentColour: '#8B7355',
+    accentColour: '#B87F4A',
     version: 2,
     styleCard: {
       formalTerritory: 'Industrial',
@@ -323,7 +323,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'minimalist',
     displayName: 'The Minimalist',
     styleTerritory: 'Japandi',
-    accentColour: '#9CAF88',
+    accentColour: '#A09080',
     version: 2,
     styleCard: {
       formalTerritory: 'Japandi',
@@ -399,7 +399,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'romantic',
     displayName: 'The Romantic',
     styleTerritory: 'French Country',
-    accentColour: '#C9A9A6',
+    accentColour: '#C4908A',
     version: 2,
     styleCard: {
       formalTerritory: 'French Country',
@@ -478,7 +478,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'storyteller',
     displayName: 'The Storyteller',
     styleTerritory: 'Eclectic Vintage',
-    accentColour: '#A67B5B',
+    accentColour: '#8A6550',
     version: 3,
     styleCard: {
       formalTerritory: 'Eclectic Vintage',
@@ -556,7 +556,7 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     id: 'urbanist',
     displayName: 'The Urbanist',
     styleTerritory: 'Urban Contemporary',
-    accentColour: '#708090',
+    accentColour: '#5E5A68',
     version: 3,
     styleCard: {
       formalTerritory: 'Urban Contemporary',
