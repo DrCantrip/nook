@@ -8,6 +8,22 @@
 
 ## Decisions
 
+### 20 April 2026 (late evening) — Fallback reveal copy shipped
+
+Three fallback descriptions shipped as dual-file drop (src/content/fallback-reveals.ts + supabase/functions/_shared/fallback-reveals.ts, commit 4907e4d). Covers three quiz outcomes where single-archetype assignment fails: all-yes (every card swiped right), all-no (every card swiped left), flat-middle (score vector too flat to nominate top archetype).
+
+Structure mirrors archetype descriptions (essence + observation + CTA); sensory anchor and motif tooltip omitted (no archetype anchor to ground them). Voice register matches archetypes-v3 (6d3e127): present-tense observation, behavioural truth, no aspirational verbs, fallback-appropriate Barnum (universal-to-bucket, not archetype-exclusionary).
+
+R-24 extension: fallbacks do not carry userLexicon/qualityLexicon. Haiku recommendation rationale for fallback users grounds in observation text directly. Full spec deferred to Sprint 3 T1B.
+
+Critique: 12-voice MEDIUM panel (Copywriter, App Copy Specialist, Content Designer ex-Monzo, User Researcher ex-Airbnb, Tester, Data Scientist, Claude Code Prompt Engineer, Strategy Lead, + 7 archetype voices). Two rounds. Three structural cuts landed: (1) all-no observation rewritten to drop failure-confession and Barnum-fail flattery, (2) all three CTAs diversified off Browse/Try verb-lock, (3) "first-time buyers" cut from all-yes CTA (self-reference on reveal screen).
+
+Provisional-awaiting-mock-first. Day-2 recall on fallback reads tests whether reframe-without-concession holds under identity-hook hypothesis.
+
+Source: panel critique + handover fallback drafts from first-evening 20 Apr.
+
+---
+
 ### 20 April 2026 (evening) — Archetype v3 content shipped to main
 
 Seven archetype descriptions in four-component structure (essence, observation, sensoryAnchor, behaviouralTruth) plus motifTooltip and userLexicon shipped to src/content/archetypes.ts and its Deno mirror supabase/functions/_shared/archetypes.ts. Merged to main as 6d3e127 after fresh-head review and 10-voice panel (convergence: 10/10 ship as-is). Voice gate clean; tsc clean; mirror parity byte-identical on all new content.

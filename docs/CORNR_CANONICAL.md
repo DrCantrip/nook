@@ -41,6 +41,8 @@ Lexicon architecture formalised as R-24 in Section 13. qualityLexicon and userLe
 
 Follow-up: pre-existing accentColour drift on 7/7 archetypes in supabase/functions/_shared/archetypes.ts is confirmed not functionally consumed by the Edge Function today, but breaks the standing dual-file invariant. Trivial sync commit pending; anchored to 6d3e127 so it can be picked up without archaeology. KI-05 candidate (pre-commit hook validating Description and StyleCard region parity between main file and mirror) captured in MC for drift-loop closure.
 
+- Fallback reveal copy (all-yes, all-no, flat-middle) shipped to src/content/ + mirror (4907e4d). Voice-register matched to archetypes-v3.
+
 Source: 20 April 2026 evening — 10-voice ship-or-revise panel on merge decision, canonical patch approach, and R-24 framing. Convergence 10/10 ship with five non-blocking follow-ups (four landed in this entry, one landed in the merge prompt as git status --short pre-step).
 
 ### 20 April 2026 — Archetype writing brief locked; reveal is a two-experience screen; palette revision candidate pending mock-first
