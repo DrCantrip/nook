@@ -8,6 +8,45 @@
 
 ## Decisions
 
+## 2026-04-20 — Archetype writing brief + design integration + palette candidate
+
+### Decisions locked
+- Writing brief: 38 conditions consolidated, documented at
+  docs/strategy/archetype-writing-brief.md. 10-12 governing rules
+  extracted for drafting session.
+- Reveal is a two-experience screen (first visit + return visit);
+  language + design + motion serve both.
+- Quiz produces 4 reveal types, not 1 (single/blend/all-yes/all-no).
+  Confidence routing at 1.4x mean threshold. See R-21.
+- Typography is archetype-invariant (R-20).
+- Fallback copy is directional, never diagnostic (R-22).
+- Essence line conjures the motif (R-23).
+- Palette revision candidate documented; shipping pending mock-first
+  validation. 4 of 7 accents proposed for revision.
+
+### Decisions deferred
+- Per-archetype WCAG and CVD verification of proposed palette
+  (blocks on mock-first)
+- Romantic motif revision (rotated ellipses → scalloped arc proposed)
+- Motion language principles (framework drafted, full spec pending)
+- Tappable motif tooltip copy (written alongside archetype descriptions)
+
+### New MC tasks
+- QUIZ-01..06 (confidence routing, tap buttons, fallback copy,
+  vector logging, mini-quiz, fuzzy reveals)
+- DESIGN-01..09 (Romantic motif, WCAG verification, motion spec,
+  tooltip spec, motion language doc, tooltip copy, palette spec,
+  mock-first colour question, palette ship decision)
+
+### Source
+Three multi-persona critiques on 20 April 2026:
+- Critique 1: Research viability + vocabulary accessibility (20 voices)
+- Critique 2: Design × language integration at reveal (10 voices)
+- Critique 3: Colour theory + brand colour (8 voices)
+- Side critique: Quiz edge cases, all-yes/all-no handling
+
+---
+
 ### 15 April 2026 (late PM) — Colour system revision v2: terracotta shift
 
 Accent palette shifted from mocha-brown toward terracotta based on UK paint trend data (Lick 2026 edit, F&B Naperon/Scallop, Pantone Mocha Mousse moving out). Four accent tokens, error token, and icon-bg token updated. Four archetype colours revised for territory authenticity (curator, nester, storyteller, urbanist). Three unchanged (maker, minimalist, romantic). CVD policy: colour never sole differentiator. BDS v3 PDF to be removed from project knowledge (Daryll action, not code).

@@ -3,7 +3,7 @@
 **Last updated:** 12 April 2026 (Deep strategy session: GTM v2 locked, unit economics recalibrated 4-5% commission, AI-native positioning as commercial moat, 24-persona teardown, 68-item MC contribution proposal P0-P3, three-tier data retention, Sprint 3 T1 split into T1a-T1d, 10 standing rules codified in Section 13)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: 7d332e0 -->
+<!-- CANONICAL-SHA: 97f5524 -->
 <!-- LAST-SYNCED-PK: 7d332e0 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
@@ -30,6 +30,16 @@
 ## Section 0 — Strategic Decisions Log
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
+
+### 20 April 2026 — Archetype writing brief locked; reveal is a two-experience screen; palette revision candidate pending mock-first
+
+Three multi-persona critiques on 20 April (20 voices, 10 voices, 8 voices) on behavioural research for archetype descriptions generated 38 conditions governing the writing session. Conditions consolidated in docs/strategy/archetype-writing-brief.md.
+
+Reveal architecture clarified as two-experience screen: first visit reads essence line + archetype name + tap-continue (~4 seconds, 60% of users); return visit from Profile tab reads depth layers (observation, sensory anchor, behavioural truth) plus tappable motif with tooltip.
+
+Quiz produces 4 reveal types, not 1: single archetype (high-confidence argmax), blend (top-2 both significant), all-yes (all dimensions positive, no discrimination), all-no (vector below threshold, no signal). Confidence routing at 1.4x mean threshold.
+
+Palette revision candidate documented: 4 of 7 archetype accents proposed for revision (Nester, Maker, Minimalist, Romantic, Urbanist) due to colour-theory + brand-clash + CVD + cultural-coding concerns. Maker #3A3A3A resolves brand-accent overlap with Cornr terracotta. Revision ships only if validated in mock-first testing; specific colour-fit question added to test script.
 
 ### 18 April 2026 — Synthetic persona strategy locked; SP-1 split into Part A (now) and Part B (with S3-T1A)
 
@@ -1355,6 +1365,30 @@ The mock-first 6-naive-user gate (PL-MOCK-FIRST) remains canonical and non-negot
 
 Source: 18 April 2026 synthetic personas deep research + three LARGE panels (10, 12, 13 personas) + Claude Code repo-state diagnostic that caught missing `recommend-products` infrastructure.
 
+### Typography is archetype-invariant (R-20)
+
+Only colour, motif, and page/section tints shift per archetype. Type system, hierarchy, spacing, and all interactive elements remain constant across the 7 archetypes. Language carries archetype differentiation under a constant type treatment.
+
+Source: 20 April 2026 design-integration critique.
+
+### Archetype colours pass WCAG AA AND CVD discrimination (R-21)
+
+All archetype accent colours must pass WCAG AA contrast for their intended text size (body-text-level unless explicitly documented as large-text-only) AND show ΔE >10 under deuteranopia and protanopia simulation against every other archetype accent.
+
+Source: 20 April 2026 colour-theory critique.
+
+### Fallback reveal copy is directional, never diagnostic (R-22)
+
+All-yes, all-no, and flat-middle reveal copy must follow second-person-warm voice. Never imply the user "swiped wrong" or "didn't engage." Name the pattern (broad openness, particular eye, blended style) as its own valid signal.
+
+Source: 20 April 2026 quiz-edge-case critique.
+
+### Essence line conjures the motif (R-23)
+
+Each archetype's essence line must evoke its visual motif compositionally. Motif reads as illustration of the essence; essence reads as translation of the motif. Integration at the compositional level, not layout level only.
+
+Source: 20 April 2026 design-integration critique.
+
 ---
 
 ## Section 14 — Design System
@@ -1378,6 +1412,41 @@ Pre-computed tint hex values (WCAG verified):
 - Urbanist (#5E5A68): page #F2EFEC, section #EDEAE7
 
 CVD policy: archetype colour is never the sole differentiator. Name, motif, and typography hierarchy always co-present.
+
+**Palette revision candidate (20 April 2026):** 4 of 7 archetype accents proposed for revision pending mock-first validation. Current palette remains canonical until mock-first test validates change. See docs/strategy/palette-revision-candidate.md or Section 0 entry dated 20 April 2026.
+
+### 14.5 Archetype-invariant interactive design
+
+Typography, hierarchy, spacing, button treatments, input fields, icons (beyond the single motif), navigation, and reveal sequence structure are identical across all 7 archetypes. Only colour (accent + 5%/8% tints) and motif shift. See R-20.
+
+### 14.6 Motion language principles (pending DESIGN-05)
+
+Motion has a voice, same as typography. Three motion registers:
+
+- **Ceremonial** — identity moments (archetype reveal, first recommendation). Staggered, paced, ~200ms between elements.
+- **Gentle** — navigation, transitions, tab switches. Single smooth motion.
+- **Immediate** — feedback, taps, loading states. No delay, no overshoot.
+
+`prefers-reduced-motion` respected universally; ceremonial falls back to spatial ceremony (generous whitespace + clear hierarchy) when motion reduced.
+
+### 14.7 Reveal sequence (pending DESIGN-03, DESIGN-04)
+
+Staggered reveal order on first visit:
+
+1. Page tint lands (ambient).
+2. Archetype name + style territory fades in (~400ms).
+3. Essence line types in character-by-character (~800ms).
+4. Motif fades in as visual echo of essence (~1200ms).
+5. Observation + sensory + behavioural truth fade in together (~1600ms).
+6. CTA gently appears (~2000ms).
+
+Return-visit reveal: static layout, full description visible, motif tappable for tooltip.
+
+Reduced-motion fallback: full layout lands simultaneously with spatial ceremony.
+
+### 14.8 Tappable motif specification (pending DESIGN-04)
+
+Motif is gently interactive. 44pt minimum hit area. No visible indicator on first reveal. One-time soft pulse on first return-visit to Profile tab (discoverability). Tap reveals tooltip above motif, 3-second fade. Tooltip content: 5-8 word archetype-specific micro-essence. Styling: archetype accent at 80%, DM Sans Italic.
 
 ---
 
