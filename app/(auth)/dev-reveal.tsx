@@ -23,7 +23,7 @@ import Animated, {
   withRepeat,
 } from "react-native-reanimated";
 
-import { colors, spacing, archetypeTheme } from "../../src/theme/tokens";
+import { colors, spacing, archetypeTheme, typography } from "../../src/theme/tokens";
 import { ARCHETYPES, type ArchetypeContent } from "../../src/content/archetypes";
 import { PERIOD_MODIFIERS } from "../../src/content/archetype-period-modifiers";
 import { GrainOverlay } from "../../src/components/atoms/GrainOverlay";
@@ -33,8 +33,6 @@ const PANEL_COUNT = 4;
 // Hardcoded mock data for visual testing.
 const MOCK_ARCHETYPE_ID = "curator" as const;
 const MOCK_PROPERTY_PERIOD = "victorian" as const;
-const MOCK_INSIGHT =
-  "You are The Curator, with a strong Nester streak. You've walked past the same chair in the shop window four times this month. You'd rather leave a wall empty than fill it with something that almost works — and yes, you know that's a little precious. You've rearranged the same three objects on your mantelpiece more times than you'd admit.";
 
 export default function DevRevealScreen() {
   const router = useRouter();
@@ -104,9 +102,7 @@ export default function DevRevealScreen() {
             {/* Panel content fills the tap region. */}
             <View style={StyleSheet.absoluteFillObject}>
               {panelIndex === 0 && <Panel1Identity archetype={archetype} />}
-              {panelIndex === 1 && (
-                <Panel2Insight insight={MOCK_INSIGHT} archetype={archetype} />
-              )}
+              {panelIndex === 1 && <Panel2Insight archetype={archetype} />}
               {panelIndex === 2 && (
                 <Panel3Anchor archetype={archetype} periodModifier={periodModifier} />
               )}
@@ -194,82 +190,34 @@ function Panel1Identity({ archetype }: { archetype: ArchetypeContent }) {
   );
 }
 
-function Panel2Insight({
-  insight,
-  archetype,
-}: {
-  insight: string;
-  archetype: ArchetypeContent;
-}) {
-  const proseOpacity = useSharedValue(0);
+function Panel2Insight({ archetype }: { archetype: ArchetypeContent }) {
+  const essenceOpacity = useSharedValue(0);
   const truthOpacity = useSharedValue(0);
+  const observationOpacity = useSharedValue(0);
 
   useEffect(() => {
-    proseOpacity.value = withTiming(1, { duration: 600 });
+    essenceOpacity.value = withTiming(1, { duration: 600 });
     truthOpacity.value = withDelay(400, withTiming(1, { duration: 600 }));
-  }, [proseOpacity, truthOpacity]);
+    observationOpacity.value = withDelay(800, withTiming(1, { duration: 600 }));
+  }, [essenceOpacity, truthOpacity, observationOpacity]);
 
-  const proseStyle = useAnimatedStyle(() => ({ opacity: proseOpacity.value }));
+  const essenceStyle = useAnimatedStyle(() => ({ opacity: essenceOpacity.value }));
   const truthStyle = useAnimatedStyle(() => ({ opacity: truthOpacity.value }));
-
-  const proseText = insight.replace(archetype.description.behaviouralTruth, "").trim();
-
-  // Archetype names within the prose render in Lora-SemiBold for identity weight.
-  // Hardcoded list matches the mock prose — real reveal pulls from blend data.
-  const emphasisPhrases = [archetype.displayName, "Nester"];
+  const observationStyle = useAnimatedStyle(() => ({ opacity: observationOpacity.value }));
 
   return (
-    <View style={styles.centred}>
-      <Animated.Text style={[styles.proseText, proseStyle]}>
-        {splitWithEmphasis(proseText, emphasisPhrases).map((seg, i) =>
-          seg.emphasis ? (
-            <Text key={i} style={styles.proseArchetype}>{seg.text}</Text>
-          ) : (
-            seg.text
-          ),
-        )}
+    <View style={styles.panel2Tiers}>
+      <Animated.Text style={[styles.tierEssence, essenceStyle]}>
+        {archetype.description.essenceLine}
       </Animated.Text>
-      <View style={styles.behaviouralTruthGap} />
-      <Animated.Text style={[styles.behaviouralTruth, truthStyle]}>
+      <Animated.Text style={[styles.tierBehaviouralTruth, truthStyle]}>
         {archetype.description.behaviouralTruth}
+      </Animated.Text>
+      <Animated.Text style={[styles.tierObservation, observationStyle]}>
+        {archetype.description.observationParagraph}
       </Animated.Text>
     </View>
   );
-}
-
-// Splits a string into segments where any of the provided phrases are marked
-// for emphasis. First-match-wins on overlapping phrases. Used to render
-// archetype names in Lora within DM Sans prose.
-function splitWithEmphasis(
-  text: string,
-  phrases: string[],
-): { text: string; emphasis: boolean }[] {
-  const result: { text: string; emphasis: boolean }[] = [];
-  let remaining = text;
-  while (remaining.length > 0) {
-    // Try to match any phrase at the start.
-    let startMatch: string | null = null;
-    for (const p of phrases) {
-      if (remaining.startsWith(p)) {
-        startMatch = p;
-        break;
-      }
-    }
-    if (startMatch) {
-      result.push({ text: startMatch, emphasis: true });
-      remaining = remaining.slice(startMatch.length);
-      continue;
-    }
-    // No match at start — advance to next phrase occurrence or end of string.
-    let nextIdx = remaining.length;
-    for (const p of phrases) {
-      const idx = remaining.indexOf(p);
-      if (idx !== -1 && idx < nextIdx) nextIdx = idx;
-    }
-    result.push({ text: remaining.slice(0, nextIdx), emphasis: false });
-    remaining = remaining.slice(nextIdx);
-  }
-  return result;
 }
 
 function Panel3Anchor({
@@ -437,31 +385,26 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
-  // Panel 2
-  proseText: {
-    fontFamily: "DMSans-Regular",
-    fontSize: 17,
-    lineHeight: 26,
-    color: colors.white,
-    textAlign: "center",
-    maxWidth: "88%",
-    opacity: 0.85,
+  // Panel 2 — three-tier typography (essence / behaviouralTruth / observation).
+  // Tiers consume typography tokens; colour applied here (white on gradient).
+  panel2Tiers: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: spacing.xl,
   },
-  proseArchetype: {
-    // Lora-SemiBold for archetype name/secondary emphasis within prose.
-    // fontSize + lineHeight inherit from parent Animated.Text.
-    fontFamily: "Lora-SemiBold",
+  tierEssence: {
+    ...typography.essence,
     color: colors.white,
+    marginBottom: 24,
   },
-  behaviouralTruthGap: { height: 32 },
-  behaviouralTruth: {
-    // Spec: Newsreader-Italic. Loaded in the project as NewsreaderItalic.
-    fontFamily: "NewsreaderItalic",
-    fontSize: 28,
-    lineHeight: 38,
+  tierBehaviouralTruth: {
+    ...typography.behaviouralTruth,
     color: colors.white,
-    textAlign: "center",
-    maxWidth: "85%",
+    marginBottom: 24,
+  },
+  tierObservation: {
+    ...typography.observation,
+    color: colors.white,
   },
 
   // Panel 3
