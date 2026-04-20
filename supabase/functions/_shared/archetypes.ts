@@ -73,6 +73,8 @@ export type Description = {
   observationParagraph: string;
   sensoryAnchor: string;
   behaviouralTruth: string;
+  motifTooltip: string;
+  userLexicon: string[];
 };
 
 export type CommercialOneLiner = {
@@ -101,13 +103,23 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     displayName: 'The Curator',
     styleTerritory: 'Mid-Century Modern',
     accentColour: '#B8860B',
-    version: 1,
+    version: 3,
     styleCard: {
       formalTerritory: 'Mid-Century Modern',
       eraAnchor: '1950s–1960s Scandinavian and American design',
       materialLexicon: [
-        'walnut', 'teak', 'oak', 'brass', 'leather',
-        'wool bouclé', 'tapered legs', 'warm whites',
+        'oiled elm', 'oiled teak', 'beech', 'patinated brass', 'limewash',
+        'Ercol', 'G Plan', 'Nathan', 'Carl Hansen', 'HAY', 'Anglepoise',
+        'Wishbone chair', 'Söderhamn', 'Hasami', 'Kinto', 'Falcon enamel',
+        'paper-cord', 'wool rug', 'Armadillo', 'linen',
+        'Farrow & Ball Shaded White', 'Farrow & Ball Setting Plaster',
+        'Little Greene Pleat', 'Frama', 'Menu-Audo',
+        'vintage pendant', 'string shelving', 'teak sideboard',
+        'Anni Albers', 'Josef Frank', 'Wim Crouwel', 'Sugimoto',
+        'Earl of East', 'Haeckels', 'Aesop',
+        'Modern House', 'Vinterior', 'Narchie', 'twentytwentyone',
+        'Dulwich Midcentury Modern Fair', 'Peckham Car Boot',
+        'Osmo Polyx', '6 Music', 'Moka pot',
       ],
       qualityLexicon: [
         'warm grain', 'considered restraint', 'honest joinery',
@@ -131,13 +143,22 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
       ],
     },
     description: {
-      essenceLine: 'Choosing slowly, and only when it feels inevitable.',
+      essenceLine: "You're drawn to the long view — a few things held, framed, kept.",
       observationParagraph:
-        "You've walked past the same chair in the shop window four times this month. You'd rather leave a wall empty than fill it with something that almost works — and yes, you know that's a little precious. You notice the grain before the silhouette, the silhouette before the price, and the price only once the first two have said yes.",
+        "Your home takes its time. You'd rather live with a wall you haven't hung yet than fill it fast. The things you own tend to have been made by someone, chosen once, kept on purpose. Empty space isn't missing — it's the room you're leaving for the right thing to arrive.",
       sensoryAnchor:
-        'Your rooms come together in warm grain and honest joinery — proportioned weight, pieces that hold their place without shouting, surfaces that reveal the hand that made them.',
+        'Low morning sun on an oiled wooden arm, worn smooth where hands have rested.',
       behaviouralTruth:
-        "You've rearranged the same three objects on your mantelpiece more times than you'd admit.",
+        "You say sorry for the sofa before anyone asks, and you'll defend the one good chair long after it needs it.",
+      motifTooltip: 'You frame what matters and leave space around it.',
+      userLexicon: [
+        'held', 'framed', 'kept', 'worn smooth', 'the right one',
+        "we're living with it", 'the bones are good', 'honest',
+        'on purpose', 'for now', 'one day', 'the long view',
+        "it'll outlive us", 'we went for', 'not perfect',
+        'a bit of a project', 'lived-in', 'slowly', 'patient',
+        'one good thing', 'worth saving', 'the corner you use most',
+      ],
     },
     commercial: {
       text: 'First-time buyers drawn to Mid-Century Modern. Invest in one signature piece over several mediocre ones. Over-index on lighting and seating; under-index on storage.',
@@ -154,13 +175,24 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     displayName: 'The Nester',
     styleTerritory: 'Coastal',
     accentColour: '#5B9EA6',
-    version: 1,
+    version: 3,
     styleCard: {
       formalTerritory: 'Coastal',
       eraAnchor: 'contemporary New England and UK seaside vernacular',
       materialLexicon: [
-        'cotton', 'linen', 'pale wood', 'rattan', 'whitewash',
-        'soft blues', 'sand-toned neutrals', 'woven textures',
+        'oatmeal linen', 'washed linen', 'slubby linen', 'brushed cotton',
+        'Piglet in Bed', 'H&M Home', 'Dunelm', 'John Lewis',
+        'Neptune', 'Daylesford', 'Oliver Bonas',
+        'stoneware jug', 'rattan tray', 'wicker basket',
+        'Neom', 'Diptyque Figuier', 'M&S Fig', 'MUJI Green Fig',
+        'Scandinavian pendant', 'ticking stripe', 'drum shade',
+        'Farrow & Ball Skimming Stone', 'Farrow & Ball School House White',
+        'warm 2700K bulb', 'table lamp', 'dimmer switch',
+        'eucalyptus', 'tulips', 'stocks', 'ranunculus',
+        'Welsh blanket', 'knitted throw', 'wool cushion',
+        'Seasalt', 'Toast',
+        'Cox & Cox', 'Garden Trading',
+        'oak dining table', 'sheepskin', 'rattan pendant',
       ],
       qualityLexicon: [
         'softness', 'lived-in ease', 'pale openness',
@@ -184,13 +216,23 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
       ],
     },
     description: {
-      essenceLine: 'Making a place feel lived-in before the boxes are unpacked.',
+      essenceLine: 'You make a place feel like home before the boxes are gone.',
       observationParagraph:
-        "You add another cushion before you add another light. You'd rather a room felt easy than look finished — even when easy means a throw not quite straight, a stack of books that wandered onto a side table and stayed. You notice immediately when someone is trying too hard, and you can usually point to the exact thing pulling the room out of itself.",
+        "Your home gets soft fast. You change the lightbulbs before the pictures go up. You buy flowers every week from wherever you did the food shop, and you've got a jug for them that's travelled through three flats. The kettle's on before the kitchen's done, because the kitchen's done when it feels right, not when it's finished.",
       sensoryAnchor:
-        'Your rooms come together in softness and pale openness — woven texture, lived-in ease, light that moves across a floor and is allowed to.',
+        'A lamp at dusk, the smell of supermarket eucalyptus, a kettle finding the boil.',
       behaviouralTruth:
-        'The room is finished when someone takes their shoes off without asking.',
+        "You'll apologise for the kitchen to someone who came over to borrow milk, then refuse to budge on nine cushions.",
+      motifTooltip: 'You hold a space until it feels like home.',
+      userLexicon: [
+        'cosy', 'soft', 'warm', 'a proper home', 'lived-in',
+        "it just needs...", 'the light in here', 'put the kettle on',
+        'sorry about the kitchen', "we'll do it properly eventually",
+        "mine's the one with", "I've had this jug since",
+        'fluffed', 'made up', 'nested', 'settled',
+        'a touch of', 'a bit more', 'feels finished',
+        'nice and warm', 'homely', "it's only", 'have a sit down',
+      ],
     },
     commercial: {
       text: 'First-time buyers drawn to Coastal. Invest in soft furnishings and textiles over hard pieces. Over-index on cushions, throws, and lighting; under-index on dining sets.',
@@ -207,13 +249,24 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     displayName: 'The Maker',
     styleTerritory: 'Industrial',
     accentColour: '#8B7355',
-    version: 1,
+    version: 2,
     styleCard: {
       formalTerritory: 'Industrial',
       eraAnchor: 'early 20th century workshop and warehouse vernacular',
       materialLexicon: [
-        'blackened steel', 'reclaimed timber', 'exposed brick', 'cast iron',
-        'raw concrete', 'leather', 'visible welds', 'workshop finishes',
+        'raw oak', 'raw ash', 'reclaimed pine', 'scaffold board',
+        'steel frame', 'black steel', 'brushed steel', 'mild steel',
+        'exposed brick', 'London stock brick', 'concrete', 'poured concrete',
+        'cast iron', 'pig iron', 'blacksmith', 'welded',
+        'dovetail joint', 'mortise and tenon', 'biscuit joint',
+        'Osmo Polyx', 'Danish oil', 'linseed oil', 'beeswax',
+        'Workshop of the Telegraph Hill', 'Benchmark Furniture',
+        'G & T Ironmongery', 'Anglepoise', 'factory pendant',
+        'Eichholtz', 'Tom Raffield',
+        'Plumen', 'enamel shade', 'industrial sconce',
+        'Kvadrat wool', 'Bute Fabrics',
+        'hand-forged', 'machined', 'sawn edge',
+        'reclamation yard', 'Salvo', 'joinery offcut',
       ],
       qualityLexicon: [
         'honest making', 'weight and substance', 'the seam that shows',
@@ -237,13 +290,24 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
       ],
     },
     description: {
-      essenceLine: 'Respecting the seam that shows how it was built.',
+      essenceLine: 'You want to see how a thing is held together.',
       observationParagraph:
-        "You prefer heavy to light and visible to finished. You'd rather see the bolts than have someone hide them — and you've definitely lectured a friend about it once. You pick up an object to feel its weight before you decide if it belongs, and you trust a piece more when you can see how it was made than when it looks like it arrived from a catalogue.",
+        "Your home shows its working. You can see how things are held together — the joints, the fixings, the grain of the wood. Nothing's hidden behind a gloss. You've got a project on the go most of the time, and the half-finished one in the corner isn't a problem — it's the next thing to do.",
       sensoryAnchor:
-        'Your rooms come together in weight and substance — the seam that shows, surfaces that carry the work in them and do not apologise.',
+        'The heft of raw oak, the smell of beeswax, a drill finding its bite.',
       behaviouralTruth:
-        'You trust what looks like it could be repaired.',
+        "You'll defend the workbench in the living room to anyone who asks, because the living room is where the work is.",
+      motifTooltip: "You build what holds, and show how it's held.",
+      userLexicon: [
+        'built', 'made', 'honest', 'proper', 'solid',
+        "how it's held together", 'the bones', 'raw',
+        "I'll fix it", 'give me a weekend', 'a proper job',
+        'worth the work', 'you can see the joint',
+        "it'll last", 'sturdy', 'the real stuff',
+        'no hiding it', 'exposed', 'on the go',
+        'a good piece of wood', 'the right tool',
+        'saves buying it', 'better than new',
+      ],
     },
     commercial: {
       text: 'First-time buyers drawn to Industrial. Invest in solid, repairable pieces over high-turnover fashion. Over-index on workshop-grade seating, lighting, and shelving.',
@@ -260,13 +324,26 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     displayName: 'The Minimalist',
     styleTerritory: 'Japandi',
     accentColour: '#9CAF88',
-    version: 1,
+    version: 2,
     styleCard: {
       formalTerritory: 'Japandi',
       eraAnchor: 'mid-20th century Japanese interiors crossed with Scandinavian modernism',
       materialLexicon: [
-        'raw wood', 'paper', 'stone', 'linen', 'matte ceramic',
-        'natural plaster', 'low horizon', 'chalky finishes',
+        'soaped oak', 'pale oak', 'Japanese oak', 'white-washed timber',
+        'waxed paper', 'washi', 'linen', 'raw cotton',
+        'Hasami', 'Kinto', 'Niwaki', 'Native & Co',
+        'Muji', 'Toast', 'Margaret Howell', 'Kvadrat',
+        'Farrow & Ball Strong White', 'Farrow & Ball School House White',
+        'Little Greene French Grey Pale', 'limewash',
+        'Frama', 'Menu-Audo', 'Another Country', 'Skagerak',
+        'Carl Hansen', 'Maruni Hiroshima', 'Wishbone chair',
+        'Global knife', 'Tojiro', 'Japanese knife block',
+        'Japanese architectural print', 'Sugimoto print',
+        'Cereal magazine', 'Kinfolk',
+        'Tattie Isles', 'Piet Oudolf',
+        'magnetic knife strip', 'flush handle', 'handle-less',
+        'Nordic Knots', 'washed linen bedding',
+        'single pendant', 'recessed downlight', 'warm 2700K',
       ],
       qualityLexicon: [
         'stillness', 'breathing room', 'the discipline of less',
@@ -290,13 +367,23 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
       ],
     },
     description: {
-      essenceLine: 'Protecting the empty space as carefully as the objects in it.',
+      essenceLine: "You'd rather one good thing than four almost-right ones.",
       observationParagraph:
-        "You clear surfaces before you decorate them, and sometimes the cleared surface is the decoration. You'd rather a corner stayed bare than let a nice-enough object take the room it needed. A full room feels louder to you than other people can hear, and you wonder if that makes you difficult company in a flatshare.",
+        "Your home is quieter than most. The surfaces stay clear because clear is what you want, not because you haven't got round to it. You put things away the same day you get them. An empty wall isn't unfinished — it's doing its job. You'd wait a year for the right chair and not mind waiting.",
       sensoryAnchor:
-        'Your rooms come together in stillness and breathing room — chalky surfaces, the discipline of less, empty space treated with as much care as the objects.',
+        'A bare wooden surface, late sun, the sound of a house with nothing humming.',
       behaviouralTruth:
-        "You've taken something off a shelf and never put anything back, and the gap still feels right.",
+        "You'll apologise for the bareness to your parents, and quietly defend the empty wall to everyone else.",
+      motifTooltip: 'A single gesture, held in stillness.',
+      userLexicon: [
+        'quiet', 'pared back', 'space to breathe', 'one good thing',
+        'put away', 'not yet', 'waiting for', 'the right one',
+        'enough', 'clean lines', 'less', 'calm',
+        'lighter', 'honest', 'we wanted it to breathe',
+        "I don't see the point of", "sorry it's a bit bare",
+        'it feels lighter', 'slow', 'undone', 'deliberate',
+        'unfinished on purpose', 'room to think',
+      ],
     },
     commercial: {
       text: 'First-time buyers drawn to Japandi. Invest in fewer, higher-quality pieces with longer replacement cycles. Under-index on decorative accents; over-index on primary furniture.',
@@ -313,13 +400,27 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     displayName: 'The Romantic',
     styleTerritory: 'French Country',
     accentColour: '#C9A9A6',
-    version: 1,
+    version: 2,
     styleCard: {
       formalTerritory: 'French Country',
       eraAnchor: '18th–19th century French provincial interiors',
       materialLexicon: [
-        'faded linen', 'aged brass', 'limewash', 'toile',
-        'cane', 'carved wood', 'softened florals', 'candlelight finishes',
+        'Matilda Goad', 'H&M Home', 'Zara Home',
+        'Oka', 'Oliver Bonas', 'Anthropologie',
+        'Farrow & Ball Setting Plaster', 'Farrow & Ball Sulking Room Pink',
+        'Farrow & Ball Pink Ground', 'chalky paint',
+        'chintz', 'gingham', 'ticking', 'floral', 'toile',
+        'block print', 'Liberty print', 'Morris & Co',
+        'scalloped lampshade', 'pleated lampshade', 'fringed lampshade',
+        'rope-edged bedhead', 'bobble trim', 'frilled cushion',
+        'brocante', 'Kempton Park Antiques Market', 'Sunbury Antiques',
+        '1stDibs', 'Selency', 'Narchie',
+        'Soho Home', 'Piglet in Bed', 'Birdie Fortescue',
+        'Susie Watson', 'Cath Kidston',
+        'painted iron bed', 'rattan headboard', 'cane bedside',
+        'limewash', 'distemper', 'botanical print',
+        'Emma Bridgewater', 'transferware',
+        'woven jute', 'vintage Persian rug',
       ],
       qualityLexicon: [
         'patina', 'atmosphere', 'the imperfection kept on purpose',
@@ -343,13 +444,25 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
       ],
     },
     description: {
-      essenceLine: 'Keeping the imperfection on purpose, because the imperfection is the point.',
+      essenceLine: 'Where most people stop adding, you keep going.',
       observationParagraph:
-        "You dim the light before you add a candle, and you've definitely lit a candle in the daytime. You would rather a piece showed its age than pretended not to — the chip on the rim, the softened edge, the fade where the sun has been hitting it for years. You layer what other people would edit, and you notice when a room has been tidied into blankness.",
+        "Your home is layered. Where other people pick a colour, you pick a colour family — five pinks, three florals, a gingham to tie it together. A room isn't done when the furniture's in. It's done when the lampshade's scalloped, the cushion's pleated, and there's a fringe on something that didn't need one.",
       sensoryAnchor:
-        'Your rooms come together in patina and atmosphere — softness earned over time, surfaces that have lived long enough to stop performing.',
+        'Afternoon light through a softly patterned curtain, tea in a chipped cup.',
       behaviouralTruth:
-        'You would buy the piece with the crack.',
+        "You'll defend the scalloped lampshade to anyone who finds your flat too much — and not apologise once.",
+      motifTooltip: 'Soft repetition, layered until it sings.',
+      userLexicon: [
+        'layered', 'sweet', 'pretty', 'a bit of pattern',
+        'I found this', 'from the brocante', 'so pretty',
+        'it makes me happy', 'softens the room',
+        'more is more', 'a colour family', 'a colour story',
+        'romantic', 'old-fashioned in a good way',
+        'grandmothery', 'wonky', 'hand-painted',
+        'the one with the scallop', 'a little pleat',
+        'in the pink room', 'a touch of chintz',
+        'warm and a bit ridiculous', 'too much on purpose',
+      ],
     },
     commercial: {
       text: 'First-time buyers drawn to French Country. Invest in secondhand, vintage, and aged finishes over new-condition goods. Over-index on lighting, textiles, and tabletop.',
@@ -366,13 +479,27 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     displayName: 'The Storyteller',
     styleTerritory: 'Eclectic Vintage',
     accentColour: '#A67B5B',
-    version: 1,
+    version: 3,
     styleCard: {
       formalTerritory: 'Eclectic Vintage',
       eraAnchor: 'cross-period vintage — nothing uniform, everything with provenance',
       materialLexicon: [
-        'velvet', 'patterned tile', 'painted wood', 'mixed metals',
-        'woven textiles from elsewhere', 'carved frames', 'colour blocks', 'inherited pieces',
+        'Welsh blanket', 'Melin Tregwynt', 'Turkish rug',
+        'Oushak rug', 'Persian runner', 'kilim',
+        'Staffordshire dog', 'Staffordshire figurine', 'Toby jug',
+        'Victorian wardrobe', 'Ercol', 'Parker Knoll',
+        'brass carriage clock', 'samovar', 'taxidermy magpie',
+        'Denby Arabesque', 'Portmeirion Botanic Garden',
+        'Le Creuset', "Peek Frean's biscuit tin", 'Bodum Chambord',
+        'Sue Ryder', 'Oxfam Books', 'Abebooks',
+        'Camden Passage', 'Alfies Antique Market', 'Sunbury Antiques',
+        'Ardingly Antiques Fair', 'Golborne Road', 'Kempton Park',
+        'Hay-on-Wye', 'Scarthin Books', 'Cecil Court',
+        'Penguin Modern Classics', 'Virago greens', 'Faber poetry',
+        'Paul Nash', 'William De Morgan tile', 'Cecil Beaton',
+        'Troika pottery', 'first edition',
+        'mahogany sideboard', 'walnut bureau', 'oak dresser',
+        'lace runner', 'darned wool', 'foxed paper',
       ],
       qualityLexicon: [
         'accumulated meaning', 'the object brought back from somewhere',
@@ -396,13 +523,24 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
       ],
     },
     description: {
-      essenceLine: 'Bringing things back from places, and keeping the mismatch.',
+      essenceLine: 'Every thing in your home comes with a story you know.',
       observationParagraph:
-        "You place an object where it can tell its own story, and you've moved a sofa once to make a found thing work. You'd rather a room held six things you remember buying than sixty that arrived in a van. You keep the mismatch on purpose — the mismatch is where the room comes alive.",
+        "Your home accumulates. A Turkish rug sits next to a Welsh blanket next to a photo of someone's great-aunt — no visual plan, just meaning. You bring things back from house clearances. You pair mismatched figurines because one was your nan's and the other needed a friend. A room is never done, because a life isn't either.",
       sensoryAnchor:
-        'Your rooms come together in contrast and accumulated meaning — layers of elsewhere, the object brought back from somewhere, rooms that hold a history by design.',
+        'The papery smell of old books, a kettle on a hob, afternoon rain at the window.',
       behaviouralTruth:
-        "You have at least one item with a story you've told more times than you'd admit.",
+        "You'll tell a visitor three stories about three objects before you've taken their coat, and mean every word.",
+      motifTooltip: "Every piece carries a story, and you'll tell it.",
+      userLexicon: [
+        'this was my', "there's a story", 'I got this from',
+        'it reminded me of', "I've had this since",
+        'house clearance', 'charity shop', 'skip find',
+        'a story here', 'meant to go', 'kept from',
+        'pair them up', 'oddly matching', 'the one with',
+        'from nan', 'from my dad', 'inherited',
+        'mismatched', 'accumulated', 'not quite finished',
+        "I couldn't not", 'a fiver at', 'they let me have it for',
+      ],
     },
     commercial: {
       text: 'First-time buyers drawn to Eclectic Vintage. Invest in secondhand, travel-acquired, and inherited pieces over matched-set retail. Over-index on decorative accents and art.',
@@ -419,13 +557,28 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
     displayName: 'The Urbanist',
     styleTerritory: 'Urban Contemporary',
     accentColour: '#708090',
-    version: 1,
+    version: 3,
     styleCard: {
       formalTerritory: 'Urban Contemporary',
       eraAnchor: 'late 20th to early 21st century architectural modernism',
       materialLexicon: [
-        'concrete', 'glass', 'blackened metal', 'engineered stone',
-        'matte black', 'polished surfaces', 'sharp edges', 'monochrome palette',
+        'Gubi', 'Gubi Beetle', 'HAY', '&Tradition',
+        'Flos', 'Flos IC', 'Serge Mouille', 'Tom Dixon',
+        'Vitra', 'Fritz Hansen', 'Muuto', 'Menu',
+        'Plykea', 'IKEA METOD hack', 'Formica-faced fronts',
+        'handle-less kitchen', 'brass edge pulls',
+        'bouclé', 'oxblood leather', 'lacquer', 'lacquered',
+        'chrome leg', 'brushed steel', 'brass inlay',
+        'Farrow & Ball Preference Red', 'Paint & Paper Library Euphorbia',
+        'Plain English', 'Lick',
+        'Caesarstone', 'engineered marble', 'quartz composite',
+        'Coal Drops Yard', 'twentytwentyone', 'SCP', "Heal's",
+        'London Design Festival', 'Salone del Mobile', 'Shoreditch Design Triangle',
+        'Slawn print', 'CIRCA edition', 'Saatchi Yates',
+        'Wallpaper*', 'Dezeen', 'Plaster', 'Cabana',
+        'NTS Radio', 'Boiler Room', 'Sonos Era',
+        'Del Maguey mezcal', 'Tutto natural wine',
+        'Fellow Ode grinder', 'Moccamaster',
       ],
       qualityLexicon: [
         'architectural clarity', 'composed silhouettes', 'negative space as feature',
@@ -449,13 +602,24 @@ export const ARCHETYPES: Record<ArchetypeId, ArchetypeContent> = {
       ],
     },
     description: {
-      essenceLine: 'Holding the line where everyone else gives in to soft.',
+      essenceLine: "You'd rather one decisive choice than a room of quieter ones.",
       observationParagraph:
-        "You compose a room the way a photographer composes a frame, and you've re-stacked someone else's books while pretending to look at the spines. You'd rather a shelf stayed empty than fill it with the small warm objects other people call personality. You notice when a cushion has pulled the room out of register.",
+        "Your home is now. The colour on the ceiling is the colour you saw last week and wanted. The sofa you're sitting on won't be there in three years. You read what came out this morning. Every room has one thing that makes the rest look obvious — and that thing is the point.",
       sensoryAnchor:
-        'Your rooms come together in architectural clarity and composed silhouettes — edges held clean, negative space as feature, the view through the window treated as the painting.',
+        'Low light on a lacquered surface, a record playing, a cold glass in hand.',
       behaviouralTruth:
-        "You've taken a photo of your own room from across the street to check that it reads.",
+        "You'll defend the chartreuse ceiling with the phrase — it's just paint — and mean exactly the opposite.",
+      motifTooltip: 'Where the grid meets a sharper line.',
+      userLexicon: [
+        'now', 'current', "this year's", 'I saw it and',
+        'decisive', 'on purpose', 'a single one', 'editorial',
+        'directional', 'the one thing', 'makes the rest look',
+        'I chose the colour', 'I did it on the weekend',
+        "it's just paint", 'you can always redo it',
+        'a bit bold', 'too much is the point',
+        'commissioned', 'limited edition', 'picked up in Milan',
+        "it'll go in a year", "that's the idea",
+      ],
     },
     commercial: {
       text: 'First-time buyers drawn to Urban Contemporary. Invest in architectural fixtures and composed sets over individual decorative pieces. Over-index on lighting and hard surfaces.',
