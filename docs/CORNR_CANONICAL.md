@@ -4,7 +4,7 @@
 
 <!-- CONTRACT-VERSION: 1 -->
 <!-- CANONICAL-SHA: dd57853 -->
-<!-- LAST-SYNCED-PK: 54bdac5 -->
+<!-- LAST-SYNCED-PK: dd57853 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
 
