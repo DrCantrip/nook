@@ -3,9 +3,9 @@
 #
 # docs/CORNR_CANONICAL.md carries a CANONICAL-SHA stamp that declares the
 # commit against which Project Knowledge is in sync. Any commit that
-# modifies the canonical must also bump that stamp. Otherwise the repo
-# and PK go out of sync silently and future drift checks fire on stale
-# baselines.
+# modifies the canonical must also bump that stamp, UNLESS the only
+# change is a stamp-line-only bump (e.g. LAST-SYNCED-PK updated after
+# a PK re-upload, without content changes).
 #
 # Escape hatch: `git commit --no-verify` for genuine exceptions only.
 
@@ -18,35 +18,74 @@ if ! git diff --cached --name-only | grep -qx "$CANONICAL"; then
   exit 0
 fi
 
-# Canonical is staged. Did the stage add a CANONICAL-SHA line?
-# '^\+[^+]' matches added content lines while excluding the '+++' diff header.
-if git diff --cached -- "$CANONICAL" | grep -E '^\+[^+]' | grep -q 'CANONICAL-SHA:'; then
+# Extract the non-header added and removed lines from the staged diff.
+ADDED_LINES=$(git diff --cached -- "$CANONICAL" | grep -E '^\+[^+]' || true)
+REMOVED_LINES=$(git diff --cached -- "$CANONICAL" | grep -E '^-[^-]' || true)
+
+# Does the staged diff bump CANONICAL-SHA?
+if echo "$ADDED_LINES" | grep -q 'CANONICAL-SHA:'; then
   exit 0
 fi
 
-# Canonical staged, SHA not bumped. Block.
+# Exemption: stamp-line-only change. Allowed without CANONICAL-SHA bump
+# because no canonical content changed — we're just recording a PK-sync
+# state. Pattern matches lines like "<!-- LAST-SYNCED-PK: abc1234 -->"
+# and "<!-- CANONICAL-SHA: abc1234 -->".
+STAMP_PATTERN='<!-- (CANONICAL-SHA|LAST-SYNCED-PK): [a-f0-9]+ -->'
+
+ALL_ADDED_ARE_STAMPS=true
+ALL_REMOVED_ARE_STAMPS=true
+
+if [ -n "$ADDED_LINES" ]; then
+  while IFS= read -r line; do
+    stripped="${line#+}"
+    if ! echo "$stripped" | grep -qE "$STAMP_PATTERN"; then
+      ALL_ADDED_ARE_STAMPS=false
+      break
+    fi
+  done <<< "$ADDED_LINES"
+fi
+
+if [ -n "$REMOVED_LINES" ]; then
+  while IFS= read -r line; do
+    stripped="${line#-}"
+    if ! echo "$stripped" | grep -qE "$STAMP_PATTERN"; then
+      ALL_REMOVED_ARE_STAMPS=false
+      break
+    fi
+  done <<< "$REMOVED_LINES"
+fi
+
+if [ "$ALL_ADDED_ARE_STAMPS" = true ] && [ "$ALL_REMOVED_ARE_STAMPS" = true ]; then
+  # Stamp-only change. No canonical content modified. Allowed.
+  exit 0
+fi
+
+# Canonical content changed, SHA not bumped. Block.
 cat >&2 <<'MSG'
 
 ─── canonical drift-detection contract (KI-01) ─────────────────────────
 
 Detected:  docs/CORNR_CANONICAL.md is staged, but the CANONICAL-SHA line
-           is not in the staged diff.
+           is not in the staged diff, and the change is not stamp-only.
 
 Why blocked:
   The canonical carries a <!-- CANONICAL-SHA: ... --> stamp that
   declares which commit Project Knowledge is in sync with. Every commit
-  that modifies the canonical must bump that stamp in the same commit,
-  or the repo and PK drift apart silently.
+  that modifies canonical CONTENT must bump that stamp in the same
+  commit, or the repo and PK drift apart silently.
+
+  Stamp-line-only changes (e.g. LAST-SYNCED-PK bump after PK upload)
+  are exempt from this requirement.
 
 How to fix:
   Update the <!-- CANONICAL-SHA: ... --> line in docs/CORNR_CANONICAL.md
-  to the SHA this commit will produce, stage it, and re-commit. The
-  LAST-SYNCED-PK line stays on the old SHA until PK is re-uploaded.
+  to the SHA this commit will produce, stage it, and re-commit.
 
 Escape hatch:
   If this change genuinely should not bump the SHA, run:
       git commit --no-verify
-  Use sparingly — --no-verify is for exceptions, not the default path.
+  Document the reason in the commit message. Use sparingly.
 
 ────────────────────────────────────────────────────────────────────────
 MSG
