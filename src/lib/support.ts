@@ -50,3 +50,49 @@ export function openSupportReport(context: SupportContext = {}): void {
     console.warn('Could not open mail client for support report:', err);
   });
 }
+
+// Profile tab "Something wrong?" CTA. Covers GDPR Article 15/16/21 intents
+// via a single mailto with an intent selector. No user_id in the body —
+// sender's email address is the identifier Cornr matches on receipt.
+export function openProfileGetInTouch(): void {
+  const subject = encodeURIComponent('Cornr profile request');
+  const body = encodeURIComponent(
+    [
+      "What I'd like to do:",
+      '[ ] Update my life stage, home status, or property details',
+      '[ ] Stop using my data for style recommendations',
+      '[ ] Delete my account',
+      '[ ] Something else',
+      '',
+      'Please leave any extra details below:',
+      '',
+      '',
+    ].join('\n'),
+  );
+  const mailto = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+
+  Linking.openURL(mailto).catch((err) => {
+    console.warn('Could not open mail client for profile request:', err);
+  });
+}
+
+// Profile "Delete my account" fallback mailto. In-app delete flow is S5-T3
+// (Apple 5.1.1(v) compliance, required before TestFlight). This mailto is
+// the v0 stopgap. No user_id in body; sender's email is the identifier.
+export function openProfileDeleteAccount(): void {
+  const subject = encodeURIComponent('Delete my Cornr account');
+  const body = encodeURIComponent(
+    [
+      'Please delete my Cornr account and all associated data.',
+      '',
+      'Optional. What could we have done better?',
+      '',
+      '',
+    ].join('\n'),
+  );
+  const mailto = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+
+  Linking.openURL(mailto).catch((err) => {
+    console.warn('Could not open mail client for delete account:', err);
+  });
+}

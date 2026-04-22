@@ -1,558 +1,566 @@
-// Dev-only reveal screen for phone testing without auth/Supabase.
-// Duplicates panel logic from app/(onboarding)/result.tsx with hardcoded data.
+// Dev-only harness for REVEAL-1B phone testing.
+//
+// Replaces the previous 4-panel dev walk-through. Two tabs:
+//   1. Reveal — preview reveal-essence and reveal-share for any archetype.
+//              Renders the gradient + identity block inline so we can test
+//              without a Supabase session.
+//   2. Profile — render the Profile tab block layout with mock data for any
+//              archetype, including the empty variant (null archetype).
+//
+// Not routed from user flow — reach it from the welcome screen's hidden
+// double-tap handler, or directly via /(auth)/dev-reveal.
+//
 // TODO: delete before TestFlight.
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from 'react';
 import {
   Pressable,
+  ScrollView,
   Share,
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
-} from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { CaretLeft } from "phosphor-react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withDelay,
-  withRepeat,
-} from "react-native-reanimated";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack, useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { CaretLeft } from 'phosphor-react-native';
 
-import { colors, spacing, archetypeTheme, typography } from "../../src/theme/tokens";
-import { ARCHETYPES, type ArchetypeContent } from "../../src/content/archetypes";
-import { PERIOD_MODIFIERS } from "../../src/content/archetype-period-modifiers";
-import { GrainOverlay } from "../../src/components/atoms/GrainOverlay";
+import {
+  ARCHETYPES,
+  type ArchetypeContent,
+  type ArchetypeId,
+} from '../../src/content/archetypes';
+import {
+  PERIOD_MODIFIERS,
+  type PropertyPeriod,
+} from '../../src/content/archetype-period-modifiers';
+import {
+  HOME_STATUS_LABELS,
+  JOURNEY_LABELS,
+  PROPERTY_PERIOD_LABELS,
+  postcodeToRegion,
+} from '../../src/content/profile-labels';
+import { ArchetypeIdentityCard } from '../../src/components/organisms/ArchetypeIdentityCard';
+import { GrainOverlay } from '../../src/components/atoms/GrainOverlay';
+import {
+  archetypeTheme,
+  colors,
+  radius,
+  spacing,
+  tint,
+  typography,
+} from '../../src/theme/tokens';
 
-const PANEL_COUNT = 4;
+const ARCHETYPE_IDS: ArchetypeId[] = [
+  'curator',
+  'nester',
+  'maker',
+  'minimalist',
+  'romantic',
+  'storyteller',
+  'urbanist',
+];
 
-// Hardcoded mock data for visual testing.
-const MOCK_ARCHETYPE_ID = "curator" as const;
-const MOCK_PROPERTY_PERIOD = "victorian" as const;
+type Tab = 'reveal' | 'profile';
+type RevealSurface = 'essence' | 'share';
 
-export default function DevRevealScreen() {
+export default function DevRevealHarness() {
   const router = useRouter();
-  const archetype = ARCHETYPES[MOCK_ARCHETYPE_ID];
-  const [panelIndex, setPanelIndex] = useState(0);
-  const panel1TapReadyRef = useRef(false);
+  const [tab, setTab] = useState<Tab>('reveal');
+  const [archetypeId, setArchetypeId] = useState<ArchetypeId | null>('curator');
+  const [surface, setSurface] = useState<RevealSurface>('essence');
 
-  useEffect(() => {
-    panel1TapReadyRef.current = false;
-    const t = setTimeout(() => {
-      panel1TapReadyRef.current = true;
-    }, 1000);
-    return () => clearTimeout(t);
-  }, []);
-
-  const advance = () => {
-    if (panelIndex >= PANEL_COUNT - 1) return;
-    if (panelIndex === 0 && !panel1TapReadyRef.current) return;
-    setPanelIndex(panelIndex + 1);
-  };
-
-  const goBack = () => {
-    if (panelIndex === 0) {
-      // On panel 0, "back" means leave the screen entirely.
-      router.back();
-      return;
-    }
-    setPanelIndex(panelIndex - 1);
-  };
-
-  const handleShare = async () => {
-    const message = `I'm ${archetype.displayName} · ${archetype.styleTerritory}. ${archetype.description.behaviouralTruth} Find your home style on Cornr. cornr.co.uk`;
-    try {
-      await Share.share({ message });
-    } catch {
-      // Swallow cancellations.
-    }
-  };
-
-  const isSharePanel = panelIndex === PANEL_COUNT - 1;
-  const periodModifier =
-    PERIOD_MODIFIERS[archetype.id]?.[MOCK_PROPERTY_PERIOD] ?? null;
-
-  // Per-archetype theme with pre-darkened gradientStart values for WCAG AA
-  // contrast against white text. See tokens.ts archetypeTheme comment block.
-  const theme = archetypeTheme(archetype.id);
+  const archetype = archetypeId ? ARCHETYPES[archetypeId] : null;
 
   return (
-    <>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <Stack.Screen options={{ headerShown: false }} />
-      <LinearGradient
-        colors={[theme.gradientStart, theme.gradientMid, theme.gradientEnd]}
-        locations={[0, 0.45, 1]}
-        style={styles.container}
-      >
-        <GrainOverlay opacity={theme.grainOpacity} />
-        {isSharePanel ? (
-          <View style={styles.tapRegion}>
-            <Panel4ShareCard
-              archetype={archetype}
-              onShare={handleShare}
-              onDone={() => router.back()}
-            />
-          </View>
-        ) : (
-          <View style={styles.tapRegion}>
-            {/* Panel content fills the tap region. */}
-            <View style={StyleSheet.absoluteFillObject}>
-              {panelIndex === 0 && <Panel1Identity archetype={archetype} />}
-              {panelIndex === 1 && <Panel2Insight archetype={archetype} />}
-              {panelIndex === 2 && (
-                <Panel3Anchor archetype={archetype} periodModifier={periodModifier} />
-              )}
-            </View>
 
-            {/* Split tap targets: left 33% = back, right 67% = advance.
-                tapSplit leaves a 20px gutter on the left edge so the iOS
-                edge-swipe gesture can pass through to the navigator. */}
-            <View style={styles.tapSplit}>
-              <Pressable
-                onPress={goBack}
-                style={styles.tapBack}
-                accessibilityRole="button"
-                accessibilityLabel="Go back"
-              />
-              <Pressable
-                onPress={advance}
-                style={styles.tapForward}
-                accessibilityRole="button"
-                accessibilityLabel="Advance to next panel"
-              />
-            </View>
-          </View>
-        )}
-
-        {/* Back chevron — rendered on every panel. Panel 0 → router.back();
-            panels 1-3 → decrement panelIndex via goBack. */}
+      <View style={styles.header}>
         <Pressable
-          onPress={goBack}
-          style={styles.backChevron}
+          onPress={() => router.back()}
           hitSlop={12}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel="Back"
         >
-          <CaretLeft size={20} weight="light" color={colors.white} />
+          <CaretLeft size={24} color={colors.ink} weight="light" />
         </Pressable>
-
-        {/* TASK 5 — progress dots. Always rendered, on top of panel content. */}
-        <View pointerEvents="none" style={styles.progressDots}>
-          {Array.from({ length: PANEL_COUNT }).map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.progressDot,
-                i === panelIndex ? styles.progressDotFilled : styles.progressDotOutline,
-              ]}
-            />
-          ))}
-        </View>
-
-        {/* TASK 6 — pulsing "Tap to continue" on non-share panels. */}
-        {!isSharePanel && <PulsingTapHint />}
-      </LinearGradient>
-    </>
-  );
-}
-
-// ── panels ───────────────────────────────────────────────
-
-function Panel1Identity({ archetype }: { archetype: ArchetypeContent }) {
-  const scale = useSharedValue(0.8);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    scale.value = withSpring(1, { damping: 14, stiffness: 140 });
-    opacity.value = withDelay(200, withTiming(1, { duration: 400 }));
-  }, [scale, opacity]);
-
-  const nameStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-  const territoryStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
-
-  return (
-    <View style={styles.centred}>
-      {/* TASK 3 — "You are" DM Sans small. Name Lora-SemiBold (closest to "regular" — no Lora Regular loaded). Territory DM Sans. All white. */}
-      <Text style={styles.kicker}>You are</Text>
-      <Animated.Text style={[styles.displayName, nameStyle]}>
-        {archetype.displayName}
-      </Animated.Text>
-      <Animated.Text style={[styles.styleTerritory, territoryStyle]}>
-        {archetype.styleTerritory}
-      </Animated.Text>
-    </View>
-  );
-}
-
-function Panel2Insight({ archetype }: { archetype: ArchetypeContent }) {
-  const essenceOpacity = useSharedValue(0);
-  const truthOpacity = useSharedValue(0);
-  const observationOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    essenceOpacity.value = withTiming(1, { duration: 600 });
-    truthOpacity.value = withDelay(400, withTiming(1, { duration: 600 }));
-    observationOpacity.value = withDelay(800, withTiming(1, { duration: 600 }));
-  }, [essenceOpacity, truthOpacity, observationOpacity]);
-
-  const essenceStyle = useAnimatedStyle(() => ({ opacity: essenceOpacity.value }));
-  const truthStyle = useAnimatedStyle(() => ({ opacity: truthOpacity.value }));
-  const observationStyle = useAnimatedStyle(() => ({ opacity: observationOpacity.value }));
-
-  return (
-    <View style={styles.panel2Tiers}>
-      <Animated.Text style={[styles.tierEssence, essenceStyle]}>
-        {archetype.description.essenceLine}
-      </Animated.Text>
-      <Animated.Text style={[styles.tierBehaviouralTruth, truthStyle]}>
-        {archetype.description.behaviouralTruth}
-      </Animated.Text>
-      <Animated.Text style={[styles.tierObservation, observationStyle]}>
-        {archetype.description.observationParagraph}
-      </Animated.Text>
-    </View>
-  );
-}
-
-function Panel3Anchor({
-  archetype,
-  periodModifier,
-}: {
-  archetype: ArchetypeContent;
-  periodModifier: string | null;
-}) {
-  return (
-    <View style={styles.centred}>
-      <Text style={styles.sensoryAnchor}>{archetype.description.sensoryAnchor}</Text>
-      {periodModifier != null && (
-        <>
-          <View style={styles.anchorPeriodDivider} />
-          <Text style={styles.periodModifier}>{periodModifier}</Text>
-        </>
-      )}
-    </View>
-  );
-}
-
-function Panel4ShareCard({
-  archetype,
-  onShare,
-  onDone,
-}: {
-  archetype: ArchetypeContent;
-  onShare: () => void;
-  onDone: () => void;
-}) {
-  const { width } = useWindowDimensions();
-  const cardWidth = width * 0.85;
-
-  return (
-    <View style={styles.shareCentred}>
-      <View style={[styles.shareCard, { maxWidth: cardWidth }]}>
-        {/* TASK 4 — wordmark at top */}
-        <Text style={styles.shareCardWordmark}>cornr</Text>
-
-        <View style={styles.shareCardSmallGap} />
-
-        {/* Name + territory */}
-        <Text style={styles.shareCardName}>{archetype.displayName}</Text>
-        <Text style={styles.shareCardTerritory}>{archetype.styleTerritory}</Text>
-
-        <View style={styles.shareCardGap} />
-
-        {/* TASK 4 — Behavioural truth as the prominent share-worthy line (emotional peak) */}
-        <Text style={styles.shareCardTruth}>{archetype.description.behaviouralTruth}</Text>
-
-        <View style={styles.shareCardSmallGap} />
-
-        {/* Essence line as secondary */}
-        <Text style={styles.shareCardEssence}>{archetype.description.essenceLine}</Text>
+        <Text style={styles.headerTitle}>Dev · REVEAL-1B</Text>
+        <View style={{ width: 24 }} />
       </View>
 
-      <Pressable
-        onPress={onShare}
-        style={({ pressed }) => [
-          styles.shareButton,
-          { width: cardWidth, opacity: pressed ? 0.85 : 1 },
-        ]}
-        accessibilityRole="button"
-        accessibilityLabel="Share your archetype"
-      >
-        <Text style={styles.shareButtonText}>Share</Text>
-      </Pressable>
+      {/* Tab switch */}
+      <View style={styles.tabBar}>
+        <TabButton label="Reveal" active={tab === 'reveal'} onPress={() => setTab('reveal')} />
+        <TabButton label="Profile" active={tab === 'profile'} onPress={() => setTab('profile')} />
+      </View>
 
-      <Pressable
-        onPress={onDone}
-        style={({ pressed }) => [styles.doneButton, { opacity: pressed ? 0.85 : 1 }]}
-        accessibilityRole="button"
-        accessibilityLabel="Back to welcome"
+      {/* Archetype selector */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chipRow}
       >
-        <Text style={styles.doneButtonText}>Done (back to welcome)</Text>
-      </Pressable>
+        {tab === 'profile' && (
+          <Chip
+            label="(empty)"
+            active={archetypeId === null}
+            onPress={() => setArchetypeId(null)}
+          />
+        )}
+        {ARCHETYPE_IDS.map((id) => (
+          <Chip
+            key={id}
+            label={ARCHETYPES[id].displayName}
+            active={archetypeId === id}
+            onPress={() => setArchetypeId(id)}
+          />
+        ))}
+      </ScrollView>
+
+      {/* Reveal surface selector */}
+      {tab === 'reveal' && (
+        <View style={styles.surfaceRow}>
+          <Chip
+            label="Essence"
+            active={surface === 'essence'}
+            onPress={() => setSurface('essence')}
+          />
+          <Chip
+            label="Share"
+            active={surface === 'share'}
+            onPress={() => setSurface('share')}
+          />
+        </View>
+      )}
+
+      {/* Preview */}
+      <View style={styles.previewWrap}>
+        {tab === 'reveal' && archetype && (
+          surface === 'essence' ? (
+            <RevealEssencePreview archetype={archetype} />
+          ) : (
+            <RevealSharePreview archetype={archetype} />
+          )
+        )}
+        {tab === 'profile' && (
+          <ProfilePreview archetype={archetype} />
+        )}
+      </View>
+    </SafeAreaView>
+  );
+}
+
+// ── Reveal previews ──────────────────────────────────────
+
+function RevealEssencePreview({ archetype }: { archetype: ArchetypeContent }) {
+  const theme = archetypeTheme(archetype.id);
+  return (
+    <View style={styles.surface}>
+      <LinearGradient
+        colors={[theme.gradientStart, theme.gradientMid, theme.gradientEnd]}
+        style={StyleSheet.absoluteFill}
+      />
+      <GrainOverlay opacity={theme.grainOpacity} />
+      <View style={styles.surfaceCentred}>
+        <Text style={styles.gradKicker}>You are</Text>
+        <Text style={styles.gradDisplayName}>{archetype.displayName}</Text>
+        <Text style={styles.gradTerritory}>{archetype.styleTerritory}</Text>
+        <View style={{ height: spacing['3xl'] }} />
+        <Text style={styles.gradEssence}>{archetype.description.essenceLine}</Text>
+        <View style={styles.motifRow}>
+          <View style={styles.motifDot} />
+          <Text style={styles.motif}>{archetype.description.motifTooltip}</Text>
+        </View>
+      </View>
     </View>
   );
 }
 
-// TASK 6 — breathing-opacity tap hint
-function PulsingTapHint() {
-  const opacity = useSharedValue(0.5);
-
-  useEffect(() => {
-    opacity.value = withRepeat(
-      withTiming(1, { duration: 1200 }),
-      -1, // infinite
-      true, // reverse
-    );
-  }, [opacity]);
-
-  const pulseStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
-
+function RevealSharePreview({ archetype }: { archetype: ArchetypeContent }) {
+  const theme = archetypeTheme(archetype.id);
+  const onShare = async () => {
+    try {
+      await Share.share({
+        message: `${archetype.description.behaviouralTruth} · I'm ${archetype.displayName} on Cornr. cornr.co.uk`,
+      });
+    } catch {
+      // Cancelled.
+    }
+  };
   return (
-    <Animated.Text style={[styles.tapHint, pulseStyle]} pointerEvents="none">
-      Tap to continue
-    </Animated.Text>
+    <View style={styles.surface}>
+      <LinearGradient
+        colors={[theme.gradientStart, theme.gradientMid, theme.gradientEnd]}
+        style={StyleSheet.absoluteFill}
+      />
+      <GrainOverlay opacity={theme.grainOpacity} />
+      <View style={styles.surfaceCentred}>
+        <Text style={styles.gradName}>{archetype.displayName}</Text>
+        <Text style={styles.gradTerritorySmall}>{archetype.styleTerritory}</Text>
+        <View style={{ height: spacing['3xl'] }} />
+        <Text style={styles.gradTruth}>{archetype.description.behaviouralTruth}</Text>
+        <Text style={styles.gradFooter}>cornr.co.uk</Text>
+      </View>
+      <View style={styles.shareActions}>
+        <Pressable
+          onPress={onShare}
+          style={({ pressed }) => [styles.sharePrimary, { opacity: pressed ? 0.85 : 1 }]}
+          accessibilityRole="button"
+          accessibilityLabel="Share"
+        >
+          <Text style={styles.sharePrimaryText}>Share</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
-// ── styles (all text colours now colors.white for contrast on warm gradient) ──
+// ── Profile preview ──────────────────────────────────────
+
+function ProfilePreview({ archetype }: { archetype: ArchetypeContent | null }) {
+  const period: PropertyPeriod = 'victorian';
+  const mockRooms = 3;
+  const mockWishlist = 12;
+  const regionLabel = postcodeToRegion('SW4');
+
+  return (
+    <ScrollView
+      contentContainerStyle={styles.profileScroll}
+      showsVerticalScrollIndicator={false}
+    >
+      {archetype ? (
+        <View style={styles.profileHeader}>
+          <Text style={styles.kicker}>Your style</Text>
+          <Text style={styles.essenceName}>{archetype.displayName}</Text>
+          <Text style={styles.essenceTerritory}>{archetype.styleTerritory}</Text>
+        </View>
+      ) : (
+        <View style={styles.profileHeader}>
+          <Text style={styles.kicker}>Your profile</Text>
+          <Text style={styles.essenceName}>Every corner, considered.</Text>
+        </View>
+      )}
+
+      {archetype ? (
+        <ArchetypeIdentityCard variant="populated" archetype={archetype} />
+      ) : (
+        <ArchetypeIdentityCard variant="empty" />
+      )}
+
+      <View style={styles.block}>
+        <Text style={styles.blockLabel}>Your collection</Text>
+        <Text style={styles.bodyRow}>Rooms: {mockRooms}</Text>
+        <Text style={styles.bodyRow}>Wishlist: {mockWishlist} items</Text>
+      </View>
+
+      <View style={styles.block}>
+        <Text style={styles.blockLabel}>What Cornr knows</Text>
+        <Text style={styles.bodyRow}>Email: test@cornr.test</Text>
+        <Text style={styles.bodyRow}>Where you're at: {JOURNEY_LABELS.settled_3_12}</Text>
+        <Text style={styles.bodyRow}>Home status: {HOME_STATUS_LABELS.first_time}</Text>
+        <Text style={styles.bodyRow}>Property: {PROPERTY_PERIOD_LABELS[period]}</Text>
+        <Text style={styles.bodyRow}>Area: {regionLabel ?? 'Not set'}</Text>
+      </View>
+
+      {archetype && (
+        <View style={[styles.depthPreview, { backgroundColor: tint(archetype.id, 'page') }]}>
+          <Text style={styles.kicker}>Depth view preview</Text>
+          <Text style={styles.depthQuote}>
+            {PERIOD_MODIFIERS[archetype.id]?.[period] ?? archetype.description.sensoryAnchor}
+          </Text>
+        </View>
+      )}
+    </ScrollView>
+  );
+}
+
+// ── Shared atoms ─────────────────────────────────────────
+
+function TabButton({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.tabBtn,
+        active && styles.tabBtnActive,
+        { opacity: pressed ? 0.85 : 1 },
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
+      <Text style={[styles.tabBtnText, active && styles.tabBtnTextActive]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function Chip({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.chip,
+        active && styles.chipActive,
+        { opacity: pressed ? 0.85 : 1 },
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
+      <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
+    </Pressable>
+  );
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  tapRegion: { flex: 1 },
-  tapSplit: {
-    // Leaves leftmost 20px uncovered so the iOS edge-swipe gesture reaches
-    // the navigator instead of being captured by the tapBack Pressable.
-    position: "absolute",
-    top: 0,
-    left: 20,
-    right: 0,
-    bottom: 0,
-    flexDirection: "row",
+  safe: { flex: 1, backgroundColor: colors.cream },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
   },
-  tapBack: {
-    flex: 1, // 33% — with flex: 2 on right, totals 3
+  headerTitle: {
+    ...typography.cardHeading,
+    color: colors.ink,
   },
-  tapForward: {
-    flex: 2, // 67%
+  tabBar: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.md,
   },
-  backChevron: {
-    position: "absolute",
-    top: 60,
-    left: 20,
-    width: 44,
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    opacity: 0.5,
+  tabBtn: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.button,
+    backgroundColor: colors.warm100,
+    minHeight: 36,
+    justifyContent: 'center',
   },
-  centred: {
+  tabBtnActive: {
+    backgroundColor: colors.ink,
+  },
+  tabBtnText: {
+    ...typography.uiLabel,
+    color: colors.ink,
+  },
+  tabBtnTextActive: {
+    color: colors.white,
+    fontFamily: 'DMSans-SemiBold',
+  },
+  chipRow: {
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.md,
+  },
+  surfaceRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.md,
+  },
+  chip: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.button,
+    backgroundColor: colors.warm100,
+    minHeight: 32,
+    justifyContent: 'center',
+  },
+  chipActive: {
+    backgroundColor: colors.accent,
+  },
+  chipText: {
+    ...typography.badge,
+    color: colors.ink,
+    textTransform: 'none',
+    letterSpacing: 0,
+  },
+  chipTextActive: {
+    color: colors.white,
+  },
+  previewWrap: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  },
+  surface: {
+    flex: 1,
+    overflow: 'hidden',
+  },
+  surfaceCentred: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
-
-  // Panel 1
-  kicker: {
-    fontFamily: "DMSans-Regular",
-    fontSize: 14,
-    color: colors.white,
-    opacity: 0.7,
-    marginBottom: spacing.md,
-    letterSpacing: 2,
-  },
-  displayName: {
-    fontFamily: "Lora-SemiBold",
-    fontSize: 48,
-    color: colors.white,
-    textAlign: "center",
-    letterSpacing: -0.5,
-    lineHeight: 56,
-  },
-  styleTerritory: {
-    fontFamily: "DMSans-Regular",
+  gradKicker: {
+    fontFamily: 'DMSans-Regular',
     fontSize: 16,
     color: colors.white,
-    opacity: 0.7,
-    marginTop: spacing.lg,
-    textAlign: "center",
-    letterSpacing: 1,
+    opacity: 0.8,
+    marginBottom: spacing.md,
   },
-
-  // Panel 2 — three-tier typography (essence / behaviouralTruth / observation).
-  // Tiers consume typography tokens; colour applied here (white on gradient).
-  panel2Tiers: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: spacing.xl,
+  gradDisplayName: {
+    fontFamily: 'Lora-SemiBold',
+    fontSize: 48,
+    color: colors.white,
+    textAlign: 'center',
+    letterSpacing: -0.5,
   },
-  tierEssence: {
+  gradTerritory: {
+    fontFamily: 'DMSans-Regular',
+    fontSize: 16,
+    color: colors.white,
+    opacity: 0.9,
+    marginTop: spacing.md,
+    textAlign: 'center',
+  },
+  gradEssence: {
     ...typography.essence,
     color: colors.white,
-    marginBottom: 24,
+    textAlign: 'center',
+    maxWidth: '88%',
   },
-  tierBehaviouralTruth: {
-    ...typography.behaviouralTruth,
-    color: colors.white,
-    marginBottom: 24,
-  },
-  tierObservation: {
-    ...typography.observation,
-    color: colors.white,
-  },
-
-  // Panel 3
-  sensoryAnchor: {
-    fontFamily: "DMSans-Regular",
-    fontSize: 17,
-    lineHeight: 26,
-    color: colors.white,
-    textAlign: "center",
-    maxWidth: "85%",
-    opacity: 0.85,
-  },
-  anchorPeriodDivider: {
-    width: 40,
-    height: 1,
-    backgroundColor: colors.white,
-    opacity: 0.15,
-    marginTop: 28,
-    marginBottom: 28,
-  },
-  periodModifier: {
-    fontFamily: "NewsreaderItalic",
-    fontSize: 18,
-    lineHeight: 28,
-    color: colors.white,
-    textAlign: "center",
-    maxWidth: "85%",
-  },
-
-  // Progress dots + tap hint overlay
-  progressDots: {
-    position: "absolute",
-    bottom: spacing["4xl"] + 44,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "center",
+  motifRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing['2xl'],
     gap: spacing.sm,
   },
-  progressDot: {
+  motifDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-  },
-  progressDotFilled: {
     backgroundColor: colors.white,
-  },
-  progressDotOutline: {
-    borderWidth: 1,
-    borderColor: colors.white,
-    opacity: 0.6,
-  },
-  tapHint: {
-    position: "absolute",
-    bottom: spacing["3xl"],
-    left: 0,
-    right: 0,
-    textAlign: "center",
-    fontFamily: "DMSans-Medium",
-    fontSize: 15,
-    color: colors.white,
-    letterSpacing: 0.5,
-  },
-
-  // Panel 4 — share card (keeps gradient background, all text white for feed legibility)
-  shareCentred: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing["2xl"],
-  },
-  shareCard: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: spacing["2xl"],
-    paddingVertical: spacing["3xl"],
-  },
-  shareCardWordmark: {
-    fontFamily: "DMSans-Medium",
-    fontSize: 12,
-    color: colors.white,
-    opacity: 0.5,
-    letterSpacing: 3,
-    textTransform: "lowercase",
-  },
-  shareCardSmallGap: { height: spacing.lg },
-  shareCardGap: { height: spacing["2xl"] },
-  shareCardName: {
-    fontFamily: "Lora-SemiBold",
-    fontSize: 36,
-    color: colors.white,
-    textAlign: "center",
-    letterSpacing: -0.5,
-    lineHeight: 42,
-  },
-  shareCardTerritory: {
-    fontFamily: "DMSans-Regular",
-    fontSize: 15,
-    color: colors.white,
     opacity: 0.7,
-    textAlign: "center",
-    marginTop: spacing.xs,
-    letterSpacing: 0.3,
   },
-  shareCardTruth: {
-    // THIS is the share-card headline per spec.
-    fontFamily: "NewsreaderItalic",
-    fontSize: 20,
-    lineHeight: 30,
-    color: colors.white,
-    textAlign: "center",
-    maxWidth: "88%",
-  },
-  shareCardEssence: {
-    fontFamily: "NewsreaderItalic",
-    fontSize: 14,
+  motif: {
+    fontFamily: 'NewsreaderItalic',
+    fontSize: 16,
     lineHeight: 22,
     color: colors.white,
-    textAlign: "center",
-    opacity: 0.5,
-    maxWidth: "85%",
+    opacity: 0.85,
   },
-  shareButton: {
-    minHeight: 56,
-    marginTop: spacing["2xl"],
-    backgroundColor: colors.ink,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  shareButtonText: {
-    fontFamily: "DMSans-SemiBold",
-    fontSize: 16,
+  gradName: {
+    fontFamily: 'Lora-SemiBold',
+    fontSize: 24,
     color: colors.white,
-    letterSpacing: 0.2,
+    letterSpacing: -0.3,
   },
-  doneButton: {
-    minHeight: 44,
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.xl,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  doneButtonText: {
-    fontFamily: "DMSans-Medium",
+  gradTerritorySmall: {
+    fontFamily: 'DMSans-Regular',
     fontSize: 14,
+    letterSpacing: 0.4,
     color: colors.white,
     opacity: 0.85,
+    marginTop: spacing.xs,
+    textTransform: 'uppercase',
+  },
+  gradTruth: {
+    fontFamily: 'Lora-SemiBold',
+    fontSize: 28,
+    lineHeight: 38,
+    color: colors.white,
+    textAlign: 'center',
+    maxWidth: '88%',
+    letterSpacing: -0.3,
+  },
+  gradFooter: {
+    fontFamily: 'DMSans-Regular',
+    fontSize: 12,
+    letterSpacing: 0.6,
+    color: colors.white,
+    opacity: 0.7,
+    marginTop: spacing['4xl'],
+    textTransform: 'uppercase',
+  },
+  shareActions: {
+    position: 'absolute',
+    bottom: spacing['4xl'],
+    left: spacing.xl,
+    right: spacing.xl,
+  },
+  sharePrimary: {
+    minHeight: 48,
+    borderRadius: 10,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sharePrimaryText: {
+    ...typography.cta,
+    color: colors.ink,
+  },
+  profileScroll: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing['4xl'],
+    gap: spacing['2xl'],
+  },
+  profileHeader: {
+    gap: spacing.xs,
+  },
+  kicker: {
+    ...typography.uiLabel,
+    color: colors.warm600,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  essenceName: {
+    fontFamily: 'Lora-SemiBold',
+    fontSize: 32,
+    lineHeight: 38,
+    color: colors.ink,
+    letterSpacing: -0.5,
+  },
+  essenceTerritory: {
+    fontFamily: 'NewsreaderItalic',
+    fontSize: 18,
+    lineHeight: 26,
+    color: colors.ink,
+    opacity: 0.85,
+  },
+  block: {
+    backgroundColor: colors.white,
+    borderRadius: radius.card,
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
+  blockLabel: {
+    ...typography.uiLabel,
+    color: colors.warm600,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: spacing.sm,
+  },
+  bodyRow: {
+    ...typography.body,
+    color: colors.ink,
+  },
+  depthPreview: {
+    borderRadius: radius.card,
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
+  depthQuote: {
+    ...typography.quote,
+    color: colors.ink,
   },
 });

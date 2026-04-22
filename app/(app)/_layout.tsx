@@ -101,6 +101,7 @@ export default function AppLayout() {
           ),
         }}
       />
+      <Tabs.Screen name="archetype-depth" options={{ href: null }} />
     </Tabs>
   );
 }

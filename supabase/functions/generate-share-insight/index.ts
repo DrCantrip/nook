@@ -20,7 +20,7 @@ import { validateInsight } from "../_shared/voice-gate.ts";
 const MODEL_VERSION = "claude-haiku-4-5";
 const SECONDARY_THRESHOLD = 0.15;
 const TERTIARY_MIN = 0.10;
-const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 serve(async (req) => {
   // 1. CORS preflight

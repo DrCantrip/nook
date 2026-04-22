@@ -48,7 +48,16 @@ type EventType =
   | 'editorial_card_clicked'
   | 'reveal_shown'
   | 'reveal_panel_changed'
-  | 'share_initiated';
+  | 'share_initiated'
+  // REVEAL-1B additions (21 April 2026) — replace reveal_panel_changed
+  // once the legacy 4-panel route (app/(onboarding)/result.tsx) is cut over.
+  | 'reveal_first_visit_seen'
+  | 'reveal_shared'
+  | 'reveal_depth_visited'
+  | 'profile_viewed'
+  | 'profile_get_in_touch_tapped'
+  | 'profile_retake_tapped'
+  | 'profile_delete_account_tapped';
 
 export function recordEvent(
   user: User | null,

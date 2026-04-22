@@ -126,5 +126,40 @@ export function archetypeTheme(id: string): ArchetypeTheme {
   return ARCHETYPE_THEMES[id as ArchetypeThemeId] ?? ARCHETYPE_THEMES.curator;
 }
 
+// Two-phase colour tints for post-archetype screens (canonical Section 14.1).
+// Page = 5% archetype-colour on background neutral. Section = 8% for cards
+// or bordered regions sitting on the page tint. WCAG verified against ink
+// text; archetype accent for headings remains above 4.5:1.
+type TintVariant = 'page' | 'section';
+
+const PAGE_TINTS: Record<ArchetypeThemeId, string> = {
+  curator:     '#F2F0EA',
+  nester:      '#F2F1EE',
+  maker:       '#F7F1EB',
+  minimalist:  '#F6F2ED',
+  romantic:    '#F7F2EE',
+  storyteller: '#F4EFEA',
+  urbanist:    '#F2EFEC',
+};
+
+const SECTION_TINTS: Record<ArchetypeThemeId, string> = {
+  curator:     '#EDEBE5',
+  nester:      '#EDEEEB',
+  maker:       '#F5EDE5',
+  minimalist:  '#F3EFEA',
+  romantic:    '#F6EFEB',
+  storyteller: '#F1EBE5',
+  urbanist:    '#EDEAE7',
+};
+
+export function tint(id: string, variant: TintVariant): string {
+  const archetypeId = (id as ArchetypeThemeId) in PAGE_TINTS
+    ? (id as ArchetypeThemeId)
+    : 'curator';
+  return variant === 'page'
+    ? PAGE_TINTS[archetypeId]
+    : SECTION_TINTS[archetypeId];
+}
+
 export const tokens = { colors, spacing, radius, typography, shadow } as const;
 export default tokens;
