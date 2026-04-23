@@ -45,7 +45,7 @@ function RootLayout() {
       }
     } else if (!hasProfile) {
       // Session but no profile — need onboarding
-      if (segment === "(app)") {
+      if (segment === "(app)" || segment === "(auth)") {
         target = "/(onboarding)/swipe";
       }
     } else {
