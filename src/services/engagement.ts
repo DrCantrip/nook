@@ -54,6 +54,7 @@ type EventType =
   | 'reveal_first_visit_seen'
   | 'reveal_shared'
   | 'reveal_depth_visited'
+  | 'reveal_depth_revisited'
   | 'profile_viewed'
   | 'profile_get_in_touch_tapped'
   | 'profile_retake_tapped'

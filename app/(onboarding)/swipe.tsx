@@ -17,7 +17,7 @@ export default function SwipeScreen() {
         (assumes an archetype_history row exists for your user).
       </Text>
       <Pressable
-        onPress={() => router.replace("/(onboarding)/result")}
+        onPress={() => router.replace("/(onboarding)/reveal-essence")}
         style={({ pressed }) => [
           styles.button,
           { opacity: pressed ? 0.85 : 1 },

@@ -5,7 +5,7 @@
 // of crashing or showing a broken state.
 
 import { render, waitFor } from "@testing-library/react-native";
-import ResultScreen from "../app/(onboarding)/result";
+import ResultScreen from "../app/(auth)/dev-result";
 import { supabase } from "../src/lib/supabase";
 
 // FIXME(test-env): The previous winter-runtime blocker is RESOLVED by the

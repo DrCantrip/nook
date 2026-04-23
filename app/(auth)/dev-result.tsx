@@ -1,3 +1,4 @@
+// Dev-only legacy 4-panel reveal. Retired by REVEAL-1B. Scheduled for deletion after mock-first validates reveal-essence + reveal-share.
 // S2-T4 — Archetype Result reveal screen.
 // Single route, four internal panels advanced by tap. First real-client call
 // to the S2-T4-INSIGHT Edge Function.

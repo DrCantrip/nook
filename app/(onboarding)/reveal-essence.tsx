@@ -36,8 +36,6 @@ import { GrainOverlay } from '../../src/components/atoms/GrainOverlay';
 import { REVEAL_CONTENT_VERSION } from '../../src/content/reveal-versioning';
 import { truthHash } from '../../src/utils/hash';
 
-let hasFiredFirstVisit = false;
-
 type State =
   | { status: 'loading' }
   | { status: 'error' }
@@ -92,8 +90,25 @@ export default function RevealEssenceScreen() {
 
       setState({ status: 'ready', archetype });
 
-      // Stamp reveal_completed_at on first visit. Upsert semantics via update
-      // — the users row is already created at signup.
+      // Read reveal_completed_at before stamping so the first-visit event only
+      // fires on genuine first visits. DB is the source of truth; module flags
+      // do not survive cold starts.
+      const { data: userRow } = await supabase
+        .from('users')
+        .select('reveal_completed_at')
+        .eq('id', userId)
+        .single();
+      const isFirstVisit = userRow?.reveal_completed_at === null;
+
+      if (isFirstVisit && session?.user) {
+        recordEvent(session.user, 'reveal_first_visit_seen', {
+          primary_archetype: archetype.id,
+          content_version: REVEAL_CONTENT_VERSION,
+          truth_hash: truthHash(archetype.description.behaviouralTruth),
+          _archetypeVersion: archetype.version,
+        });
+      }
+
       await supabase
         .from('users')
         .update({ reveal_completed_at: new Date().toISOString() })
@@ -105,17 +120,6 @@ export default function RevealEssenceScreen() {
       cancelled = true;
     };
   }, [userId]);
-
-  useEffect(() => {
-    if (state.status !== 'ready' || hasFiredFirstVisit || !session?.user) return;
-    hasFiredFirstVisit = true;
-    recordEvent(session.user, 'reveal_first_visit_seen', {
-      primary_archetype: state.archetype.id,
-      content_version: REVEAL_CONTENT_VERSION,
-      truth_hash: truthHash(state.archetype.description.behaviouralTruth),
-      _archetypeVersion: state.archetype.version,
-    });
-  }, [state, session?.user]);
 
   const ctaStyle = useAnimatedStyle(() => ({ opacity: ctaOpacity.value }));
 

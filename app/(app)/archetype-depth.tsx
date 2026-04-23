@@ -8,7 +8,7 @@
 //
 // Spec: canonical Section 14 REVEAL-1B (return-visit depth).
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { CaretLeft } from 'phosphor-react-native';
@@ -44,7 +44,6 @@ export default function ArchetypeDepthScreen() {
   const userId = session?.user?.id ?? null;
   const [state, setState] = useState<State>({ status: 'loading' });
   const [motifOpen, setMotifOpen] = useState(false);
-  const visitedFiredRef = useRef(false);
 
   useEffect(() => {
     if (!userId) {
@@ -90,6 +89,16 @@ export default function ArchetypeDepthScreen() {
 
       setState({ status: 'ready', archetype, propertyPeriod });
 
+      const wasFirstDepthVisit = userRes.data?.depth_first_seen_at === null;
+      if (session?.user) {
+        const eventName = wasFirstDepthVisit ? 'reveal_depth_visited' : 'reveal_depth_revisited';
+        recordEvent(session.user, eventName, {
+          primary_archetype: archetype.id,
+          content_version: REVEAL_CONTENT_VERSION,
+          _archetypeVersion: archetype.version,
+        });
+      }
+
       if (!userRes.data?.depth_first_seen_at) {
         await supabase
           .from('users')
@@ -103,16 +112,6 @@ export default function ArchetypeDepthScreen() {
       cancelled = true;
     };
   }, [userId]);
-
-  useEffect(() => {
-    if (state.status !== 'ready' || visitedFiredRef.current || !session?.user) return;
-    visitedFiredRef.current = true;
-    recordEvent(session.user, 'reveal_depth_visited', {
-      primary_archetype: state.archetype.id,
-      content_version: REVEAL_CONTENT_VERSION,
-      _archetypeVersion: state.archetype.version,
-    });
-  }, [state, session?.user]);
 
   const onBack = () => {
     Haptics.selectionAsync();
