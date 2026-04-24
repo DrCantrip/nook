@@ -168,9 +168,10 @@ NEXT SESSION OPENING (mandatory ritual)
 
 1. Read memory
 2. Read this handover
-3. Run: bash scripts/drift/check.sh
-   Expected: exit 2 — PK is at dd57853, canonical now references
-   newer state. Re-upload canonical to PK before producing anything.
+3. Re-upload docs/CORNR_CANONICAL.md to Project Knowledge FIRST.
+   Then run: bash scripts/drift/check.sh
+   Expected: exit 0. If still exit 2, the upload didn't take — retry
+   before doing anything else.
 4. State match in 2-3 sentences, wait for confirmation
 5. If session is product/build: pick from "TOMORROW" below.
 6. If session is followup/cleanup/strategy: pick from FOLLOWUPS.
@@ -240,6 +241,9 @@ DESIGN
                swipe-between-tabs, archetype-card swipe-to-depth)
                — Cornr is a swipe quiz, gesture vocabulary should
                extend; needs proper exploration
+  DESIGN-11    Sensory-anchor background colour audit on archetype-depth
+               (sage-grey breaks the 80/15/5 ink+cream+accent rule;
+               either carve-out the rule or change the background).
 
 PERF
   PERF-01      Profile query consolidation (4 parallel reads → 1
@@ -268,12 +272,24 @@ ENG / OBSERVABILITY
   TEST-01      Jest event-fire test suite for archetype-depth +
                reveal-essence event-gating logic; would have caught
                BUG-EVENT-01 + the earlier event bugs in CI (~1-2h)
+  INFRA-05     Automate canonical-to-PK sync via post-commit hook or
+               scheduled job. Eliminates the recurring drift exit 2 at
+               session start.
 
 SECURITY
   SEC-AUDIT-01 Same as INFRA-04 from security angle (silent error
                handling = security observability gap)
   SEC-AUDIT-02 Integration test that intentionally errors a query
                and verifies Sentry receives the event (~1h)
+  SEC-AUDIT-03 (P0)  Verify Sentry beforeSend PII scrubbing per 8 April A1
+                     spec is implemented. Currently unverified — risk that
+                     raw UUIDs/emails/postcodes are being transmitted to
+                     Sentry EU from any code path that captures errors with
+                     user data.
+  SEC-AUDIT-04 (P0)  Verify PostHog person_profiles='identified_only' per 8
+                     April A2 spec is implemented. Currently unverified —
+                     risk that anonymous users are creating persistent PII
+                     profiles instead of being merged on signup.
 
 UX / ARCH
   HOME-01      Disable or scaffold Add Room flow (currently 404s)
@@ -315,6 +331,44 @@ DOMAIN
   many places in the app reference cornr.co.uk (share-card
   signature, support mailto, possibly more). Run grep before
   the £8 spend so the domain lands ready-to-resolve.
+
+═══════════════════════════════════════════════════════════
+AUDIT FINDINGS FROM FULL-CONVERSATION REVIEW
+═══════════════════════════════════════════════════════════
+
+After tonight's session ended, audited the full conversation transcript
+for new insights that hadn't landed in this handover. Surfaced:
+
+- Two P0 security audits (A1 Sentry, A2 PostHog) specified 8 April have
+  never been verified as implemented. Captured as SEC-AUDIT-03/04 above.
+  Real risk: Sentry tags shipped tonight in useProfile fix assume A1 is
+  in place. If A1 isn't implemented, every other Sentry capture site is
+  potentially leaking PII.
+
+- PK ↔ canonical drift pattern is a recurring friction tax (3rd time
+  this month). INFRA-05 fixes it permanently. Until then, PK upload
+  becomes step 1 of session opening (above).
+
+- archetype_version (engagement_events) and reveal_version (archetype_
+  history) are similarly-named columns for genuinely different concepts
+  (description-text version vs reveal-surface version). Naming asymmetry
+  caused tonight's Profile null-state bug. Future rewrite-loop work
+  needs to track BOTH carefully. Worth a canonical clarification line
+  near R-15.
+
+- memory_user_edits tool referenced in some Claude.ai system prompts
+  does NOT exist in Claude Code's tool surface — Claude Code memory is
+  file-based at C:\Users\Skcar\.claude\projects\c--Projects-Nook\memory\.
+  Future memory-update prompts to Claude Code should specify the
+  file-edit pattern explicitly.
+
+- DESIGN-11 sensory-anchor background colour breaks the 80/15/5 rule
+  on archetype-depth (sage-grey backdrop). Captured above.
+
+- Tonight's work generated real Dan-deck-v2 evidence: the journey_stage
+  migration + cohort possibility, the "essence IS the evidence" thesis
+  test passing, screenshots of the live production reveal flow. Worth
+  a 1-page "what we shipped" addendum to the deck before the May meeting.
 
 ═══════════════════════════════════════════════════════════
 SESSION META-LEARNINGS
