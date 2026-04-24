@@ -11,6 +11,7 @@
 // subscriptions later.
 
 import { useEffect, useState } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { supabase } from '../lib/supabase';
 import { ARCHETYPES, type ArchetypeContent, type ArchetypeId } from '../content/archetypes';
 import type { PropertyPeriod } from '../content/archetype-period-modifiers';
@@ -37,7 +38,6 @@ export type ProfileData = {
   memberSince: string | null; // from users.created_at
   // Latest archetype assignment. Null if quiz not completed.
   archetype: ArchetypeContent | null;
-  archetypeVersion: number | null;
   // Denormalised counts for "Your collection" section.
   roomsCount: number;
   wishlistCount: number;
@@ -59,7 +59,6 @@ const EMPTY_DATA: ProfileData = {
   revealCompletedAt: null,
   memberSince: null,
   archetype: null,
-  archetypeVersion: null,
   roomsCount: 0,
   wishlistCount: 0,
 };
@@ -91,7 +90,7 @@ export function useProfile(userId: string | null): UseProfileResult {
           Promise.resolve(
             supabase
               .from('archetype_history')
-              .select('primary_archetype, archetype_version')
+              .select('primary_archetype')
               .eq('user_id', userId)
               .order('recorded_at', { ascending: false })
               .limit(1)
@@ -118,6 +117,22 @@ export function useProfile(userId: string | null): UseProfileResult {
           return;
         }
 
+        if (archetypeRes.error) {
+          Sentry.captureException(archetypeRes.error, {
+            tags: { source: 'useProfile', query: 'archetype_history' },
+          });
+        }
+        if (roomsRes.error) {
+          Sentry.captureException(roomsRes.error, {
+            tags: { source: 'useProfile', query: 'rooms' },
+          });
+        }
+        if (wishlistRes.error) {
+          Sentry.captureException(wishlistRes.error, {
+            tags: { source: 'useProfile', query: 'wishlist' },
+          });
+        }
+
         const userRow = userRes.data;
         const archetypeRow = archetypeRes.data;
         const roomsCount = roomsRes.count ?? 0;
@@ -125,7 +140,6 @@ export function useProfile(userId: string | null): UseProfileResult {
 
         const primaryId = (archetypeRow?.primary_archetype as ArchetypeId | undefined) ?? null;
         const archetype = primaryId ? (ARCHETYPES[primaryId] ?? null) : null;
-        const archetypeVersion = (archetypeRow?.archetype_version as number | undefined) ?? null;
 
         const data: ProfileData = {
           email: (userRow?.email as string | null | undefined) ?? null,
@@ -138,7 +152,6 @@ export function useProfile(userId: string | null): UseProfileResult {
           revealCompletedAt: (userRow?.reveal_completed_at as string | null | undefined) ?? null,
           memberSince: (userRow?.created_at as string | null | undefined) ?? null,
           archetype,
-          archetypeVersion,
           roomsCount,
           wishlistCount,
         };

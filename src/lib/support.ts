@@ -85,7 +85,7 @@ export function openProfileDeleteAccount(): void {
     [
       'Please delete my Cornr account and all associated data.',
       '',
-      'Optional. What could we have done better?',
+      'Optional, what could we have done better?',
       '',
       '',
     ].join('\n'),
