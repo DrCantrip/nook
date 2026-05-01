@@ -97,10 +97,12 @@ same commit.
   US region; or recreate org in EU region and redirect DSN (requires
   re-instrumenting and accepting loss of issue history). GDPR
   implications either way. Decide before any public release.
-- **HOME-REGRESSION-01 (P1):** Profile screen sign-out missing — observed
+- **HOME-SIGNOUT-01 (P1):** Profile screen sign-out missing — observed
   during SEC-AUDIT-03 testing that sign-out is unreachable from Profile
-  tab. Likely regression from REVEAL-1B branch. Investigate and fix
-  before PR merges.
+  tab. Reclassified from HOME-REGRESSION-01 after SEC-AUDIT-04 audit
+  confirmed `signOut()` exists in `useAuth.ts` but has zero call sites:
+  this is a missing-since-day-one gap, not a regression. Needs design
+  treatment, not just a wire-up.
 - **ENV-VAR-MIGRATE (P2):** Migrate Sentry environment from `__DEV__`
   ternary to `EXPO_PUBLIC_ENV`. Anchored to Sprint 4 T-RENAME.
 - **SENTRY-DPA-REVIEW (P2):** Confirm Sentry DPA is current. Tied to
@@ -124,3 +126,104 @@ same commit.
 - **MC-SYNC-SEC-AUDIT-03 (P2):** Apply SEC-AUDIT-03 closure + 8
   followups to MC artifact in claude.ai. Source: this file's
   SEC-AUDIT-03 section. Owner: next claude.ai planning session.
+
+---
+
+## Audit Closure Record — SEC-AUDIT-04
+
+- **Audit ID:** SEC-AUDIT-04
+- **Title:** PostHog `identified_only` + identify/reset flow
+- **Spec source:** 8 April 2026 panel, A2
+- **Date closed:** 29 April 2026
+
+### Implemented
+
+`src/services/posthog.ts` constructor now passes
+`personProfiles: "identified_only"` so anonymous distinct_ids no longer
+create persistent person profiles. The wrapper `identify()` and `reset()`
+functions are now `async` so callers can await ordering. Sign-up
+(`app/(auth)/sign-up.tsx`) and sign-in (`app/(auth)/sign-in.tsx`) flows
+both call `await identify(userId)` immediately after successful auth,
+using the Supabase user UUID — anonymous events from the same session
+are auto-merged into the new identified person via PostHog's distinct_id
+aliasing. Sign-out in `useAuth.ts` is now `async` and runs
+`supabase.auth.signOut()` first, then `await reset()`, ensuring no final
+event leaks to the identified profile.
+
+### Deviations from spec
+
+- **Property name:** SDK API uses `personProfiles` (camelCase), not
+  `person_profiles` (snake_case) as specified.
+  - Rationale: `posthog-react-native` types the option as
+    `personProfiles`. The web/JS SDK uses snake_case; React Native uses
+    camelCase. Same semantics; SDK-specific naming. Not a behavioural
+    deviation, just naming reality.
+  - Followup: none.
+
+- **Sign-in identify() added beyond spec scope.** A2 specified
+  sign-up → identify only. Sign-in carries the same risk pattern
+  (returning user authenticating from a fresh device starts anonymous,
+  pre-auth events orphan without identify). Added in same commit.
+  - Rationale: spec gap, not deviation. Documented for completeness.
+  - Followup: none.
+
+- **Sign-out ordering.** Spec didn't specify ordering between
+  `signOut()` and `reset()`. Implemented as `signOut()` first
+  (await), then `reset()` (await). Reverse order risks firing a final
+  event under the identified profile because PostHog session is still
+  active when the auth state change triggers any cleanup events.
+  - Rationale: race-condition prevention, not deviation.
+  - Followup: none.
+
+### Verification
+
+29 April 2026 — partial pass, sufficient to close. Dashboard at
+`eu.posthog.com` (project 142615, EU region confirmed). COUNTs 0/1/2
+verified: 0 → 0 → 1, confirming `identified_only` and `identify()`
+both work as specified. Events merged on identify: confirmed via 4
+distinct_ids aliased to the new identified person. Sign-out `reset()`
+implementation verified via Metro logs (320ms `signOut` → `reset` gap
+from earlier test); dashboard verification of COUNT 3 + post-signout
+event isolation deferred to first post-mock-first end-to-end test due
+to NAV-DEAD-END preventing pre-quiz signed-in users from reaching the
+dev sign-out button.
+
+### Followups generated
+
+- **POSTHOG-EU-VERIFY (RESOLVED, 29 April 2026):** Dashboard at
+  `eu.posthog.com` (project ID 142615) confirmed live and matching the
+  `eu.i.posthog.com` SDK ingest host. Memory and canonical were
+  correct about PostHog being EU-region — the Sentry US/EU surprise
+  did not generalise. No migration needed.
+- **NAV-DEAD-END (P1):** Post-signup users with no `archetype_history`
+  are stranded on Style Swipe / Reveal placeholder screens with no way
+  back to Home or to sign-out. Real users hitting empty-quiz-state
+  would be in the same trap. Related to BS2-T0 entry-point work — the
+  entry-point flow needs a path back to Home.
+- **HOME-SIGNOUT-01 (P1, reclassified from HOME-REGRESSION-01):**
+  Profile sign-out has never been wired to a UI surface. `signOut()`
+  exists in `useAuth.ts` but no consumer. Needs design treatment, not
+  just a wire-up.
+- **SIGNUP-EMAIL-REGEX-INCONSISTENT (P2):** Sign In screen rejects
+  RFC-valid plus-aliases (`user+tag@gmail.com`); Sign Up screen accepts
+  them. Inconsistent client-side regex between screens.
+- **MC-SYNC-SEC-AUDIT-04 (P2):** Apply SEC-AUDIT-04 closure to MC
+  artifact in claude.ai. Same pattern as MC-SYNC-SEC-AUDIT-03.
+- **SUPABASE-STAGING-EMAIL-CONFIRM (RESOLVED, 29 April 2026):** Staging
+  required email confirmation; redirect URL pointed at localhost
+  (unreachable from phone). Disabled in Supabase dashboard at
+  2026-04-29 13:09. Production project must keep email confirmation
+  enabled.
+- **STAGING-TEST-USER-DOMAIN (P3):** Supabase signup validates email
+  deliverability (MX records). `.test` and unbought domains are
+  rejected. Use real Gmail with dot-variant for fresh test users
+  (e.g. `daryll.cowan2026@gmail.com`).
+- **EMPTY-STATE-STYLING (P3):** Pre-quiz "Style Swipe" and "couldn't
+  find your quiz result" screens lack brand styling. Acceptable for
+  dev placeholders but worth tokenising before TestFlight.
+- **DEV-LOG-LOVE (P3):** Stray `console.log("LOVE")` fires during nav.
+  Find and remove (or migrate to tagged logger when convention lands).
+- **DEV-SIGNOUT-REACHABILITY (P3):** `DevSignOutButton` was on Home
+  only; pre-quiz users couldn't reach it. Moot once HOME-SIGNOUT-01
+  lands a real sign-out path. The dev button has been removed in this
+  commit.

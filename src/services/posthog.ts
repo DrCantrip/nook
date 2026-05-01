@@ -11,7 +11,10 @@ export function initPostHog() {
     return;
   }
 
-  posthog = new PostHog(API_KEY, { host: HOST });
+  posthog = new PostHog(API_KEY, {
+    host: HOST,
+    personProfiles: "identified_only",
+  });
 }
 
 export function capture(event: string, properties?: Record<string, string | number | boolean>) {
@@ -19,12 +22,12 @@ export function capture(event: string, properties?: Record<string, string | numb
   posthog.capture(event, properties);
 }
 
-export function identify(userId: string, properties?: Record<string, string | number | boolean>) {
+export async function identify(userId: string, properties?: Record<string, string | number | boolean>) {
   if (!posthog) return;
-  posthog.identify(userId, properties);
+  await posthog.identify(userId, properties);
 }
 
-export function reset() {
+export async function reset() {
   if (!posthog) return;
-  posthog.reset();
+  await posthog.reset();
 }

@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
+import { identify } from "../../src/services/posthog";
 import { STRINGS } from "../../src/content/strings";
 import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 
@@ -46,10 +47,14 @@ export default function SignInScreen() {
 
     setLoading(true);
     try {
-      const { error: authError } = await signIn(email.trim(), password);
+      const { data, error: authError } = await signIn(email.trim(), password);
       if (authError) {
         setError(authError.message);
         return;
+      }
+      const userId = data?.user?.id;
+      if (userId) {
+        await identify(userId);
       }
     } catch {
       setError(S.genericError);

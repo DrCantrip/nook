@@ -16,7 +16,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft, CaretDown, CaretUp } from "phosphor-react-native";
 import { useAuth } from "../../src/hooks/useAuth";
 import { supabase } from "../../src/lib/supabase";
-import { capture } from "../../src/services/posthog";
+import { capture, identify } from "../../src/services/posthog";
 import { recordEvent } from "../../src/services/engagement";
 import { STRINGS } from "../../src/content/strings";
 import { colors, spacing, radius, typography } from "../../src/theme/tokens";
@@ -85,6 +85,7 @@ export default function SignUpScreen() {
 
       const userId = data?.user?.id;
       if (userId) {
+        await identify(userId);
         try {
           await Promise.resolve(
             supabase

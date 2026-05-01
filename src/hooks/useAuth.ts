@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
+import { reset as resetPostHog } from "../services/posthog";
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
@@ -43,7 +44,11 @@ export function useAuth() {
   const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
 
-  const signOut = () => supabase.auth.signOut();
+  const signOut = async () => {
+    const result = await supabase.auth.signOut();
+    await resetPostHog();
+    return result;
+  };
 
   return { session, user, loading, signUp, signIn, signOut };
 }
