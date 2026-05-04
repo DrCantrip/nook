@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { StyleSheet, View, Text, useWindowDimensions, ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -14,6 +14,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { tokens } from '../../theme/tokens';
+import { createLogger } from '../../../lib/log';
+
+const log = createLogger('SwipeCard');
 
 export type SwipeCardProps = {
   imageUrl: string;
@@ -39,6 +42,10 @@ function SwipeCardImpl({
 }: SwipeCardProps) {
   const { width: screenWidth } = useWindowDimensions();
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    log.debug('mounted', { id: accessibilityLabel });
+  }, [accessibilityLabel]);
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);

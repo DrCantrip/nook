@@ -1,5 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import * as SecureStore from "expo-secure-store";
+import { createLogger } from "../../lib/log";
+
+const log = createLogger("SupabaseClient");
 
 const ExpoSecureStoreAdapter = {
   getItem: (key: string) => SecureStore.getItemAsync(key),
@@ -18,3 +21,5 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     detectSessionInUrl: false,
   },
 });
+
+log.debug("client initialised", { project: "staging" });

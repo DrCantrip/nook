@@ -9,6 +9,9 @@ import { initPostHog } from "../src/services/posthog";
 import { useAuth } from "../src/hooks/useAuth";
 import { useStyleProfile } from "../src/hooks/useStyleProfile";
 import { useAppFonts } from "../src/hooks/useAppFonts";
+import { createLogger } from "../lib/log";
+
+const log = createLogger("AuthGuard");
 
 // Init observability at module load
 initSentry();
@@ -37,13 +40,16 @@ function RootLayout() {
     const segment = segments[0];
 
     let target: string | null = null;
+    let branch: "no-session" | "no-profile" | "authed" = "authed";
 
     if (!session) {
+      branch = "no-session";
       // Only redirect if user is in a protected group
       if (segment === "(app)" || segment === "(onboarding)") {
         target = "/(auth)/welcome";
       }
     } else if (!hasProfile) {
+      branch = "no-profile";
       // Session but no profile — need onboarding
       if (segment === "(app)" || segment === "(auth)") {
         target = "/(onboarding)/swipe";
@@ -56,6 +62,8 @@ function RootLayout() {
     }
 
     if (!target) return;
+
+    log.debug("redirect decision", { branch, segment, target });
 
     const id = setTimeout(() => {
       router.replace(target as string);
