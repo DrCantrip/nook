@@ -15,6 +15,195 @@ These exist in Supabase staging (project tleoqtldxjlyufixeukz) for RLS verificat
 
 Last RLS verification: 7 Apr 2026 (Prompt A, all 6 tables passed).
 
+## Testing & Debugging Discipline (read every session)
+
+### Logging — the only allowed pattern
+
+All logging in `app/`, `components/`, `lib/`, `hooks/`, and edge functions
+goes through `lib/log.ts`. Never write `console.log` in committed code
+(except inside `lib/log.ts` itself).
+
+```typescript
+// lib/log.ts — the wrapper. Do not modify without explicit instruction.
+const isDev = __DEV__;
+type Level = "debug" | "info" | "warn" | "error";
+
+const fmt = (v: unknown): string => {
+  if (typeof v === "string") return v;
+  if (v instanceof Error) return `${v.name}: ${v.message}\n${v.stack ?? ""}`;
+  try { return JSON.stringify(v, null, 2); } catch { return String(v); }
+};
+
+export const createLogger = (tag: string) => ({
+  debug: (...args: unknown[]) => { if (isDev) console.log(`[${tag}]`, ...args.map(fmt)); },
+  info:  (...args: unknown[]) => console.log(`[${tag}]`, ...args.map(fmt)),
+  warn:  (...args: unknown[]) => console.warn(`[${tag}]`, ...args.map(fmt)),
+  error: (...args: unknown[]) => console.error(`[${tag}]`, ...args.map(fmt)),
+});
+```
+
+**Usage — top of every file that logs:**
+
+```typescript
+import { createLogger } from "@/lib/log";
+const log = createLogger("SwipeDeck"); // tag = component or module name
+
+log.debug("card removed", { id: card.id, remaining: deck.length });
+log.info("swipe complete", { direction, ms: Date.now() - startedAt });
+log.warn("retrying haiku", { attempt, errorCode });
+log.error("auth guard failed", err); // err can be Error or any object
+```
+
+### Banned patterns
+
+- `console.log(obj)` directly — collapses to `[Object object]` in some Metro paths.
+- `console.log("foo", JSON.stringify(obj))` at call sites — the wrapper handles it.
+- Logging without a tag (`createLogger("")` is a smell).
+- Logging full Supabase response objects unfiltered (PII risk; log `data?.id, error?.message` instead).
+- `console.log` left in code at end of task — see "Self-test before declaring done" below.
+
+### Tag naming convention
+
+Tags use PascalCase and match the most specific scope. Two valid forms:
+
+**Module-scoped tags** (default for code that outlives a single task):
+- Component: `SwipeDeck`, `EditorialCard`, `SwipeCard`
+- Hook: `useAuthGuard`, `useEngagementEvents`
+- Module: `SupabaseClient`, `HaikuPrompt`, `ConsentSplit`
+- Edge function: `EdgeFn:scoreMatch`, `EdgeFn:rotateHaiku`
+- Migration runtime check: `RLS:engagementEvents`
+
+**Task-scoped tags** (for work that is task-scoped per R-26):
+- Active task ID: `SEC-AUDIT-04`, `NAV-DEAD-END`, `HOME-SIGNOUT-01`
+
+This makes Metro logs grep-able: `[SwipeDeck]` filters one component instantly;
+`[SEC-AUDIT-04]` traces every line written during that audit task across all
+modules.
+
+### Test strategy (the only one that exists right now)
+
+Cornr is pre-6-user-gate. There are NO unit test suites and NONE will be
+added without explicit instruction. The test pyramid is:
+
+1. **`npm run check`** — `tsc --noEmit` — Claude Code runs this after
+   every code change, before declaring done. Failure is non-negotiable.
+   (ESLint is not yet installed; addition is a separate follow-up task.)
+2. **Manual smoke checklist** — written into every task's Acceptance Criteria
+   by Claude.ai. Daryll executes on iPhone via Expo Go or EAS dev build,
+   whichever is current.
+3. **TestFlight beta + mock-first user sessions** — the real verification.
+4. **Sentry error rate + PostHog event-fire confirmation** — post-deploy.
+
+**Do not propose adding Jest, Vitest, Detox, Maestro, or any test framework
+unless explicitly asked.** "Add tests" is not a yes-by-default request in
+this repo at this stage.
+
+### Self-test before declaring done — mandatory checklist
+
+Before Claude Code says "task complete" or commits, it MUST in this order:
+
+1. Run `npm run check`. If it fails, fix and re-run. Do not declare done
+   on a red build.
+2. Grep the diff for `console.log` — if any new ones outside `lib/log.ts`,
+   replace with `log.debug` or remove. Banned.
+3. Grep the diff for `// TODO`, `// FIXME`, `// @ts-ignore`, `as any`. If
+   any new ones, list them in the response and ask whether they're
+   acceptable.
+4. For any new `log.debug` added during debugging, decide explicitly:
+   keep (it's load-bearing for a future bug) or remove (it was scaffolding).
+   Do not commit speculative debug logs.
+5. List in the response, under "Verified" and "Unverified":
+   - **Verified**: which acceptance criteria are now machine-checkable-true
+     (e.g., "tsc passes; new component renders in isolated Storybook-style
+     test in `app/_dev/`; RLS migration applied locally").
+   - **Unverified**: which require Daryll's device or a live Supabase
+     project to confirm. Be specific.
+
+If 5 cannot be filled in because the acceptance criteria were vague, stop
+and ask Daryll to clarify before continuing. Do not invent acceptance.
+
+### Debugging escalation order
+
+When a runtime error or unexpected behaviour appears, follow this order
+(do not skip steps):
+
+1. **Read the Metro/dev server log.** Filter by the relevant `[Tag]`. The
+   prefix-and-stringify wrapper makes this useful.
+2. **Reproduce in isolation.** If it's a component, render it alone in
+   `app/_dev/<scratch>.tsx`. If it's an edge function, call it via
+   `curl` or `supabase functions invoke`.
+3. **Check the SDK 54 trap list** before assuming a code bug:
+   - reanimated/worklets version mismatch → `npx expo start --clear`
+     and check `npx expo-doctor` for major-version mismatches.
+   - babel.config.js with `react-native-reanimated/plugin` → REMOVE,
+     it's handled by `babel-preset-expo` in SDK 54+.
+   - Edge-to-edge layout glitch on Android 16 → expected; do not "fix"
+     by disabling, it cannot be disabled in SDK 54.
+4. **Check Sentry dev environment** — the SDK is initialised with
+   `environment: __DEV__ ? "development" : "production"`. Errors appear
+   with breadcrumbs.
+5. **Check Supabase logs** for the right surface: client 403 → Postgres
+   policy logs (NOT just function logs). Test the failing query in SQL
+   editor BUT REMEMBER the SQL editor runs as `postgres` superuser and
+   bypasses RLS — reproduce using `auth.login_as_user('<email>')` to
+   simulate the actual user.
+6. **Only then ask Daryll**, and when you do, include: the failing log
+   line (with prefix), the exact reproduction step, the hypothesis you've
+   ruled out, and the hypothesis you're about to test. No vague
+   "something seems off."
+
+### RLS verification snippet (use when touching policies)
+
+When adding/modifying any RLS policy, append this verification block to
+the migration file as a comment, and run it locally:
+
+```sql
+-- RLS verification (run locally; do not deploy):
+-- 1. As anonymous:
+SET request.jwt.claims TO '{"role":"anon"}';
+SET ROLE anon;
+-- expected: rows hidden
+SELECT * FROM <table> LIMIT 1;
+
+-- 2. As authenticated non-owner:
+CALL auth.login_as_user('test-non-owner@cornr.dev');
+SELECT * FROM <table> LIMIT 1;
+
+-- 3. As authenticated owner:
+CALL auth.login_as_user('test-owner@cornr.dev');
+SELECT * FROM <table> LIMIT 1;
+
+RESET ROLE;
+```
+
+If `auth.login_as_user` doesn't exist yet in the project, install the
+helper from the canonical Supabase test gist before adding the first
+RLS-protected table.
+
+### PostHog / Sentry development hygiene
+
+- **PostHog**: dev events go to a separate PostHog project (`Cornr-Dev`),
+  not production. The init key is read from `EXPO_PUBLIC_POSTHOG_KEY` and
+  switches by `__DEV__`. Do not change this without instruction.
+- **Sentry**: single project, `environment` tag separates dev/prod. Do
+  NOT add `Sentry.captureException` calls in code — the SDK auto-captures
+  thrown errors. Manual capture only for caught-and-handled errors that
+  are still worth seeing (rare).
+- When verifying a new analytics event during a task, confirm it fired
+  by checking the PostHog `Cornr-Dev` Live Events feed, not by adding
+  a `console.log` next to the `posthog.capture` call.
+
+### Commit hygiene during testing
+
+- Do not commit `log.debug` lines that were added solely to chase one
+  bug. Remove them once root-caused, or convert to `log.info`/`log.warn`
+  if they're load-bearing.
+- Do not commit changes to `lib/log.ts` itself unless explicitly
+  instructed — the wrapper is stable surface area.
+- Do not commit `// TODO: fix later` without an issue/ticket reference.
+- One observable change per commit, matching the Acceptance Criteria
+  granularity of the prompt.
+
 ## Stack
 React Native + Expo SDK 54 (managed workflow). NEVER eject.
 expo-router v6 file-based navigation.
