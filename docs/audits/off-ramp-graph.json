@@ -1,0 +1,511 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-04",
+  "branch": "feat/reveal-1b-two-experience",
+  "nodes": [
+    {
+      "id": "index",
+      "route": "/",
+      "file": "app/index.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": false,
+      "has_escape": false,
+      "encounter_frequency_estimated": "high",
+      "notes": "Pure redirect to /(auth)/welcome via <Redirect>. No UI."
+    },
+    {
+      "id": "welcome",
+      "route": "/(auth)/welcome",
+      "file": "app/(auth)/welcome.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": true,
+      "has_escape": false,
+      "encounter_frequency_estimated": "high",
+      "notes": "Landing screen for unauthenticated users. No back affordance (it IS the root after redirect)."
+    },
+    {
+      "id": "sign_in",
+      "route": "/(auth)/sign-in",
+      "file": "app/(auth)/sign-in.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": true,
+      "has_escape": true,
+      "encounter_frequency_estimated": "high",
+      "notes": "Has internal reset-password sub-state (showReset toggle). Successful sign-in does not router.push — auth-state change drives AuthGuard redirect to /(app)/home or /(onboarding)/swipe."
+    },
+    {
+      "id": "sign_up",
+      "route": "/(auth)/sign-up",
+      "file": "app/(auth)/sign-up.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": true,
+      "has_escape": true,
+      "encounter_frequency_estimated": "high",
+      "notes": "Successful signup shows checkEmail success message — no programmatic navigation. User stays on screen until they tap back or sign-in link, OR the auth state change (after email confirmation) flips AuthGuard."
+    },
+    {
+      "id": "dev_swipe",
+      "route": "/(auth)/dev-swipe",
+      "file": "app/(auth)/dev-swipe.tsx",
+      "type": "screen",
+      "has_forward": false,
+      "has_lateral": false,
+      "has_escape": false,
+      "encounter_frequency_estimated": "not_on_path",
+      "notes": "Re-exports SwipeCardHarness — dev-only, no router calls inside. System back gesture is the only escape."
+    },
+    {
+      "id": "dev_network_error",
+      "route": "/(auth)/dev-network-error",
+      "file": "app/(auth)/dev-network-error.tsx",
+      "type": "screen",
+      "has_forward": false,
+      "has_lateral": false,
+      "has_escape": false,
+      "encounter_frequency_estimated": "not_on_path",
+      "notes": "Re-exports NetworkErrorTest — dev-only, no router calls inside. System back gesture only."
+    },
+    {
+      "id": "dev_reveal",
+      "route": "/(auth)/dev-reveal",
+      "file": "app/(auth)/dev-reveal.tsx",
+      "type": "screen",
+      "has_forward": false,
+      "has_lateral": false,
+      "has_escape": true,
+      "encounter_frequency_estimated": "not_on_path",
+      "notes": "Dev harness with two tabs (Reveal preview, Profile preview). Header back chevron via router.back."
+    },
+    {
+      "id": "dev_result",
+      "route": "/(auth)/dev-result",
+      "file": "app/(auth)/dev-result.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": false,
+      "has_escape": false,
+      "encounter_frequency_estimated": "not_on_path",
+      "notes": "Legacy 4-panel reveal, deprecated by REVEAL-1B. ORPHAN — no inbound navigation from any other route in app/. Reachable only by typing /(auth)/dev-result. Done routes to /(app)/home; error state routes to /(onboarding)/swipe."
+    },
+    {
+      "id": "swipe",
+      "route": "/(onboarding)/swipe",
+      "file": "app/(onboarding)/swipe.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": false,
+      "has_escape": true,
+      "encounter_frequency_estimated": "high",
+      "notes": "Stub — real SwipeDeck deferred to S2-T2. Forward is the dev shortcut to reveal-essence. Escape is the __DEV__-guarded sign-out button (added in commit f256a29 — temporary, removes once HOME-SIGNOUT-01 lands)."
+    },
+    {
+      "id": "reveal_essence",
+      "route": "/(onboarding)/reveal-essence",
+      "file": "app/(onboarding)/reveal-essence.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": false,
+      "has_escape": false,
+      "encounter_frequency_estimated": "high",
+      "notes": "First-visit reveal screen 1 of 2. Forward: 'See your share card' CTA after 1.5s tap-ready delay. Error state has 'Try again' that replaces to /(onboarding)/swipe. NO back affordance."
+    },
+    {
+      "id": "reveal_share",
+      "route": "/(onboarding)/reveal-share",
+      "file": "app/(onboarding)/reveal-share.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": true,
+      "has_escape": false,
+      "encounter_frequency_estimated": "high",
+      "notes": "First-visit reveal screen 2 of 2. Forward: Done -> /(app)/home (router.replace). Lateral: native Share sheet (no in-app navigation). Error state: Continue -> /(app)/home. NO back affordance."
+    },
+    {
+      "id": "home",
+      "route": "/(app)/home",
+      "file": "app/(app)/home.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": true,
+      "has_escape": false,
+      "encounter_frequency_estimated": "high",
+      "notes": "Main entry. Forward: 'Set up a room' CTA -> /(app)/room-setup (TARGET ROUTE DOES NOT EXIST — see Patterns). Lateral: EditorialCard CTA -> /(app)/products on wishlist/quiet-welcome variants; tab bar to other tabs. No sign-out, no back."
+    },
+    {
+      "id": "products",
+      "route": "/(app)/products",
+      "file": "app/(app)/products.tsx",
+      "type": "screen",
+      "has_forward": false,
+      "has_lateral": true,
+      "has_escape": false,
+      "encounter_frequency_estimated": "medium",
+      "notes": "Placeholder screen — title only, zero buttons or affordances. Tab bar is the only off-ramp."
+    },
+    {
+      "id": "trades",
+      "route": "/(app)/trades",
+      "file": "app/(app)/trades.tsx",
+      "type": "screen",
+      "has_forward": false,
+      "has_lateral": true,
+      "has_escape": false,
+      "encounter_frequency_estimated": "low",
+      "notes": "Placeholder screen — title only, zero buttons or affordances. Tab bar is the only off-ramp."
+    },
+    {
+      "id": "profile",
+      "route": "/(app)/profile",
+      "file": "app/(app)/profile.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": true,
+      "has_escape": false,
+      "encounter_frequency_estimated": "high",
+      "notes": "Forward: Retake -> /(onboarding)/swipe; ArchetypeIdentityCard (populated) -> /(app)/archetype-depth via card's internal router.push; ArchetypeIdentityCard (empty) -> /(onboarding)/swipe. Lateral: tab bar; off-app: Get in touch -> mailto, Delete -> mailto. NO sign-out (HOME-SIGNOUT-01)."
+    },
+    {
+      "id": "archetype_depth",
+      "route": "/(app)/archetype-depth",
+      "file": "app/(app)/archetype-depth.tsx",
+      "type": "screen",
+      "has_forward": false,
+      "has_lateral": false,
+      "has_escape": true,
+      "encounter_frequency_estimated": "medium",
+      "notes": "Hidden from tab bar (href:null in (app)/_layout). Reachable from Profile. Header back chevron uses router.back() with router.replace('/(app)/profile') fallback. No tab bar visible (Tabs layout still wraps it but the Tabs.Screen entry hides this route)."
+    },
+    {
+      "id": "not_found",
+      "route": "/+not-found",
+      "file": "app/+not-found.tsx",
+      "type": "screen",
+      "has_forward": true,
+      "has_lateral": false,
+      "has_escape": false,
+      "encounter_frequency_estimated": "not_on_path",
+      "notes": "Catch-all for unknown routes. 'Back to home' uses router.replace('/'). Returns to redirect chain."
+    }
+  ],
+  "edges": [
+    {
+      "from": "index",
+      "to": "welcome",
+      "type": "guard_redirect",
+      "trigger": "<Redirect href=\"/(auth)/welcome\" /> on mount",
+      "method": "Redirect"
+    },
+    {
+      "from": "welcome",
+      "to": "sign_up",
+      "type": "user_action",
+      "trigger": "primary CTA 'Get started'",
+      "method": "router.push"
+    },
+    {
+      "from": "welcome",
+      "to": "sign_in",
+      "type": "user_action",
+      "trigger": "'Sign in' link",
+      "method": "router.push"
+    },
+    {
+      "from": "welcome",
+      "to": "dev_swipe",
+      "type": "user_action",
+      "trigger": "'Dev: Swipe Card' button (NOT __DEV__-guarded)",
+      "method": "router.push"
+    },
+    {
+      "from": "welcome",
+      "to": "dev_reveal",
+      "type": "user_action",
+      "trigger": "'Dev: Reveal' button (__DEV__-guarded)",
+      "method": "router.push"
+    },
+    {
+      "from": "welcome",
+      "to": "dev_network_error",
+      "type": "user_action",
+      "trigger": "'Dev: Network Error Test' button (__DEV__-guarded)",
+      "method": "router.push"
+    },
+    {
+      "from": "welcome",
+      "to": "not_found",
+      "type": "user_action",
+      "trigger": "'Dev: 404 Test' button (__DEV__-guarded) routes to /this-route-does-not-exist",
+      "method": "router.push"
+    },
+    {
+      "from": "sign_in",
+      "to": "welcome",
+      "type": "user_action",
+      "trigger": "header back arrow",
+      "method": "router.back"
+    },
+    {
+      "from": "sign_in",
+      "to": "sign_up",
+      "type": "user_action",
+      "trigger": "footer 'Sign up' link",
+      "method": "router.replace"
+    },
+    {
+      "from": "sign_in",
+      "to": "home",
+      "type": "guard_redirect",
+      "trigger": "successful signIn fires session change; AuthGuard redirects authed users on (auth) segment",
+      "method": "router.replace"
+    },
+    {
+      "from": "sign_in",
+      "to": "swipe",
+      "type": "guard_redirect",
+      "trigger": "successful signIn for user with no style_profiles row; AuthGuard 'no-profile' branch",
+      "method": "router.replace"
+    },
+    {
+      "from": "sign_up",
+      "to": "welcome",
+      "type": "user_action",
+      "trigger": "header back arrow",
+      "method": "router.back"
+    },
+    {
+      "from": "sign_up",
+      "to": "sign_in",
+      "type": "user_action",
+      "trigger": "footer 'Sign in' link",
+      "method": "router.replace"
+    },
+    {
+      "from": "sign_up",
+      "to": "swipe",
+      "type": "guard_redirect",
+      "trigger": "after email confirmation, session activates; AuthGuard 'no-profile' branch routes to onboarding swipe",
+      "method": "router.replace"
+    },
+    {
+      "from": "swipe",
+      "to": "reveal_essence",
+      "type": "user_action",
+      "trigger": "'Dev: Go to reveal' button (NOT __DEV__-guarded; stub-only screen)",
+      "method": "router.replace"
+    },
+    {
+      "from": "swipe",
+      "to": "welcome",
+      "type": "user_action",
+      "trigger": "'Dev: Sign out' button (__DEV__-guarded) calls supabase.auth.signOut(); AuthGuard sees !session and routes",
+      "method": "supabase.auth.signOut + AuthGuard"
+    },
+    {
+      "from": "reveal_essence",
+      "to": "reveal_share",
+      "type": "user_action",
+      "trigger": "'See your share card' CTA (after 1.5s tap-ready delay)",
+      "method": "router.push"
+    },
+    {
+      "from": "reveal_essence",
+      "to": "swipe",
+      "type": "user_action",
+      "trigger": "'Try again' button on error state (no archetype_history row)",
+      "method": "router.replace"
+    },
+    {
+      "from": "reveal_share",
+      "to": "home",
+      "type": "user_action",
+      "trigger": "'Done' button",
+      "method": "router.replace"
+    },
+    {
+      "from": "reveal_share",
+      "to": "home",
+      "type": "user_action",
+      "trigger": "'Continue' button on error state",
+      "method": "router.replace"
+    },
+    {
+      "from": "home",
+      "to": "products",
+      "type": "user_action",
+      "trigger": "EditorialCard CTA on wishlist-fallback or quiet-welcome variants (Tier 2/Tier 3 fallback only)",
+      "method": "router.push"
+    },
+    {
+      "from": "home",
+      "to": "missing_room_setup",
+      "type": "user_action",
+      "trigger": "'Set up a room' CTA (empty-state) AND 'Add another room' CTA (single-room state)",
+      "method": "router.push"
+    },
+    {
+      "from": "home",
+      "to": "products",
+      "type": "user_action",
+      "trigger": "tab bar — Products tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "home",
+      "to": "trades",
+      "type": "user_action",
+      "trigger": "tab bar — Trades tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "home",
+      "to": "profile",
+      "type": "user_action",
+      "trigger": "tab bar — Profile tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "products",
+      "to": "home",
+      "type": "user_action",
+      "trigger": "tab bar — Home tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "products",
+      "to": "trades",
+      "type": "user_action",
+      "trigger": "tab bar — Trades tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "products",
+      "to": "profile",
+      "type": "user_action",
+      "trigger": "tab bar — Profile tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "trades",
+      "to": "home",
+      "type": "user_action",
+      "trigger": "tab bar — Home tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "trades",
+      "to": "products",
+      "type": "user_action",
+      "trigger": "tab bar — Products tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "trades",
+      "to": "profile",
+      "type": "user_action",
+      "trigger": "tab bar — Profile tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "profile",
+      "to": "swipe",
+      "type": "user_action",
+      "trigger": "'Retake the style quiz' action OR ArchetypeIdentityCard (empty variant) tap",
+      "method": "router.push"
+    },
+    {
+      "from": "profile",
+      "to": "archetype_depth",
+      "type": "user_action",
+      "trigger": "ArchetypeIdentityCard (populated variant) tap — internal router.push",
+      "method": "router.push"
+    },
+    {
+      "from": "profile",
+      "to": "home",
+      "type": "user_action",
+      "trigger": "tab bar — Home tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "profile",
+      "to": "products",
+      "type": "user_action",
+      "trigger": "tab bar — Products tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "profile",
+      "to": "trades",
+      "type": "user_action",
+      "trigger": "tab bar — Trades tab",
+      "method": "Tabs"
+    },
+    {
+      "from": "profile",
+      "to": "external_mailto",
+      "type": "user_action",
+      "trigger": "'Something wrong? Get in touch' OR 'Delete my account'",
+      "method": "Linking.openURL (mailto)"
+    },
+    {
+      "from": "archetype_depth",
+      "to": "profile",
+      "type": "user_action",
+      "trigger": "header back chevron — router.back() with router.replace('/(app)/profile') fallback",
+      "method": "router.back / router.replace"
+    },
+    {
+      "from": "not_found",
+      "to": "index",
+      "type": "user_action",
+      "trigger": "'Back to home' button",
+      "method": "router.replace"
+    },
+    {
+      "from": "dev_result",
+      "to": "home",
+      "type": "user_action",
+      "trigger": "Done button on Panel 4 share card (legacy reveal)",
+      "method": "router.replace"
+    },
+    {
+      "from": "dev_result",
+      "to": "swipe",
+      "type": "user_action",
+      "trigger": "'Try again' button on error state",
+      "method": "router.replace"
+    },
+    {
+      "from": "dev_reveal",
+      "to": "welcome",
+      "type": "user_action",
+      "trigger": "header back chevron",
+      "method": "router.back"
+    },
+    {
+      "from": "auth_guard_no_session",
+      "to": "welcome",
+      "type": "guard_redirect",
+      "trigger": "app/_layout.tsx useEffect — !session && segment in ['(app)','(onboarding)']",
+      "method": "router.replace"
+    },
+    {
+      "from": "auth_guard_no_profile",
+      "to": "swipe",
+      "type": "guard_redirect",
+      "trigger": "app/_layout.tsx useEffect — session && !hasProfile && segment in ['(app)','(auth)']",
+      "method": "router.replace"
+    },
+    {
+      "from": "auth_guard_authed",
+      "to": "home",
+      "type": "guard_redirect",
+      "trigger": "app/_layout.tsx useEffect — session && hasProfile && segment in ['(auth)','(onboarding)']",
+      "method": "router.replace"
+    }
+  ]
+}
