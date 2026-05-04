@@ -1417,6 +1417,98 @@ Full composition spec deferred to S3-T1A precondition. This rule fixes the seman
 
 Source: 20 April 2026 evening — 10-voice ship-or-revise panel.
 
+> **Note on R-26 cross-namespace collision:** `CLAUDE.md` contains
+> `### R-26 — LLM fingerprint patterns` (a heading-style rule scoped
+> to Claude Code copy hygiene). The canonical's R-26 below is
+> separately scoped to logging convention. The two governance
+> documents have independent rule namespaces; resolution of the
+> cross-namespace collision is deferred to follow-up task
+> GOV-RULE-NUMBERING-01. When future sessions reference "R-26",
+> source must be specified (canonical R-26 vs CLAUDE.md R-26).
+
+**R-25 — Acceptance criteria block is mandatory in every Claude Code prompt.**
+Every Claude Code task prompt produced by this project must end with an
+`## Acceptance Criteria` block listing: (a) the observable behaviour that
+proves the task is done, (b) the exact commands Claude Code must run to
+self-verify (`npm run check` minimum: tsc), (c) the runtime smoke steps
+Daryll will perform on device. Prompts without this block fail the
+critique gate.
+
+For prompts that produce artefacts (files, MC tasks, canonical patches,
+documentation), the Acceptance Criteria must additionally include a
+`findable_at:` reference (literal path or location) and one verification
+command (e.g. `grep`, `ls`, `git show`) that confirms reachability.
+Reachability check is the discipline — produced artefacts that cannot be
+located by a future session are functionally lost. Source: 30 Apr session
+where MC artefact reconstruction blocked because reachability was never
+verified at create-time.
+
+**R-26 — Logging convention is named in build prompts.**
+Any Claude Code prompt that adds or modifies code containing user-facing
+flow, async logic, auth, RLS-touching queries, edge-function calls, or
+analytics events must specify: "Use `lib/log.ts` `createLogger` with the
+tag matching either the component/module name OR the active task ID
+(e.g. `[SEC-AUDIT-04]`, `[NAV-DEAD-END]`) when the work is task-scoped
+rather than module-scoped. No raw `console.log`."
+
+Task-ID prefixes enable cross-referencing Metro logs against
+`docs/operations/security.md`, MC entries, and commit messages — one
+grep traces the work end-to-end. Component-name tags remain correct
+for module-scoped work that outlives a single task. This is one line in
+the prompt; non-negotiable.
+
+**R-27 — Handover prompts must declare unverified surfaces.**
+The session-end handover prompt (the one Daryll pastes into the next
+Claude.ai session) must include a `## Unverified` section listing what
+was built but NOT smoke-tested on device, NOT tested as a non-owner user
+(RLS), or NOT exercised through the consent split. Empty section is
+allowed; missing section is not.
+
+**R-28 — Critique gate enforces verifiability, not elegance.**
+The critique gate on outgoing build prompts checks one thing first: can
+Claude Code verify the acceptance criteria itself without a device deploy?
+If not, the prompt is rewritten until at least one criterion is
+machine-checkable. Stylistic critique is secondary.
+
+**R-29 — Scope ceiling per Claude Code prompt: one observable change.**
+A single Claude Code prompt produces one observable change to the user
+flow OR one schema/RLS migration OR one edge function — never a
+combination. Multi-step work is split into sequential prompts with
+explicit handover. Violations are the #1 cause of "compiles but doesn't
+run" rework.
+
+**R-30 — Expo SDK 54 fragility surfaces are flagged in prompts.**
+Any Claude Code prompt touching reanimated, worklets, gesture handler,
+fonts, edge-to-edge, or babel config must include the line: "SDK 54
+notes: do NOT add `react-native-reanimated/plugin` to babel.config.js
+(handled by babel-preset-expo). Confirm `react-native-worklets` peer
+matches Expo's expected version. If runtime errors occur, run
+`npx expo start --clear` before assuming a code bug." This pre-empts the
+single most expensive class of false-positive bug in this stack.
+
+**R-31 — RLS-touching prompts require dual-role verification.**
+Any prompt that adds or alters an RLS policy, a Supabase migration, or
+an edge function with auth-conditional behaviour must specify in
+acceptance criteria: "Verified as (a) anonymous role, (b) authenticated
+non-owner role, (c) authenticated owner role." If the change cannot be
+exercised in all three states from the app, the prompt names the SQL
+snippet (`auth.login_as_user`) Claude Code should add to the migration
+test file.
+
+**R-32 — Standing prompt prefix for build sessions ("two-paste pattern v2").**
+The conventions paste (paste 1) MUST include, verbatim, this header
+before any other content:
+
+> Read CLAUDE.md fully before reading this prompt. Run `npm run check`
+> after every code change. Use `lib/log.ts` `createLogger`, never raw
+> `console.log`. Declare "done" only when the Acceptance Criteria block
+> in the task prompt is satisfied AND the Unverified section is filled
+> in. Stop and ask if any acceptance criterion cannot be verified
+> without a device deploy.
+
+This replaces ad-hoc preambles. The task paste (paste 2) carries the
+spec + acceptance criteria + unverified-template only.
+
 ---
 
 ## Section 14 — Design System
