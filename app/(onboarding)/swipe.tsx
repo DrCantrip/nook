@@ -20,17 +20,19 @@ export default function SwipeScreen() {
         SwipeDeck lands in S2-T2. Tap below to jump to the reveal screen
         (assumes an archetype_history row exists for your user).
       </Text>
-      <Pressable
-        onPress={() => router.replace("/(onboarding)/reveal-essence")}
-        style={({ pressed }) => [
-          styles.button,
-          { opacity: pressed ? 0.85 : 1 },
-        ]}
-        accessibilityRole="button"
-        accessibilityLabel="Skip to reveal screen (dev)"
-      >
-        <Text style={styles.buttonText}>Dev: Go to reveal</Text>
-      </Pressable>
+      {__DEV__ && (
+        <Pressable
+          onPress={() => router.replace("/(onboarding)/reveal-essence")}
+          style={({ pressed }) => [
+            styles.button,
+            { opacity: pressed ? 0.85 : 1 },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel="Skip to reveal screen (dev)"
+        >
+          <Text style={styles.buttonText}>Dev: Go to reveal</Text>
+        </Pressable>
+      )}
 
       {/* HOME-SIGNOUT-01 temporary unblock — remove once a real sign-out path lands */}
       {__DEV__ && (
