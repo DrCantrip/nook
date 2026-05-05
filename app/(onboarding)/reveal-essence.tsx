@@ -11,7 +11,7 @@
 //
 // Spec: canonical Section 14 REVEAL-1B (two-experience reveal).
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -34,9 +34,17 @@ import {
 } from '../../src/content/archetypes';
 import { GrainOverlay } from '../../src/components/atoms/GrainOverlay';
 import { NetworkErrorScreen } from '../../src/components/organisms/NetworkErrorScreen';
+import type { ErrorCopyKey } from '../../src/content/errors';
 import { REVEAL_CONTENT_VERSION } from '../../src/content/reveal-versioning';
 import { truthHash } from '../../src/utils/hash';
 import { useMotionPreference } from '../../src/hooks/useMotionPreference';
+import { createLogger } from '../../lib/log';
+
+const log = createLogger('reveal-essence');
+
+// ≥2 failures within this window = genuine backend pressure signal.
+// Hardcoded; mock-first telemetry (REVEAL-FAILURE-TELEMETRY) will calibrate.
+const RECENT_FAILURE_WINDOW_MS = 90_000;
 
 type State =
   | { status: 'loading' }
@@ -49,6 +57,12 @@ export default function RevealEssenceScreen() {
   const userId = session?.user?.id ?? null;
 
   const [state, setState] = useState<State>({ status: 'loading' });
+  // triggerKey: bump-only signal for the resolution useEffect dep array.
+  // retryCount: read by the busy-branch threshold; never in deps.
+  // lastFailureAt: stamped in the catch path when failure surfaces.
+  const [triggerKey, setTriggerKey] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastFailureAt, setLastFailureAt] = useState<number | null>(null);
   const tapReadyRef = useRef(false);
   const ctaOpacity = useSharedValue(0);
   const { gentle, reduceMotion } = useMotionPreference();
@@ -71,64 +85,99 @@ export default function RevealEssenceScreen() {
   useEffect(() => {
     if (!userId) {
       setState({ status: 'error' });
+      setLastFailureAt(Date.now());
       return;
     }
+    const controller = new AbortController();
     let cancelled = false;
 
     (async () => {
-      const { data: history, error } = await supabase
-        .from('archetype_history')
-        .select('primary_archetype')
-        .eq('user_id', userId)
-        .order('recorded_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      try {
+        // AbortController guards ONLY the primary archetype-history query.
+        // Post-success housekeeping below is intentionally NOT signal-guarded
+        // — aborting on retry/unmount could leave reveal_completed_at unwritten
+        // after a successful reveal. Asymmetry is intentional.
+        const { data: history, error } = await supabase
+          .from('archetype_history')
+          .select('primary_archetype')
+          .eq('user_id', userId)
+          .order('recorded_at', { ascending: false })
+          .limit(1)
+          .abortSignal(controller.signal)
+          .maybeSingle();
 
-      if (cancelled) return;
-      if (error || !history) {
+        if (cancelled) return;
+        if (error) {
+          // Supabase wraps fetch AbortError into the error field on some paths.
+          if (error.name === 'AbortError') return;
+          log.error('archetype-history resolution failed', error);
+          setState({ status: 'error' });
+          setLastFailureAt(Date.now());
+          return;
+        }
+        if (!history) {
+          log.error('archetype-history returned no row for user', { userId });
+          setState({ status: 'error' });
+          setLastFailureAt(Date.now());
+          return;
+        }
+
+        const primaryId = history.primary_archetype as ArchetypeId;
+        const archetype = ARCHETYPES[primaryId];
+        if (!archetype) {
+          log.error('unknown primary_archetype id', { primaryId });
+          setState({ status: 'error' });
+          setLastFailureAt(Date.now());
+          return;
+        }
+
+        setState({ status: 'ready', archetype });
+
+        // Read reveal_completed_at before stamping so the first-visit event only
+        // fires on genuine first visits. DB is the source of truth; module flags
+        // do not survive cold starts. Not signal-guarded — see header comment.
+        const { data: userRow } = await supabase
+          .from('users')
+          .select('reveal_completed_at')
+          .eq('id', userId)
+          .single();
+        const isFirstVisit = userRow?.reveal_completed_at === null;
+
+        if (isFirstVisit && session?.user) {
+          recordEvent(session.user, 'reveal_first_visit_seen', {
+            primary_archetype: archetype.id,
+            content_version: REVEAL_CONTENT_VERSION,
+            truth_hash: truthHash(archetype.description.behaviouralTruth),
+            _archetypeVersion: archetype.version,
+          });
+        }
+
+        await supabase
+          .from('users')
+          .update({ reveal_completed_at: new Date().toISOString() })
+          .eq('id', userId)
+          .is('reveal_completed_at', null);
+      } catch (err) {
+        if (cancelled) return;
+        // controller.abort() throws AbortError on the query promise — ignore silently.
+        if (err instanceof Error && err.name === 'AbortError') return;
+        log.error('reveal-essence resolution threw', err);
         setState({ status: 'error' });
-        return;
+        setLastFailureAt(Date.now());
       }
-
-      const primaryId = history.primary_archetype as ArchetypeId;
-      const archetype = ARCHETYPES[primaryId];
-      if (!archetype) {
-        setState({ status: 'error' });
-        return;
-      }
-
-      setState({ status: 'ready', archetype });
-
-      // Read reveal_completed_at before stamping so the first-visit event only
-      // fires on genuine first visits. DB is the source of truth; module flags
-      // do not survive cold starts.
-      const { data: userRow } = await supabase
-        .from('users')
-        .select('reveal_completed_at')
-        .eq('id', userId)
-        .single();
-      const isFirstVisit = userRow?.reveal_completed_at === null;
-
-      if (isFirstVisit && session?.user) {
-        recordEvent(session.user, 'reveal_first_visit_seen', {
-          primary_archetype: archetype.id,
-          content_version: REVEAL_CONTENT_VERSION,
-          truth_hash: truthHash(archetype.description.behaviouralTruth),
-          _archetypeVersion: archetype.version,
-        });
-      }
-
-      await supabase
-        .from('users')
-        .update({ reveal_completed_at: new Date().toISOString() })
-        .eq('id', userId)
-        .is('reveal_completed_at', null);
     })();
 
     return () => {
       cancelled = true;
+      controller.abort();
     };
-  }, [userId]);
+  }, [userId, triggerKey]);
+
+  const handleRetry = useCallback(() => {
+    setRetryCount((n) => n + 1);
+    setState({ status: 'loading' });
+    setTriggerKey((k) => k + 1);
+  }, []);
 
   const ctaStyle = useAnimatedStyle(() => ({ opacity: ctaOpacity.value }));
 
@@ -151,10 +200,15 @@ export default function RevealEssenceScreen() {
   }
 
   if (state.status === 'error') {
+    const isBusyState =
+      retryCount >= 2 &&
+      lastFailureAt !== null &&
+      Date.now() - lastFailureAt < RECENT_FAILURE_WINDOW_MS;
+    const errorKey: ErrorCopyKey = isBusyState ? 'revealBusy' : 'revealUnavailable';
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <NetworkErrorScreen errorKey="revealUnavailable" />
+        <NetworkErrorScreen errorKey={errorKey} onRetry={handleRetry} />
       </>
     );
   }

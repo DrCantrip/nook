@@ -64,7 +64,8 @@ export type ErrorCopyKey =
   | 'wishlistSyncFailed'
   | 'imageLoadFailed'
   | 'revealUnavailable'
-  | 'revealShareUnavailable';
+  | 'revealShareUnavailable'
+  | 'revealBusy';
 
 export const errorCopy: Record<ErrorCopyKey, ErrorCopy> = {
   // Anchor — global crash fallback rendered by ErrorBoundary.
@@ -167,6 +168,17 @@ export const errorCopy: Record<ErrorCopyKey, ErrorCopy> = {
   revealShareUnavailable: {
     title: 'Bit busy back here',
     body: "The share card didn't come together — your archetype is still safe and ready.",
+    primaryAction: { label: 'Try again', intent: 'retry' },
+    secondaryAction: { label: 'Take me home', intent: 'home' },
+  },
+
+  // Client-side UX signal only — NOT a security boundary.
+  // Server-side rate-limiting on the reveal endpoint is the actual
+  // defence. This branch fires when the user has hit ≥2 failures
+  // within 90s, signalling genuine backend pressure to the user.
+  revealBusy: {
+    title: 'Bit of a queue',
+    body: "We're working through more swipes than usual right now — give us a moment and try again.",
     primaryAction: { label: 'Try again', intent: 'retry' },
     secondaryAction: { label: 'Take me home', intent: 'home' },
   },

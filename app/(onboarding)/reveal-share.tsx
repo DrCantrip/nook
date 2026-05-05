@@ -10,7 +10,7 @@
 // the app knows — via users.reveal_completed_at stamped on the previous
 // screen — to keep them in the return-visit track from now on.
 
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,10 +26,20 @@ import {
 } from '../../src/content/archetypes';
 import { GrainOverlay } from '../../src/components/atoms/GrainOverlay';
 import { NetworkErrorScreen } from '../../src/components/organisms/NetworkErrorScreen';
+import type { ErrorCopyKey } from '../../src/content/errors';
 import { REVEAL_CONTENT_VERSION } from '../../src/content/reveal-versioning';
 import { truthHash } from '../../src/utils/hash';
-import { useEffect, useState } from 'react';
 import { supabase } from '../../src/lib/supabase';
+import { createLogger } from '../../lib/log';
+
+const log = createLogger('reveal-share');
+
+// ≥2 failures within this window = genuine backend pressure signal.
+// Hardcoded; mock-first telemetry (REVEAL-FAILURE-TELEMETRY) will calibrate.
+// Note: revealBusy on the share screen is under post-mock-first review
+// (REVEAL-SHARE-BUSY-NECESSITY) — share's archetype-history query runs ~2s
+// after essence's same query succeeded.
+const RECENT_FAILURE_WINDOW_MS = 90_000;
 
 type State =
   | { status: 'loading' }
@@ -42,10 +52,17 @@ export default function RevealShareScreen() {
   const { session } = useAuth();
   const userId = session?.user?.id ?? null;
   const [state, setState] = useState<State>({ status: 'loading' });
+  // triggerKey: bump-only signal for the resolution useEffect dep array.
+  // retryCount: read by the busy-branch threshold; never in deps.
+  // lastFailureAt: stamped in the catch path when failure surfaces.
+  const [triggerKey, setTriggerKey] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastFailureAt, setLastFailureAt] = useState<number | null>(null);
   const shareFiredRef = useRef(false);
 
   useEffect(() => {
     // Allow the dev harness to preview any archetype via ?archetype=curator.
+    // Dev-harness path bypasses network — no AbortController needed.
     const paramId = params.archetype as ArchetypeId | undefined;
     if (paramId && ARCHETYPES[paramId]) {
       setState({ status: 'ready', archetype: ARCHETYPES[paramId] });
@@ -54,37 +71,66 @@ export default function RevealShareScreen() {
 
     if (!userId) {
       setState({ status: 'error' });
+      setLastFailureAt(Date.now());
       return;
     }
+    const controller = new AbortController();
     let cancelled = false;
 
     (async () => {
-      const { data: history, error } = await supabase
-        .from('archetype_history')
-        .select('primary_archetype')
-        .eq('user_id', userId)
-        .order('recorded_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      try {
+        const { data: history, error } = await supabase
+          .from('archetype_history')
+          .select('primary_archetype')
+          .eq('user_id', userId)
+          .order('recorded_at', { ascending: false })
+          .limit(1)
+          .abortSignal(controller.signal)
+          .maybeSingle();
 
-      if (cancelled) return;
-      if (error || !history) {
+        if (cancelled) return;
+        if (error) {
+          if (error.name === 'AbortError') return;
+          log.error('archetype-history resolution failed', error);
+          setState({ status: 'error' });
+          setLastFailureAt(Date.now());
+          return;
+        }
+        if (!history) {
+          log.error('archetype-history returned no row for user', { userId });
+          setState({ status: 'error' });
+          setLastFailureAt(Date.now());
+          return;
+        }
+        const primaryId = history.primary_archetype as ArchetypeId;
+        const archetype = ARCHETYPES[primaryId];
+        if (!archetype) {
+          log.error('unknown primary_archetype id', { primaryId });
+          setState({ status: 'error' });
+          setLastFailureAt(Date.now());
+          return;
+        }
+        setState({ status: 'ready', archetype });
+      } catch (err) {
+        if (cancelled) return;
+        if (err instanceof Error && err.name === 'AbortError') return;
+        log.error('reveal-share resolution threw', err);
         setState({ status: 'error' });
-        return;
+        setLastFailureAt(Date.now());
       }
-      const primaryId = history.primary_archetype as ArchetypeId;
-      const archetype = ARCHETYPES[primaryId];
-      if (!archetype) {
-        setState({ status: 'error' });
-        return;
-      }
-      setState({ status: 'ready', archetype });
     })();
 
     return () => {
       cancelled = true;
+      controller.abort();
     };
-  }, [userId, params.archetype]);
+  }, [userId, params.archetype, triggerKey]);
+
+  const handleRetry = useCallback(() => {
+    setRetryCount((n) => n + 1);
+    setState({ status: 'loading' });
+    setTriggerKey((k) => k + 1);
+  }, []);
 
   const handleShare = async () => {
     if (state.status !== 'ready') return;
@@ -124,10 +170,15 @@ export default function RevealShareScreen() {
   }
 
   if (state.status === 'error') {
+    const isBusyState =
+      retryCount >= 2 &&
+      lastFailureAt !== null &&
+      Date.now() - lastFailureAt < RECENT_FAILURE_WINDOW_MS;
+    const errorKey: ErrorCopyKey = isBusyState ? 'revealBusy' : 'revealShareUnavailable';
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <NetworkErrorScreen errorKey="revealShareUnavailable" />
+        <NetworkErrorScreen errorKey={errorKey} onRetry={handleRetry} />
       </>
     );
   }

@@ -227,14 +227,16 @@ dev sign-out button.
   only; pre-quiz users couldn't reach it. Moot once HOME-SIGNOUT-01
   lands a real sign-out path. The dev button has been removed in this
   commit.
-- **REVEAL-RETRY-STATE (P2):** Add retry-count state to reveal-essence
-  so the `revealBusy` rate-limit copy + B15 rate-limit branch can ship
-  together. Currently blocked because reveal-essence is stateless on
-  its failure path — `setState({ status: 'error' })` is one-shot, no
-  re-fetch trigger. The REVEAL-ERROR-COPY migration shipped with
-  `onRetry={undefined}` per the no-state constraint, so the user-tap
-  on "Try again" falls through `NetworkErrorScreen`'s console.warn to
-  `router.replace('/')`. Source: REVEAL-ERROR-COPY task, 5 May 2026.
+- **REVEAL-RETRY-STATE (RESOLVED, 5 May 2026):** Shipped retry state
+  (triggerKey/retryCount/lastFailureAt), `revealBusy` rate-limit copy
+  branch (≥2 failures within 90s window), and AbortController on the
+  primary archetype-history query in both reveal-essence and
+  reveal-share. NetworkErrorScreen now receives a real `onRetry`
+  callback. Post-success housekeeping calls (reveal_completed_at
+  read/write) intentionally NOT signal-guarded — see commit
+  `feat(reveal): retry state + revealBusy + AbortController on
+  resolution query (REVEAL-RETRY-STATE)`. Originally captured by
+  REVEAL-ERROR-COPY task, 5 May 2026.
 - **LOG-CONSOLE-WARN-AUDIT (P2):** `NetworkErrorScreen` contains two
   raw `console.warn` calls (the retry-fallback and dismiss-fallback
   warnings). CLAUDE.md's discipline section bans `console.log` outside
@@ -296,3 +298,31 @@ dev sign-out button.
   a backfill that is no-op on prod (no stranded rows) but the
   trigger + FK are essential. File this against LR-PROD-SYNC.
   Source: SIGNUP-PUBLIC-USERS-SYNC task, 5 May 2026.
+- **REVEAL-FAILURE-TELEMETRY (P2):** Emit PostHog events on reveal
+  failure and busy-branch transitions: `reveal_failure` with
+  `{screen, retry_count}` payload, and `reveal_busy_shown` when the
+  `revealBusy` branch fires. Required for B15 rate-limit threshold
+  calibration — the current ≥2 failures within 90s window is
+  hardcoded in both reveal-essence and reveal-share; telemetry will
+  validate or revise the constants. Without this signal we have no
+  way to tell whether the threshold is too aggressive (firing on
+  transient flakes) or too lax (silent for users actually being
+  rate-limited).
+  Source: REVEAL-RETRY-STATE task, 5 May 2026.
+- **REVEAL-SHARE-COPY-AUDIT (P3):** `revealShareUnavailable` copy
+  ("The share card didn't come together") implies a failed
+  generation, but the actual failure mode on reveal-share is an
+  archetype-fetch failure (same query as essence, just re-issued ~2s
+  later). The voice misframes the user's mental model. Re-voice-gate
+  the copy when REVEAL-FAILURE-TELEMETRY data lands and we know how
+  often this branch actually fires.
+  Source: REVEAL-RETRY-STATE task, 5 May 2026.
+- **REVEAL-SHARE-BUSY-NECESSITY (P3):** reveal-share's
+  archetype-history query runs roughly 2 seconds after the same
+  query succeeded on reveal-essence. The `revealBusy` branch may be
+  over-engineered for the share screen specifically — if essence
+  succeeded, share is overwhelmingly likely to succeed too on the
+  next tap. Decide post-mock-first whether to keep, simplify, or
+  remove the busy branch in reveal-share. Could collapse to a
+  simpler "Try again" without the busy-vs-unavailable distinction.
+  Source: REVEAL-RETRY-STATE task, 5 May 2026.
