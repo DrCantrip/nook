@@ -4,6 +4,7 @@ import { Tabs } from "expo-router";
 import { House, ShoppingBag, Wrench, User } from "phosphor-react-native";
 import { STRINGS } from "../../src/content/strings";
 import { colors } from "../../src/theme/tokens";
+import { useMotionPreference } from "../../src/hooks/useMotionPreference";
 
 const S = STRINGS.tabs;
 
@@ -17,23 +18,26 @@ function AnimatedTabIcon({
   focused: boolean;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
+  const { gentle } = useMotionPreference();
 
   useEffect(() => {
     if (focused) {
       Animated.sequence([
         Animated.timing(scale, {
           toValue: 1.1,
-          duration: 120,
+          duration: gentle.duration,
+          easing: gentle.easing,
           useNativeDriver: true,
         }),
         Animated.timing(scale, {
           toValue: 1.0,
-          duration: 120,
+          duration: gentle.duration,
+          easing: gentle.easing,
           useNativeDriver: true,
         }),
       ]).start();
     }
-  }, [focused]);
+  }, [focused, gentle.duration, gentle.easing, scale]);
 
   return (
     <Animated.View style={{ transform: [{ scale }] }}>

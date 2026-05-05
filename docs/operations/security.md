@@ -245,3 +245,24 @@ dev sign-out button.
   unwired retry intents (per REVEAL-ERROR-COPY) — preserving them
   intentionally is a valid choice, but it should be documented.
   Source: REVEAL-ERROR-COPY task, 5 May 2026.
+- **DEV-RESULT-CLEANUP (P2):** Either delete
+  `app/(auth)/dev-result.tsx` or `__DEV__`-gate the route at the
+  layout level before TestFlight. Currently a production user could
+  URL-type their way to it and see un-gated motion + dead UI. The
+  file's own header comment notes "Retired by REVEAL-1B" — slated for
+  deletion. Excluded from REDUCED-MOTION-AUDIT scope on this basis.
+  Source: REDUCED-MOTION-AUDIT task, 5 May 2026.
+- **MOTION-TOKENS-MIGRATE (P2):** When DESIGN-TOKENS-CANONICAL-SOT
+  lands, `src/theme/motion.ts` must be in scope of the
+  auto-generation pipeline. Markdown derivation should include the
+  three motion registers (`considered` / `gentle` / `immediate`) plus
+  the canonical philosophy comment from the file header. The
+  reduced-motion fallback rule belongs in derived docs too.
+  Source: REDUCED-MOTION-AUDIT task, 5 May 2026.
+- **STAGGERED-REVEAL-WRAPPER (P3):** Build a `<StaggeredReveal>`
+  component for reveal-essence polish (DESIGN-03-A) on top of
+  `motion.ts`. Implements canonical Section 14.7's sequence (tint →
+  name → essence → motif → depth block → CTA at considered-register
+  intervals). Lifts the staggered pattern that REVEAL-1A had and 1B
+  lost. Sequenced after mock-first.
+  Source: REDUCED-MOTION-AUDIT task, 5 May 2026.

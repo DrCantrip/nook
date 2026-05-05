@@ -36,6 +36,7 @@ import { GrainOverlay } from '../../src/components/atoms/GrainOverlay';
 import { NetworkErrorScreen } from '../../src/components/organisms/NetworkErrorScreen';
 import { REVEAL_CONTENT_VERSION } from '../../src/content/reveal-versioning';
 import { truthHash } from '../../src/utils/hash';
+import { useMotionPreference } from '../../src/hooks/useMotionPreference';
 
 type State =
   | { status: 'loading' }
@@ -50,15 +51,22 @@ export default function RevealEssenceScreen() {
   const [state, setState] = useState<State>({ status: 'loading' });
   const tapReadyRef = useRef(false);
   const ctaOpacity = useSharedValue(0);
+  const { gentle, reduceMotion } = useMotionPreference();
 
   useEffect(() => {
+    // Comprehension gate, not animation; see canonical Section 1.5.
+    // Reduced-motion users skip the reveal pause since there's no fade to read across.
+    const tapDelay = reduceMotion ? 300 : 1500;
     tapReadyRef.current = false;
     const t = setTimeout(() => {
       tapReadyRef.current = true;
-    }, 1500);
-    ctaOpacity.value = withDelay(1500, withTiming(1, { duration: 400 }));
+    }, tapDelay);
+    ctaOpacity.value = withDelay(
+      tapDelay,
+      withTiming(1, { duration: gentle.duration, easing: gentle.easing }),
+    );
     return () => clearTimeout(t);
-  }, [ctaOpacity]);
+  }, [ctaOpacity, gentle.duration, gentle.easing, reduceMotion]);
 
   useEffect(() => {
     if (!userId) {

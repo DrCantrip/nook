@@ -20,18 +20,22 @@ import { capture, identify } from "../../src/services/posthog";
 import { recordEvent } from "../../src/services/engagement";
 import { STRINGS } from "../../src/content/strings";
 import { colors, spacing, radius, typography } from "../../src/theme/tokens";
+import { useMotionPreference } from "../../src/hooks/useMotionPreference";
 
 const S = STRINGS.signUp;
 
 function WhyWeAskExpander({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
+  const { reduceMotion } = useMotionPreference();
 
   return (
     <View style={styles.expanderContainer}>
       <Pressable
         style={styles.expanderTrigger}
         onPress={() => {
-          LayoutAnimation.easeInEaseOut();
+          if (!reduceMotion) {
+            LayoutAnimation.easeInEaseOut();
+          }
           setExpanded((v) => !v);
         }}
       >
