@@ -266,3 +266,13 @@ dev sign-out button.
   intervals). Lifts the staggered pattern that REVEAL-1A had and 1B
   lost. Sequenced after mock-first.
   Source: REDUCED-MOTION-AUDIT task, 5 May 2026.
+- **SWIPECARD-MOTION-CONSUME (P3):** Migrate SwipeCard from direct
+  reanimated `useReducedMotion` to the project `useMotionPreference`
+  hook for symmetry. Reanimated's hook is captures-once-at-module-load
+  (verified by reading `node_modules` source — docstring confirms
+  "Changing the reduced motion system setting doesn't cause your
+  components to rerender"). SwipeCard re-renders frequently per-gesture
+  so the staleness window is short, but a user toggling Reduce Motion
+  mid-deck would see stale behaviour on the next card. Low priority —
+  post-launch polish.
+  Source: REDUCED-MOTION-AUDIT task, 5 May 2026.

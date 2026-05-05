@@ -8,6 +8,12 @@
 // Direct use of reanimated primitives (withSpring, etc.) is permitted
 // in worklet-heavy contexts (SwipeCard). Non-worklet surfaces should
 // consume motion registers via useMotionPreference.
+//
+// Note on reanimated: react-native-reanimated's `useReducedMotion` is
+// captures-once-at-module-load (not reactive). Use the project
+// `useMotionPreference` hook for new surfaces. Direct reanimated usage
+// remains acceptable only in worklet-heavy contexts that re-render
+// frequently (SwipeCard).
 
 import { Easing } from 'react-native-reanimated';
 
