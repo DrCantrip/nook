@@ -62,7 +62,9 @@ export type ErrorCopyKey =
   | 'signUpFailed'
   | 'signInFailed'
   | 'wishlistSyncFailed'
-  | 'imageLoadFailed';
+  | 'imageLoadFailed'
+  | 'revealUnavailable'
+  | 'revealShareUnavailable';
 
 export const errorCopy: Record<ErrorCopyKey, ErrorCopy> = {
   // Anchor — global crash fallback rendered by ErrorBoundary.
@@ -151,5 +153,21 @@ export const errorCopy: Record<ErrorCopyKey, ErrorCopy> = {
     title: 'Out walking the dog',
     body: "This one couldn't make it through. The rest of your recommendations are fine.",
     primaryAction: { label: 'Got it', intent: 'dismiss' },
+  },
+
+  // Reveal-essence failure: archetype resolution didn't return a result.
+  revealUnavailable: {
+    title: 'Almost there',
+    body: "Your swipes are safe — we just couldn't put the picture together this time.",
+    primaryAction: { label: 'Try again', intent: 'retry' },
+    secondaryAction: { label: 'Take me home', intent: 'home' },
+  },
+
+  // Reveal-share failure: share card generation failed.
+  revealShareUnavailable: {
+    title: 'Bit busy back here',
+    body: "The share card didn't come together — your archetype is still safe and ready.",
+    primaryAction: { label: 'Try again', intent: 'retry' },
+    secondaryAction: { label: 'Take me home', intent: 'home' },
   },
 };

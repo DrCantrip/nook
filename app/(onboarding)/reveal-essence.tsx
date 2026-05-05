@@ -33,6 +33,7 @@ import {
   type ArchetypeId,
 } from '../../src/content/archetypes';
 import { GrainOverlay } from '../../src/components/atoms/GrainOverlay';
+import { NetworkErrorScreen } from '../../src/components/organisms/NetworkErrorScreen';
 import { REVEAL_CONTENT_VERSION } from '../../src/content/reveal-versioning';
 import { truthHash } from '../../src/utils/hash';
 
@@ -145,17 +146,7 @@ export default function RevealEssenceScreen() {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <View style={styles.errorScreen}>
-          <Text style={styles.errorTitle}>We couldn't find your quiz result.</Text>
-          <Pressable
-            onPress={() => router.replace('/(onboarding)/swipe')}
-            style={({ pressed }) => [styles.errorButton, { opacity: pressed ? 0.85 : 1 }]}
-            accessibilityRole="button"
-            accessibilityLabel="Try the quiz again"
-          >
-            <Text style={styles.errorButtonText}>Try again</Text>
-          </Pressable>
-        </View>
+        <NetworkErrorScreen errorKey="revealUnavailable" />
       </>
     );
   }
@@ -220,31 +211,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: colors.ink,
     opacity: 0.5,
-  },
-  errorScreen: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.cream,
-    paddingHorizontal: spacing.xl,
-  },
-  errorTitle: {
-    ...typography.sectionHeading,
-    color: colors.ink,
-    textAlign: 'center',
-    marginBottom: spacing['2xl'],
-  },
-  errorButton: {
-    minHeight: 44,
-    paddingHorizontal: spacing['2xl'],
-    backgroundColor: colors.ink,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  errorButtonText: {
-    ...typography.cta,
-    color: colors.white,
   },
   kicker: {
     fontFamily: 'DMSans-Regular',

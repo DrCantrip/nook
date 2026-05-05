@@ -227,3 +227,21 @@ dev sign-out button.
   only; pre-quiz users couldn't reach it. Moot once HOME-SIGNOUT-01
   lands a real sign-out path. The dev button has been removed in this
   commit.
+- **REVEAL-RETRY-STATE (P2):** Add retry-count state to reveal-essence
+  so the `revealBusy` rate-limit copy + B15 rate-limit branch can ship
+  together. Currently blocked because reveal-essence is stateless on
+  its failure path — `setState({ status: 'error' })` is one-shot, no
+  re-fetch trigger. The REVEAL-ERROR-COPY migration shipped with
+  `onRetry={undefined}` per the no-state constraint, so the user-tap
+  on "Try again" falls through `NetworkErrorScreen`'s console.warn to
+  `router.replace('/')`. Source: REVEAL-ERROR-COPY task, 5 May 2026.
+- **LOG-CONSOLE-WARN-AUDIT (P2):** `NetworkErrorScreen` contains two
+  raw `console.warn` calls (the retry-fallback and dismiss-fallback
+  warnings). CLAUDE.md's discipline section bans `console.log` outside
+  `lib/log.ts` but does not explicitly cover `console.warn` /
+  `console.error`. Decide: extend the ban to all `console.*`, or add
+  `warn`/`error` levels to `lib/log.ts` and migrate. Either way, the
+  `NetworkErrorScreen` warns become fallback signal channels for
+  unwired retry intents (per REVEAL-ERROR-COPY) — preserving them
+  intentionally is a valid choice, but it should be documented.
+  Source: REVEAL-ERROR-COPY task, 5 May 2026.
