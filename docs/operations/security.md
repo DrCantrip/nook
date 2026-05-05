@@ -276,3 +276,23 @@ dev sign-out button.
   mid-deck would see stale behaviour on the next card. Low priority —
   post-launch polish.
   Source: REDUCED-MOTION-AUDIT task, 5 May 2026.
+- **SIGNUP-UPDATE-SILENT-NOMATCH-LOG (P3):** Add defensive logging to
+  the consent UPDATE in `app/(auth)/sign-up.tsx` — chain `.select()`
+  after `.update()` to confirm a row matched, then log a warning via
+  `createLogger` if `data.length === 0`. The `handle_new_user` trigger
+  installed by SIGNUP-PUBLIC-USERS-SYNC should make this a no-op
+  forever, but the defensive log catches future trigger regressions or
+  any new sign-up path that bypasses the trigger. Low priority —
+  post-launch.
+  Source: SIGNUP-PUBLIC-USERS-SYNC task, 5 May 2026.
+- **LR-PROD-SYNC (P0 reminder, not new):** The
+  `20260505140000_create_handle_new_user_trigger.sql` migration is
+  part of the production deployment bundle. Production project
+  (`jsrscopoddxoluwaoyak`) was empty at investigation time on 5 May
+  2026 (0 auth.users, 0 public.users, 0 triggers). This migration
+  must run on production BEFORE any TestFlight user signs up — without
+  it, every TestFlight signup will silently drop consent flags and
+  journey_stage exactly as staging did pre-fix. The migration includes
+  a backfill that is no-op on prod (no stranded rows) but the
+  trigger + FK are essential. File this against LR-PROD-SYNC.
+  Source: SIGNUP-PUBLIC-USERS-SYNC task, 5 May 2026.
