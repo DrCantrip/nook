@@ -46,7 +46,7 @@ let hasFiredViewed = false;
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const isAnonymous = user?.is_anonymous === true;
   const result = useProfile(user?.id ?? null);
   const viewedFiredRef = useRef(false);
@@ -116,6 +116,12 @@ export default function ProfileScreen() {
       recordEvent(user, 'profile_delete_account_tapped', {});
     }
     openProfileDeleteAccount();
+  };
+
+  const onSignOut = async () => {
+    Haptics.selectionAsync();
+    await signOut();
+    // Auth guard in app/_layout.tsx detects null session and replaces to /(auth)/welcome.
   };
 
   const memberSinceLabel = formatMemberSince(memberSince);
@@ -232,6 +238,14 @@ export default function ProfileScreen() {
               accessibilityLabel="Delete my account"
             >
               <Text style={styles.actionDanger}>Delete my account</Text>
+            </Pressable>
+            <Pressable
+              onPress={onSignOut}
+              style={({ pressed }) => [styles.action, { opacity: pressed ? 0.85 : 1 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Sign out"
+            >
+              <Text style={styles.actionText}>Sign out</Text>
             </Pressable>
           </View>
         )}
