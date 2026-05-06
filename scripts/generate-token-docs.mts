@@ -27,12 +27,8 @@ import { dirname, join, relative } from 'node:path';
 import {
   colors,
   spacing,
-  radius,
   typography,
   shadow,
-  archetypeTheme,
-  tint,
-  ARCHETYPE_IDS,
 } from '../src/theme/tokens.ts';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -309,10 +305,13 @@ function claudeMdTypography(): string {
 
 // Design-system markdown generators
 
+// Palette generator: Tier 1 cluster ONLY (core neutrals, accent, semantic,
+// AI teal, swipe overlays). Tier 2 (archetype themes) and Tier 3 (tinted
+// surfaces) stay hand-curated outside the marker per Stage 2 amendment 2.
 function designSystemPalette(source: string): string {
   const groups = extractColorGroups(source);
   const lines: string[] = [];
-  for (const group of groups) {
+  for (const [i, group] of groups.entries()) {
     lines.push(`**${group.name}**`);
     lines.push('');
     lines.push('| Token | Value | Use |');
@@ -320,27 +319,7 @@ function designSystemPalette(source: string): string {
     for (const item of group.items) {
       lines.push(`| \`${item.key}\` | \`${item.value}\` | ${item.comment || '—'} |`);
     }
-    lines.push('');
-  }
-  // Tier 2 — archetype themes
-  lines.push('**Archetype themes — Tier 2 (`archetypeTheme(id)`)**');
-  lines.push('');
-  lines.push('| Archetype | gradientStart | gradientMid | gradientEnd | accent | grainOpacity |');
-  lines.push('|---|---|---|---|---|---|');
-  for (const id of ARCHETYPE_IDS) {
-    const t = archetypeTheme(id);
-    lines.push(
-      `| ${id} | \`${t.gradientStart}\` | \`${t.gradientMid}\` | \`${t.gradientEnd}\` | \`${t.accent}\` | ${t.grainOpacity} |`,
-    );
-  }
-  lines.push('');
-  // Tier 3 — tinted surfaces
-  lines.push('**Archetype tinted surfaces — Tier 3 (`tint(id, variant)`)**');
-  lines.push('');
-  lines.push('| Archetype | page (5%) | section (8%) |');
-  lines.push('|---|---|---|');
-  for (const id of ARCHETYPE_IDS) {
-    lines.push(`| ${id} | \`${tint(id, 'page')}\` | \`${tint(id, 'section')}\` |`);
+    if (i < groups.length - 1) lines.push('');
   }
   return withWarning(lines.join('\n'));
 }
