@@ -27,7 +27,7 @@ export function ErrorScreenTemplate({
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
-      <Text style={[styles.wordmark, { marginTop: spacing['3xl'] }]}>cornr</Text>
+      <Text style={[styles.wordmark, { marginTop: spacing['3xl'] }]}>Cornr</Text>
 
       <View style={styles.content}>
         <Text style={styles.title}>{title}</Text>
