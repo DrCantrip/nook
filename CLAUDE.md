@@ -310,6 +310,7 @@ Icon background uses dedicated token #C4785A (warm terracotta). Separate from ac
 Archetype-themed screens consume `archetypeTheme(id)` from tokens.ts — never hardcode archetype-specific colours in components.
 
 ### Palette — semantic roles (non-themed screens)
+<!-- TOKEN-DOCS:START name=palette -->
 | Token          | Hex       | Use                                                         |
 |----------------|-----------|-------------------------------------------------------------|
 | ink            | #1A1814   | All text, headings, wordmark                                |
@@ -323,6 +324,7 @@ Archetype-themed screens consume `archetypeTheme(id)` from tokens.ts — never h
 | warm-100       | #EDE8E2   | Card backgrounds, skeleton loading                          |
 | teal-bg        | #F0FDFA   | AI rationale panel bg — ONLY when content source is AI      |
 | teal-text      | #134E4A   | AI rationale text — ONLY when content source is AI          |
+<!-- TOKEN-DOCS:END name=palette -->
 
 90/10 rule: ink + cream/white = 90% of every non-themed screen. Accent at 10% or less.
 
@@ -357,6 +359,7 @@ Never use LinearGradient on non-themed screens. Never create gradients from hard
 Both headings and body text use ink (#1A1814) on non-themed screens.
 On themed screens (reveal, share card), all text uses white (#FFFCF9).
 
+<!-- TOKEN-DOCS:START name=typography -->
 | Role              | Family       | Size | Weight     | Line-height | Tracking |
 |-------------------|-------------|------|------------|-------------|----------|
 | Display           | Lora        | 34px | 700        | 40px        | -0.5px   |
@@ -367,6 +370,7 @@ On themed screens (reveal, share card), all text uses white (#FFFCF9).
 | Badge/chip        | DM Sans     | 12px | 600        | 16px        | +0.4px   |
 | CTA label         | DM Sans     | 16px | 600        | —           | +0.2px   |
 | Editorial/essence | Newsreader  | 18px | 400 italic | 28px        | 0        |
+<!-- TOKEN-DOCS:END name=typography -->
 
 Reveal screen hero scale (overrides above on themed screens only):
 | Role              | Family          | Size | Weight     |

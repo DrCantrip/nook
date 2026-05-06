@@ -28,6 +28,7 @@ Cornr's colour model is layered. Tier 1 is the always-present semantic palette. 
 
 Pre-archetype screens use 90% cream + 10% colour. Interactive elements are accent. Text is ink. Hierarchy comes from font family, not colour.
 
+<!-- TOKEN-DOCS:START name=palette -->
 **Core neutrals**
 
 | Token | Hex | Usage |
@@ -76,6 +77,7 @@ Pre-archetype screens use 90% cream + 10% colour. Interactive elements are accen
 |---|---|---|
 | `swipeOverlayLove` | `rgba(58, 126, 79, 0.35)` | Right-swipe love-direction overlay |
 | `swipeOverlayPass` | `rgba(172, 83, 66, 0.35)` | Left-swipe pass-direction overlay |
+<!-- TOKEN-DOCS:END name=palette -->
 
 ### Tier 2 — Reveal hero gradients (`archetypeTheme(id)`)
 
@@ -137,6 +139,7 @@ Hierarchy comes from font family, not colour. All ink-coloured text on cream by 
 - **DM Sans (sans)** — body, UI labels, CTAs, observations. Functional moments.
 - **Newsreader Italic** — pull quotes, essence lines. Editorial moments only.
 
+<!-- TOKEN-DOCS:START name=typography -->
 | Role | Family | Size | Line height | Letter spacing |
 |---|---|---|---|---|
 | `display` | Lora-Bold | 34 | 40 | -0.5 |
@@ -151,6 +154,7 @@ Hierarchy comes from font family, not colour. All ink-coloured text on cream by 
 | `essence` | NewsreaderItalic | 22 | 29 | — |
 | `behaviouralTruth` | Lora-SemiBold | 22 | 28 | — |
 | `observation` | DMSans-Regular | 16 | 24 | — |
+<!-- TOKEN-DOCS:END name=typography -->
 
 **Reveal-hero typography hierarchy** (largest text = the product moment):
 - Style territory in DMSans-Regular at the top (context).
@@ -163,6 +167,7 @@ Hierarchy comes from font family, not colour. All ink-coloured text on cream by 
 
 T-shirt scale, used for padding, margins, and gap.
 
+<!-- TOKEN-DOCS:START name=spacing -->
 | Token | px |
 |---|---|
 | `xs` | 4 |
@@ -173,6 +178,7 @@ T-shirt scale, used for padding, margins, and gap.
 | `2xl` | 24 |
 | `3xl` | 32 |
 | `4xl` | 48 |
+<!-- TOKEN-DOCS:END name=spacing -->
 
 **Standing rules:**
 - Screen horizontal margin: 20 (`xl`).
@@ -189,6 +195,7 @@ T-shirt scale, used for padding, margins, and gap.
 
 Radius communicates element type. Never uniform.
 
+<!-- TOKEN-DOCS:START name=radii -->
 | Token | px | Use |
 |---|---|---|
 | `badge` | 6 | Status pills, label chips |
@@ -197,6 +204,7 @@ Radius communicates element type. Never uniform.
 | `card` | 16 | Cards, list rows |
 | `modal` | 20 | Modal sheets (top-only) |
 | `swipe` | 20 | Swipe deck cards |
+<!-- TOKEN-DOCS:END name=radii -->
 
 ---
 
@@ -204,10 +212,12 @@ Radius communicates element type. Never uniform.
 
 Imported from `tokens.shadow`. Never write shadow values inline in a component.
 
+<!-- TOKEN-DOCS:START name=shadows -->
 | Token | Color | Opacity | Radius | Offset | Elevation |
 |---|---|---|---|---|---|
 | `shadow.card` | `ink` | 0.08\* | 12 | `{0, 4}`\* | 4\* |
 | `shadow.swipe` | `ink` | 0.12 | 20 | `{0, 8}` | 8 |
+<!-- TOKEN-DOCS:END name=shadows -->
 
 > \***Known token drift on `shadow.card`** (CD-MARKDOWN re-derivation, 5 May): tokens.ts defines `card` as `{0.08, 12, {0,4}, 4}`, but BDS v3 and historical components use `{0.06, 12, {0,1}, 2}`. Components likely inline the BDS values, bypassing the token. **Flagged for future fix** — do not "correct" in either direction without an audit pass. Treat tokens.ts as authoritative for any new component until then.
 
