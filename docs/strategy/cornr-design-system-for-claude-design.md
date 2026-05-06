@@ -29,9 +29,13 @@ Cornr's colour model is layered. Tier 1 is the always-present semantic palette. 
 Pre-archetype screens use 90% cream + 10% colour. Interactive elements are accent. Text is ink. Hierarchy comes from font family, not colour.
 
 <!-- TOKEN-DOCS:START name=palette -->
-**Core neutrals**
+> ⚠️ AUTO-GENERATED from `src/theme/tokens.ts` by `scripts/generate-token-docs.ts`.
+> Do not edit by hand — changes here are overwritten on next regeneration.
+> Re-run `npm run docs:tokens` after any tokens.ts change.
 
-| Token | Hex | Usage |
+**Core**
+
+| Token | Value | Use |
 |---|---|---|
 | `ink` | `#1A1814` | Primary text, headings, wordmark (16.6:1 on cream, AAA) |
 | `charcoal` | `#2C2824` | Dark card backgrounds |
@@ -43,40 +47,38 @@ Pre-archetype screens use 90% cream + 10% colour. Interactive elements are accen
 | `cream` | `#FAF7F3` | Page background |
 | `white` | `#FFFCF9` | Card surface |
 
-**Accent (terracotta — 15 April late PM shift, Lick / Farrow & Ball 2026 trend data)**
+**Accent — terracotta shift 15 Apr late PM (Lick/F&B 2026 trend data)**
 
-| Token | Hex | Usage |
+| Token | Value | Use |
 |---|---|---|
-| `accent` | `#9E5F3C` | Interactive text, borders, icons |
-| `accentSurface` | `#BE7458` | Filled button backgrounds **only** — never used for text |
+| `accent` | `#9E5F3C` | Interactive text/borders/icons |
+| `accentSurface` | `#BE7458` | Filled button bg ONLY — never used for text |
 | `accentLight` | `#F0D8C0` | Tint backgrounds |
 | `accentDark` | `#965E40` | Pressed states |
 
 **Semantic**
 
-| Token | Hex | Usage |
+| Token | Value | Use |
 |---|---|---|
-| `success` | `#3A7E4F` | Confirmations, "love" overlay base |
-| `warning` | `#8E6B26` | Cautions |
-| `warningLight` | `#FDF3E3` | Warning backgrounds |
-| `error` | `#A84B42` | Errors, "pass" overlay base — 16.1° hue separation from terracotta accent |
-| `info` | `#4A6E8E` | Informational |
+| `success` | `#3A7E4F` | — |
+| `warning` | `#8E6B26` | — |
+| `warningLight` | `#FDF3E3` | — |
+| `error` | `#A84B42` | 16.1° hue separation from terracotta accent |
+| `info` | `#4A6E8E` | — |
 
-**AI-content surfaces (the only place teal is allowed)**
+**AI content (only place teal is allowed)**
 
-| Token | Hex | Usage |
+| Token | Value | Use |
 |---|---|---|
-| `tealBg` | `#F0FDFA` | AI rationale panel background |
-| `tealText` | `#134E4A` | AI rationale panel text |
+| `tealBg` | `#F0FDFA` | — |
+| `tealText` | `#134E4A` | — |
 
-> Note: AI teal is deprecated for *user-facing identity surfaces* (canonical 15 Apr PM). It still applies to AI-generated content panels (recommendation rationale).
+**Swipe overlays**
 
-**Swipe overlays (rgba, applied at 35% opacity over card)**
-
-| Token | Value | Usage |
+| Token | Value | Use |
 |---|---|---|
-| `swipeOverlayLove` | `rgba(58, 126, 79, 0.35)` | Right-swipe love-direction overlay |
-| `swipeOverlayPass` | `rgba(172, 83, 66, 0.35)` | Left-swipe pass-direction overlay |
+| `swipeOverlayLove` | `rgba(58, 126, 79, 0.35)` | success at 35% — love overlay |
+| `swipeOverlayPass` | `rgba(172, 83, 66, 0.35)` | error at 35% — pass overlay |
 <!-- TOKEN-DOCS:END name=palette -->
 
 ### Tier 2 — Reveal hero gradients (`archetypeTheme(id)`)
@@ -140,6 +142,10 @@ Hierarchy comes from font family, not colour. All ink-coloured text on cream by 
 - **Newsreader Italic** — pull quotes, essence lines. Editorial moments only.
 
 <!-- TOKEN-DOCS:START name=typography -->
+> ⚠️ AUTO-GENERATED from `src/theme/tokens.ts` by `scripts/generate-token-docs.ts`.
+> Do not edit by hand — changes here are overwritten on next regeneration.
+> Re-run `npm run docs:tokens` after any tokens.ts change.
+
 | Role | Family | Size | Line height | Letter spacing |
 |---|---|---|---|---|
 | `display` | Lora-Bold | 34 | 40 | -0.5 |
@@ -168,6 +174,10 @@ Hierarchy comes from font family, not colour. All ink-coloured text on cream by 
 T-shirt scale, used for padding, margins, and gap.
 
 <!-- TOKEN-DOCS:START name=spacing -->
+> ⚠️ AUTO-GENERATED from `src/theme/tokens.ts` by `scripts/generate-token-docs.ts`.
+> Do not edit by hand — changes here are overwritten on next regeneration.
+> Re-run `npm run docs:tokens` after any tokens.ts change.
+
 | Token | px |
 |---|---|
 | `xs` | 4 |
@@ -196,6 +206,10 @@ T-shirt scale, used for padding, margins, and gap.
 Radius communicates element type. Never uniform.
 
 <!-- TOKEN-DOCS:START name=radii -->
+> ⚠️ AUTO-GENERATED from `src/theme/tokens.ts` by `scripts/generate-token-docs.ts`.
+> Do not edit by hand — changes here are overwritten on next regeneration.
+> Re-run `npm run docs:tokens` after any tokens.ts change.
+
 | Token | px | Use |
 |---|---|---|
 | `badge` | 6 | Status pills, label chips |
@@ -213,10 +227,16 @@ Radius communicates element type. Never uniform.
 Imported from `tokens.shadow`. Never write shadow values inline in a component.
 
 <!-- TOKEN-DOCS:START name=shadows -->
-| Token | Color | Opacity | Radius | Offset | Elevation |
-|---|---|---|---|---|---|
-| `shadow.card` | `ink` | 0.08\* | 12 | `{0, 4}`\* | 4\* |
-| `shadow.swipe` | `ink` | 0.12 | 20 | `{0, 8}` | 8 |
+> ⚠️ AUTO-GENERATED from `src/theme/tokens.ts` by `scripts/generate-token-docs.ts`.
+> Do not edit by hand — changes here are overwritten on next regeneration.
+> Re-run `npm run docs:tokens` after any tokens.ts change.
+
+```ts
+shadow.card  → { shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 4 }
+shadow.swipe → { shadowOpacity: 0.12, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 8 }
+```
+
+`shadowColor` for both is `colors.ink` (`#1A1814`).
 <!-- TOKEN-DOCS:END name=shadows -->
 
 > \***Known token drift on `shadow.card`** (CD-MARKDOWN re-derivation, 5 May): tokens.ts defines `card` as `{0.08, 12, {0,4}, 4}`, but BDS v3 and historical components use `{0.06, 12, {0,1}, 2}`. Components likely inline the BDS values, bypassing the token. **Flagged for future fix** — do not "correct" in either direction without an audit pass. Treat tokens.ts as authoritative for any new component until then.

@@ -326,3 +326,19 @@ dev sign-out button.
   remove the busy branch in reveal-share. Could collapse to a
   simpler "Try again" without the busy-vs-unavailable distinction.
   Source: REVEAL-RETRY-STATE task, 5 May 2026.
+- **TEAL-DEPRECATION-PROSE-RELOCATE (P3):** The teal deprecation
+  note ("AI teal is deprecated for *user-facing identity surfaces*,
+  canonical 15 Apr PM. It still applies to AI-generated content
+  panels — recommendation rationale.") was inside the design-system
+  markdown's palette marker and lost during the first regeneration.
+  The note belongs in canonical Section 14 as a design rule, not
+  in the derived design-system markdown. Capture in the next
+  CD-CANONICAL-SYNC task.
+  Source: DESIGN-TOKENS-CANONICAL-SOT task, 6 May 2026.
+- **TOKENS-COMMENTS-COMPLETE (P3):** Six tokens lack inline
+  `// comment` annotations in `src/theme/tokens.ts` and render as
+  "—" in the regenerated palette tables: `success`, `warning`,
+  `warningLight`, `info`, `tealBg`, `tealText`. Add inline comments
+  on each so the next `npm run docs:tokens` produces editorial-rich
+  rows. Trivial fix; captures code-side documentation debt.
+  Source: DESIGN-TOKENS-CANONICAL-SOT task, 6 May 2026.
