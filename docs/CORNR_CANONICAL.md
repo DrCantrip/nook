@@ -3,7 +3,7 @@
 **Last updated:** 20 April 2026 (late evening — fallback reveal copy shipped on main as 4907e4d, dual-file mirror to supabase/functions/_shared/; archetype v3 ship and R-24 retained from prior evening entry)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: c86d6e3 -->
+<!-- CANONICAL-SHA: 5ed5103 -->
 <!-- LAST-SYNCED-PK: c86d6e3 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
