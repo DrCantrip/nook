@@ -4,9 +4,9 @@ Run these checks in order:
 Run `npx tsc --noEmit`. If it fails, show errors and ask if the user wants to fix them before completing the task.
 
 ## 2. Design Spec Check
-Read docs/DESIGN_SPECS.md. For every screen or component touched in this task, verify:
+Read docs/strategy/cornr-design-system-for-claude-design.md. For every screen or component touched in this task, verify:
 - Spacing values match the spec (screen padding 20px, button height 52px, gaps between elements)
-- Colours match the spec (primary-900 for CTAs, neutral-500 minimum for text, warmstone backgrounds)
+- Colours match the spec (ink for headings, accent for interactive, cream for screen backgrounds — never hardcode hex)
 - Typography matches the spec (correct size, weight, tracking for each text role)
 - Touch targets are 44pt minimum on all interactive elements
 - Press states use activeOpacity={0.85}, never 0.5
