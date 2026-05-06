@@ -470,10 +470,16 @@ async function main(): Promise<void> {
     process.exit(3);
   }
 
-  // 3. Regenerate or check
+  // 3. Regenerate or check.
+  // CRLF normalisation: Git's autocrlf converts LF in the index to CRLF in
+  // the working tree on Windows. The script always writes LF; comparing
+  // CRLF-on-disk against LF-regen would always report drift. Normalise
+  // both sides to LF before comparing. Writes still go out as LF (Git
+  // re-converts on commit).
   let drift = false;
   for (const target of targets) {
-    const onDisk = await readFile(target.path, 'utf8');
+    const onDiskRaw = await readFile(target.path, 'utf8');
+    const onDisk = onDiskRaw.replace(/\r\n/g, '\n');
     const regenerated = applyAllMarkers(onDisk, target);
     const rel = relative(REPO_ROOT, target.path).replaceAll('\\', '/');
     if (regenerated !== onDisk) {
