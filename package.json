@@ -10,6 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "check": "tsc --noEmit",
+    "_docs_tokens_note": "MODULE_TYPELESS_PACKAGE_JSON warning is suppressed: this is an Expo project (Metro bundles), not published as ES module — adding type:module would break RN's CJS expectation. The .mts script is ESM-explicit; tokens.ts is .ts and triggers Node's reparse warning on import. Functionally fine, just noisy.",
     "docs:tokens": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-token-docs.mts",
     "docs:tokens:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-token-docs.mts --check"
   },
