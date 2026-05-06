@@ -2,7 +2,7 @@
 
 Read the following files silently (do NOT output their contents):
 - CLAUDE.md
-- docs/DESIGN_SPECS.md — load all visual design specifications (spacing, colours, typography, touch targets, press states). Every screen built this session must match these specs exactly.
+- docs/strategy/cornr-design-system-for-claude-design.md — load all visual design specifications (spacing, colours, typography, touch targets, press states). Every screen built this session must match these specs exactly.
 - docs/BUILD_LOG.md
 
 Then report in this exact format:

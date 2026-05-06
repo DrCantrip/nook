@@ -29,7 +29,7 @@
 **Branch:** `feat/bridge-sprint-2/welcome-rebuild`
 
 ```
-Read docs/CORNR_CANONICAL.md Section 2 (two-tier room context capture) and docs/DESIGN_SPECS.md.
+Read docs/CORNR_CANONICAL.md Section 2 (two-tier room context capture) and docs/strategy/cornr-design-system-for-claude-design.md.
 
 Rebuild the Welcome screen (app/(auth)/welcome.tsx or equivalent) with three interaction zones in clear visual hierarchy.
 
@@ -98,7 +98,7 @@ Visual spec:
 - accessibilityState={{ checked: selected }}
 - accessibilityHint provided by parent (Welcome screen)
 
-Add to docs/DESIGN_SPECS.md component inventory under Molecules.
+Add to docs/strategy/cornr-design-system-for-claude-design.md component inventory under Molecules.
 
 All colours from tokens.ts. Run npx tsc --noEmit.
 ```

@@ -310,19 +310,36 @@ Icon background uses dedicated token #C4785A (warm terracotta). Separate from ac
 Archetype-themed screens consume `archetypeTheme(id)` from tokens.ts — never hardcode archetype-specific colours in components.
 
 ### Palette — semantic roles (non-themed screens)
-| Token          | Hex       | Use                                                         |
-|----------------|-----------|-------------------------------------------------------------|
-| ink            | #1A1814   | All text, headings, wordmark                                |
-| cream          | #FAF7F3   | List/home screen backgrounds                                |
-| white          | #FFFCF9   | Card surfaces, focus screens, inputs                        |
-| accent         | #9E5F3C   | Interactive text, links, borders, icons, focus rings        |
-| accent-surface | #BE7458   | PrimaryButton bg and filled interactive surfaces ONLY       |
-| warm-600       | #6B6358   | Secondary text, UI labels, form labels                      |
-| warm-400       | #948A7D   | Placeholders, inactive icons, inactive nav                  |
-| warm-200       | #D4CBC0   | Light borders, dividers, disabled button bg                 |
-| warm-100       | #EDE8E2   | Card backgrounds, skeleton loading                          |
-| teal-bg        | #F0FDFA   | AI rationale panel bg — ONLY when content source is AI      |
-| teal-text      | #134E4A   | AI rationale text — ONLY when content source is AI          |
+<!-- TOKEN-DOCS:START name=palette -->
+> ⚠️ AUTO-GENERATED from `src/theme/tokens.ts` by `scripts/generate-token-docs.ts`.
+> Do not edit by hand — changes here are overwritten on next regeneration.
+> Re-run `npm run docs:tokens` after any tokens.ts change.
+
+| Token | Hex | Use |
+|---|---|---|
+| ink | #1A1814 | Primary text, headings, wordmark (16.6:1 on cream, AAA) |
+| charcoal | #2C2824 | Dark card backgrounds |
+| warm-800 | #3D3832 | Borders on dark surfaces |
+| warm-600 | #6B6358 | Secondary text, UI labels (5.54:1 on cream) |
+| warm-400 | #948A7D | Placeholders, inactive icons (3.18:1, large text only) |
+| warm-200 | #D4CBC0 | Light borders, disabled bg |
+| warm-100 | #EDE8E2 | Skeleton, light card bg |
+| cream | #FAF7F3 | Page background |
+| white | #FFFCF9 | Card surface |
+| accent | #9E5F3C | Interactive text/borders/icons |
+| accent-surface | #BE7458 | Filled button bg ONLY — never used for text |
+| accent-light | #F0D8C0 | Tint backgrounds |
+| accent-dark | #965E40 | Pressed states |
+| success | #3A7E4F | — |
+| warning | #8E6B26 | — |
+| warning-light | #FDF3E3 | — |
+| error | #A84B42 | 16.1° hue separation from terracotta accent |
+| info | #4A6E8E | — |
+| teal-bg | #F0FDFA | — |
+| teal-text | #134E4A | — |
+| swipe-overlay-love | rgba(58, 126, 79, 0.35) | success at 35% — love overlay |
+| swipe-overlay-pass | rgba(172, 83, 66, 0.35) | error at 35% — pass overlay |
+<!-- TOKEN-DOCS:END name=palette -->
 
 90/10 rule: ink + cream/white = 90% of every non-themed screen. Accent at 10% or less.
 
@@ -357,16 +374,26 @@ Never use LinearGradient on non-themed screens. Never create gradients from hard
 Both headings and body text use ink (#1A1814) on non-themed screens.
 On themed screens (reveal, share card), all text uses white (#FFFCF9).
 
-| Role              | Family       | Size | Weight     | Line-height | Tracking |
-|-------------------|-------------|------|------------|-------------|----------|
-| Display           | Lora        | 34px | 700        | 40px        | -0.5px   |
-| Screen title      | Lora        | 22px | 600        | 28px        | -0.3px   |
-| Card heading      | DM Sans     | 17px | 600        | 22px        | 0        |
-| Body              | DM Sans     | 16px | 400        | 24px        | 0        |
-| UI label          | DM Sans     | 14px | 500        | 20px        | 0        |
-| Badge/chip        | DM Sans     | 12px | 600        | 16px        | +0.4px   |
-| CTA label         | DM Sans     | 16px | 600        | —           | +0.2px   |
-| Editorial/essence | Newsreader  | 18px | 400 italic | 28px        | 0        |
+<!-- TOKEN-DOCS:START name=typography -->
+> ⚠️ AUTO-GENERATED from `src/theme/tokens.ts` by `scripts/generate-token-docs.ts`.
+> Do not edit by hand — changes here are overwritten on next regeneration.
+> Re-run `npm run docs:tokens` after any tokens.ts change.
+
+| Role | Family | Size | Weight | Line height | Letter spacing |
+|---|---|---|---|---|---|
+| Display | Lora | 34px | 700 | 40px | -0.5px |
+| Screen title | Lora | 22px | 600 | 28px | -0.3px |
+| Section heading | Lora | 20px | 600 | 26px | -0.2px |
+| Card heading | DM Sans | 17px | 600 | 22px | — |
+| Body | DM Sans | 16px | 400 | 24px | — |
+| UI label | DM Sans | 14px | 500 | 20px | — |
+| Badge/chip | DM Sans | 12px | 600 | 16px | 0.4px |
+| CTA label | DM Sans | 16px | 600 | 20px | 0.2px |
+| Quote | Newsreader Italic | 16px | 400 | 24px | — |
+| Essence | Newsreader Italic | 22px | 400 | 29px | — |
+| Behavioural truth | Lora | 22px | 600 | 28px | — |
+| Observation | DM Sans | 16px | 400 | 24px | — |
+<!-- TOKEN-DOCS:END name=typography -->
 
 Reveal screen hero scale (overrides above on themed screens only):
 | Role              | Family          | Size | Weight     |
