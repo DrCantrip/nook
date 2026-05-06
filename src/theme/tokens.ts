@@ -48,12 +48,12 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  badge: 6,
-  button: 10,
-  input: 12,
-  card: 16,
-  modal: 20,
-  swipe: 20,
+  badge: 6,        // Status pills, label chips
+  button: 10,      // Filled and ghost buttons
+  input: 12,       // Text inputs, selects
+  card: 16,        // Cards, list rows
+  modal: 20,       // Modal sheets (top-only)
+  swipe: 20,       // Swipe deck cards
 } as const;
 
 export const typography = {
@@ -94,14 +94,20 @@ export const shadow = {
 // needed so white text (#FFFCF9) passes WCAG AA (4.5:1) across the full
 // gradient. Contrast margins per archetype documented in commit history.
 
-export type ArchetypeThemeId =
-  | 'curator'
-  | 'nester'
-  | 'maker'
-  | 'minimalist'
-  | 'romantic'
-  | 'storyteller'
-  | 'urbanist';
+// Runtime list of archetype IDs. Type derived below.
+// Exported so doc generators (scripts/generate-token-docs.ts) can iterate
+// without hardcoding the taxonomy.
+export const ARCHETYPE_IDS = [
+  'curator',
+  'nester',
+  'maker',
+  'minimalist',
+  'romantic',
+  'storyteller',
+  'urbanist',
+] as const;
+
+export type ArchetypeThemeId = (typeof ARCHETYPE_IDS)[number];
 
 export type ArchetypeTheme = {
   gradientStart: string;

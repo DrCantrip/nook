@@ -9,7 +9,12 @@
     "web": "expo start --web",
     "test": "jest",
     "test:watch": "jest --watch",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "docs:tokens": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-token-docs.mts",
+    "docs:tokens:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-token-docs.mts --check"
+  },
+  "engines": {
+    "node": ">=24.0.0"
   },
   "jest": {
     "preset": "jest-expo",
