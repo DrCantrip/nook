@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" shape-rendering="geometricPrecision">
+  <rect width="1024" height="1024" fill="#C4785A"></rect>
+  <g transform="translate(170.5 230.50999999999996) scale(3.415)">
+    <path d="M 10 14 L 190 14 L 190 90" stroke="#FAF7F3" stroke-width="10.541727672035138" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+  </g>
+  <text x="512" y="730.05" font-family="Lora" font-size="280" font-style="italic" font-weight="700" fill="#FAF7F3" text-anchor="middle" dominant-baseline="alphabetic">Cornr</text>
+</svg>
