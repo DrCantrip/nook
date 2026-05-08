@@ -1631,6 +1631,60 @@ before any other content:
 This replaces ad-hoc preambles. The task paste (paste 2) carries the
 spec + acceptance criteria + unverified-template only.
 
+### Claude Design briefs match prescription density to specification certainty (R-33)
+
+When delivering design briefs to Claude Design, prescription density must match how locked the specification is.
+
+**Locked-spec mode (typewriter)**: when geometry, palette, dimensions, or composition are locked from prior decision, the brief MUST include literal SVG paths, exact pixel dimensions, and explicit colour hex values. Verbal description is insufficient — verbal-only briefs introduced unintended changes (see icon v1 downturn). Locked geometry → coordinates in the prompt.
+
+**Open-design mode (collaborator-on-rails)**: when the design is genuinely open and Claude Design is the executor of a creative decision, the brief contains intent, dimensional constraints, and explicit permission to flag and propose alternatives if the brief reads under-specified or contradictory. Over-constraining open-design briefs kills the judgement Claude Design is being asked to apply (see icon v2 over-constrained execution).
+
+The asymmetry: typewriter mode applied to open design produces drift-from-judgement; collaborator mode applied to locked spec produces drift-from-decision. The cost of the second is higher because it overrides decisions. Default to typewriter when in doubt; explicitly authorise collaborator only when the design itself is genuinely the question.
+
+Source: 6 May 2026 icon work, particularly the v1-v2-v3 failure arc.
+
+### Brand capitalisation: "Cornr" user-facing, "cornr" internal (R-34)
+
+"Cornr" (capital C) in all user-facing brand presentation including mid-sentence references. "cornr" (lowercase) only in code paths, identifiers, schema names, deep-link schemes, URL slugs, npm package names, repository names, social handles where the platform convention is lowercase.
+
+No mid-sentence exceptions for stylistic flow. The brand's softness comes from the contraction (missing 'e'), the italic Lora wordmark, the terracotta palette, and the voice rules — not from lowercase styling. iPhone pattern: capital P in marketing presentation, lowercase i visually as part of the wordmark, no special internal treatment.
+
+Practical decision boundary: if a string is read by a human as a brand name, capitalise. If it is read by a machine or another developer as an identifier, lowercase.
+
+Source: 6 May 2026 icon master lock + capitalisation cascade.
+
+### tokens.ts is the runtime source of truth for design tokens; downstream docs auto-regenerate (R-35)
+
+`src/theme/tokens.ts` is the runtime source of truth for all design tokens (colours, typography, spacing, radii, shadows, archetype themes). Token-derived sections of CLAUDE.md and `docs/strategy/cornr-design-system-for-claude-design.md` are wrapped in `<!-- TOKEN-DOCS:START name=X -->` markers and regenerate via `npm run docs:tokens`. Drift checked via `npm run docs:tokens:check` (exits non-zero if generated docs don't match current tokens.ts).
+
+Hand-edits inside marker blocks are overwritten on next regeneration — the warning blockquote inside each marker says so loudly. Adding a new token requires running the regenerator before commit; pre-commit drift detection is currently manual (CI gate deferred to v2 of the pipeline).
+
+`docs/DESIGN_SPECS.md` is retired. Authoritative design system documentation is the canonical Section 14 + tokens.ts pair, with `docs/strategy/cornr-design-system-for-claude-design.md` as the auto-derived design upload Claude Design consumes.
+
+Source: 6 May 2026 — DESIGN-TOKENS-CANONICAL-SOT v1 pipeline shipped. Architecture in canonical Section 14.11.
+
+### Audit-first for sweep tasks (R-36)
+
+Tasks that look like "find all X and change to Y across the codebase" must run a read-only audit pass first, surface findings categorised by treatment, and apply changes only after explicit per-category approval.
+
+The 6 May capitalisation cascade demonstrated the pattern's value: 295 occurrences of "cornr" across 72 files; only 5 lines actually needed change. A naive sweep would have lowercased 195 already-correctly-capitalised instances and broken type-narrowed identifiers in TypeScript literal types.
+
+Audit categories should distinguish: (A) user-facing strings that need the change, (B) configuration fields where the rule depends on context, (C) internal code that does not change, (D) documentation where the rule depends on whether the reference is narrative or code-related, (E) any TypeScript literal types or schema literals that need a separate type-system review.
+
+This rule applies to: capitalisation changes, terminology renames, brand name changes, framework/library reference replacements, deprecated-API replacements, and any change with a high false-positive risk on a naive grep-and-replace.
+
+Source: 6 May 2026 capitalisation cascade. Pattern was originally established by the off-ramp audit (5 May 2026) and the Sentry beforeSend audit (29 April 2026); R-36 formalises the pattern as standing rule.
+
+### Heuristic gate on first regeneration of crystallisation pipelines (R-37)
+
+When a manual surface (hand-curated documentation, hand-maintained content) is being crystallised into an automated regeneration pipeline, the first pipeline run almost always produces noise: additive coverage growth (auto-output covers more than the manual surface did), format drift (whitespace, column padding, heading punctuation differ), or genuine content losses (editorial blockquotes, footnotes, asterisks not modelled by the generator).
+
+The heuristic gate pattern: auto-proceed if the first-run diff is small AND no value-bearing tokens (hex codes, identifiers, numeric values) changed; pause for human review otherwise. Future regenerations after the first do not need the gate — it is a v1-only safety net for the crystallisation transition.
+
+The 6 May SoT pipeline first-run hit the gate (>5% lines changed plus 50 hex hits). Manual review confirmed: zero hex value drift (every hex matched tokens.ts), additive coverage growth (CLAUDE.md palette grew 11→22 rows, typography 8→12 roles), three legitimate content losses captured as follow-ups. Heuristic gate prevented silent shipping of incomplete first-run output.
+
+Source: 6 May 2026 — DESIGN-TOKENS-CANONICAL-SOT first-run regeneration.
+
 ---
 
 ## Section 14 — Design System
