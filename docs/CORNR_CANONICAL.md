@@ -31,6 +31,128 @@
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
 
+### 6 May 2026 — Brand presentation crystallised: icon master locked, capitalisation cascade, design tokens auto-regenerate
+
+Three connected design and infrastructure decisions landed on 6 May, all converging on a single durable shape: Cornr's brand presentation is now consistent across every surface where it appears, and the documentation that describes it auto-regenerates from code.
+
+**Icon master v6 locked.** The icon arc that began with the 16 April masthead-context approval (corner mark plus "cornr" wordmark, matched-weight, cream on terracotta) hit five intermediate failure modes before resolving. v1 introduced a downturn from verbal description alone (the literal SVG path was missing). v2 had correct geometry but masthead proportions in an icon canvas. v3 (a wordmark-led panel output) lost brand presence by demoting the corner mark to ornament. v4 (an "eighth motif" pure-circle direction following an over-extension of family-grammar reasoning) lost the brand name entirely. v5 returned to the 16 April composition with proper icon-canvas proportions and rendered cleanly. v6 added capital-C wordmark presentation after a side-by-side render comparison. Final composition: corner mark above "Cornr" wordmark, matched-weight stroke, cream `#FAF7F3` on terracotta `#C4785A`, SVG path `M 10 14 L 190 14 L 190 90`. 14 production exports landed at `c77db57`. Design captured in canonical Section 14.9. Lessons captured in R-33.
+
+**Capitalisation cascade.** The icon shows "Cornr" capitalised; the codebase before today rendered the wordmark lowercase in two places (welcome screen, error screens) creating a visible byte-level inconsistency. Audit-first sweep returned 295 occurrences of "cornr" across 72 files. 195 already capitalised (66%). Only 5 lines actually needed change. Brand rule locked: "Cornr" capitalised in all user-facing presentation including mid-sentence references (no lowercase exceptions for stylistic flow); "cornr" lowercase only in code paths, identifiers, schemas, deep-link schemes, URL slugs, npm/repo names. The brand's softness is carried by the contraction (missing 'e'), the italic Lora wordmark, the terracotta palette, and the voice rules — not by lowercase styling. Rule formalised as R-34. Two follow-ups captured: REPO-RENAME-CORNR (P3, GitHub-side action), PACKAGE-JSON-NAME-RENAME (P3, paired with repo rename).
+
+**DESIGN-TOKENS-CANONICAL-SOT pipeline.** `src/theme/tokens.ts` is now the runtime source of truth for design tokens. Token-derived sections of CLAUDE.md and `docs/strategy/cornr-design-system-for-claude-design.md` are wrapped in `<!-- TOKEN-DOCS:START name=X -->` markers and regenerate via `npm run docs:tokens`. Drift checked via `npm run docs:tokens:check`. Idempotent, bidirectional, Windows-CRLF-safe. Five logical commits preserved on `feat/token-sot`, merged at `23e42af`. `docs/DESIGN_SPECS.md` retired (3 references redirected). First-run regeneration tripped a deliberate heuristic gate (>5% lines changed plus hex hits in diff) — manual review confirmed additive coverage growth (CLAUDE.md palette grew 11→22 rows, typography 8→12 roles) plus formatting-only diffs, zero value drift. Architecture in 14.11. Pipeline rule formalised as R-35. Heuristic-gate pattern formalised as R-37. Two follow-ups captured: TEAL-DEPRECATION-PROSE-RELOCATE (closed in this canonical sync — note relocated to 14.1), TOKENS-COMMENTS-COMPLETE (P3, six tokens lacking inline comments render as "—" in regenerated docs).
+
+**Three workflow lessons banked as observations** (held below R-N threshold per single-instance evidence; promote when they recur):
+- *Render comparisons resolve executional design questions in seconds where panels would take longer.* The capital-vs-lowercase wordmark decision was settled by one side-by-side render. Watch-list for promotion.
+- *Claude Code autonomy floor scales with track record.* Yesterday's SoT pipeline ran clean across 5 commits + a self-caught scope error + a Windows-CRLF bugfix without chat round-trips. Worth less prescription density next time. Watch-list.
+- *First-run crystallisation pipelines benefit from one-time human review.* Already promoted to R-37 — the SoT first-run had two evidence sources (the heuristic gate worked exactly as designed; the additive coverage growth was real signal worth preserving rather than auto-shipping).
+
+What did NOT change: the warm palette, archetype motif system, design system's authoritative pair (canonical Section 14 + tokens.ts), the locked archetype set, two-commit canonical stamp pattern (KI-02).
+
+Source: 6 May 2026 — three sequenced sessions across morning + afternoon + evening. Icon arc preserved in conversations of 15-16 April (masthead approval), morning of 6 May (v1, v2 failure analysis), and 6 May afternoon/evening (v3-v6 + capitalisation cascade + SoT pipeline). Multiple panels: LARGE for icon-context geometry derivation, LARGE for SoT architecture, SMALL for Stage 2 SoT amendments, brand strategist consult for capitalisation policy. Follow-up tasks for next CD-CANONICAL-SYNC: confirm autonomy-floor and render-comparison observations have crystallised into R-N candidates; close TOKENS-COMMENTS-COMPLETE.
+
+---
+
+### 4-5 May 2026 — Pre-mock-first must-list shipped; CD design-system markdown re-derived; business incorporated
+
+Two parallel arcs landed across 4-5 May: the must-list of items blocking mock-first user testing, and the legal/business infrastructure required for TestFlight.
+
+**Pre-mock-first must-list (5/5 shipped on 5 May, single-day session 2).** REVEAL-ERROR-COPY (e0c55ec) — voice-gated error copy on the reveal screen. REDUCED-MOTION-AUDIT (bd08612 + 93329e2) — P0 WCAG compliance, three motion gates wired into reveal-essence CTA, tab-bar icon scale, and sign-up "Why we ask" expander. SIGNUP-PUBLIC-USERS-SYNC (2c31abe) — P0 data integrity, fixed via SECURITY DEFINER trigger on auth.users (not UPSERT in app code, which the panel rejected for race-condition exposure). HOME-SIGNOUT-01 (af1ce20) — wired `useAuth.signOut()` to Profile screen, replacing the dev-only test button. Motion vocabulary foundation locked in the same session: three registers (considered, gentle, immediate), `lib/motion.ts` as the authoritative source, `reanimated.useReducedMotion` confirmed not reactive at runtime (read once at mount; gating logic must remount or use an alternative reactive source). Reveal-screen retry/abort architecture also landed.
+
+**CD-MARKDOWN-RE-DERIVE shipped on 5 May session 3.** `docs/strategy/cornr-design-system-for-claude-design.md` re-derived from `tokens.ts` and canonical Section 14 to match the post-15-April warm palette and removal of NativeWind. Committed at `0d3177c`. This file is the design system upload Claude Design consumes for journey-flow renders, mockups, and design briefs; pre-derivation it was stale by ~3 weeks. Provisional staleness-rule for derived design-system markdown: re-derive after any tokens.ts edit OR canonical Section 14 patch OR significant brand decision. (This rule was superseded the next day by the SoT pipeline — see 6 May entry.)
+
+**Cornr Ltd incorporated on 4 May.** Companies House registration via 1st Formations privacy package (~£52.99). Sole director, sole shareholder, sole PSC (Daryll). SIC 62012 (Business and domestic software development). 100 ordinary shares at £1 each. Model articles. The privacy package routes the registered office through 1st Formations rather than home address (~£40/year recurring). Incorporation unblocks the Sprint 4 T-RENAME chain: Companies House registration enables HMRC tax registration, which enables business banking (Starling), which enables Apple Developer enrolment as an organisation rather than an individual. Apple Developer organisation enrolment requires DUNS-1 (3-4 week wait, started clock on 30 April per memory). cornr.co.uk domain queue active. Trademark filing target unchanged: May 2026, Class 9 + 42, ~£220.
+
+**Two security findings carried forward from 5 May session 1** (off-ramp audit, ran as planning-side preparation for must-list): every screen's "I want out" affordance audited against actual app surfaces. Four were missing one. Fixes wired into REDUCED-MOTION-AUDIT and HOME-SIGNOUT-01 commits. Pattern captured: planning-side claude.ai work surfaces issues that build-side Claude Code would miss because Claude Code reads files, not user flows.
+
+What did NOT change: Sprint 2 status (T1 complete, T2 SwipeDeck still pending), mock-first user test status (still pending), entry-point D-prime (still locked), the seven archetype set, the two-experience reveal architecture.
+
+Source: 4 May business incorporation session + 5 May three sessions (off-ramp audit, must-list ship, CD markdown re-derive). Specific commits: e0c55ec, bd08612, 93329e2, 2c31abe, af1ce20, 0d3177c, plus the off-ramp audit document at 720b58b. Follow-up: prod Supabase migration deployment remains a launch blocker (`20260505140000_create_handle_new_user_trigger.sql` committed but not yet applied to `jsrscopoddxoluwaoyak`). Three device tests deferred to mock-first cycle: motion-gate behaviour, sign-out flow end-to-end, signup-creates-both-rows verification.
+
+---
+
+### 29 April 2026 — Security audits SEC-AUDIT-03 and SEC-AUDIT-04 closed; observability region facts corrected
+
+Both P0 security audits specified on 8 April closed across the 29 April session.
+
+**SEC-AUDIT-03 (Sentry beforeSend PII scrubbing) closed at `9738221`.** Recursive walker covers six spec-defined fields plus event.message, event.tags, event.fingerprint, event.transaction. Three documented deviations from the 8 April spec, each with rationale: `__DEV__` ternary kept (env-var migration deferred to Sprint 4 to avoid scope creep on a security-critical commit), postcode regex extended to full postcodes with inward part rather than district-only (district-only produced false positives on internal task IDs like SEC-AUDIT-04), coverage extended beyond six named fields to include event.transaction (testing surfaced URL-shaped transaction names containing PII). Verification used a `__DEV__`-guarded inline test button on the Home screen — the separate test route approach was abandoned after significant friction with deep-link navigation on Windows + physical device. Dashboard verification confirmed all three scrub patterns visible in Sentry issue REACT-NATIVE-6.
+
+**Observability region facts corrected.** Sentry org `cornr-technologies` is on the **US region**, not EU as memory previously claimed. SENTRY-EU-MIGRATION captured P1 (cross-region migration not supported by Sentry; needs resolution path before TestFlight). SENTRY-GEO-IP captured P2 (IP geolocation enrichment is active server-side in Sentry, bypassing `beforeSend` — has to be disabled at organisation level, not via SDK). Old `nook-technologies-27` US org also exists; deletion deferred to Sprint 4 T-RENAME-1..8.
+
+**SEC-AUDIT-04 (PostHog person_profiles + identify/reset) closed at `7768c70`.** Implementation across five files. SDK deviation documented: `posthog-react-native` uses `personProfiles` (camelCase), not `person_profiles` (snake_case) as the web SDK spec assumed. PostHog confirmed genuinely EU (`eu.posthog.com`, project ID 142615). HOME-SIGNOUT-01 reclassified during this audit from regression to P1 not-yet-shipped (sign-out hook existed in `useAuth.ts:46` but had zero UI call sites — missing since day one). Anonymous browsing sub-check passed. Supabase email validation rejects .test TLDs (MX validation, not just format) — Gmail plus-alias pattern (`daryll.cowan+auditNN@gmail.com`) is the workaround for test-user creation via app signup.
+
+What did NOT change from these audit closures: any product decision, any architecture decision, the existing test users `test-a@cornr.test` and `test-b@cornr.test` (those exist via direct migration seeding, not signup; the .test TLD restriction only affects signup-via-app).
+
+Source: 25 April + 29 April sessions across two-day implementation + verification cycle. Per R-25, this entry records the deviations and corrections — what was specified vs what shipped — not the implementation work itself. Follow-ups: SENTRY-EU-MIGRATION P1 in `docs/operations/security.md`, SENTRY-GEO-IP P2 in same, three test-account-deletion items captured as MC tasks.
+
+---
+
+### 25 April 2026 — Workflow infrastructure consolidated: lib/log, R-25 through R-32, Testing & Debugging Discipline
+
+A workflow upgrade install patched three workflow surfaces in a single session, producing durable infrastructure that governs how every subsequent build session runs.
+
+**Diagnostic.** Five friction patterns identified across recent sessions: (1) acceptance criteria absent or vague in Claude Code prompts (Claude Code declares done before reachability is verified), (2) unstructured logs producing high-noise low-signal output (raw `console.log` without task-ID prefix or context), (3) Expo SDK 54 fragility surfaces (Reanimated v3 vs v4 mismatch, peer dependency drift, silent TypeScript failures killing Metro), (4) the "compiles but doesn't run" gap (Claude Code's Done-when satisfied; user's flow still broken), (5) Supabase log fragmentation across multiple surfaces (Edge Function logs, Postgres logs, dashboard, CLI — no unified view).
+
+**Three artefacts shipped.**
+- `src/lib/log.ts` — tagged logger wrapper, ~30 lines, zero new dependencies. Uses `createLogger(tag)` returning `{info, warn, error, debug}` methods that prefix every output with `[<task-id>]` for grep. Auto-stringifies object payloads. Replaces raw `console.log` for any new code; existing raw calls migrate opportunistically when the file is touched.
+- Section 13 patched with R-25 through R-32. R-25 (acceptance criteria mandatory in every Claude Code prompt). R-26 (logging convention named in build prompts). R-27 (handover prompts must declare unverified surfaces). R-28 (critique gate enforces verifiability, not elegance). R-29 (scope ceiling per Claude Code prompt: one observable change). R-30 (Expo SDK 54 fragility surfaces flagged in prompts). R-31 (RLS-touching prompts require dual-role verification). R-32 (standing prompt prefix for build sessions: "two-paste pattern v2").
+- CLAUDE.md gained a Testing & Debugging Discipline section: banned patterns, mandatory self-test checklist before declaring done, debugging escalation order, RLS dual-role verification snippet.
+
+**Explicitly out of scope and not built.** No Jest. No Husky. No custom Claude Code subagents. No logger library dependency. No pgTAP RLS suites. The diagnostic identified these as solutions Cornr would over-invest in at current stage; the three shipped artefacts deliver the highest-leverage subset.
+
+**One observation banked, deferred.** The R-25..R-32 install applies to Claude Code (build-side) discipline. Claude.ai (planning-side) failures — the MC artefact unreachability, off-ramp blindness, path-verification-in-flight, panel-discipline drift — are not covered. A parallel "R-33..R-N for planning sessions" was flagged as owed; deferred to a future workflow-upgrade session. (Note from 6 May canonical sync: this deferral was partially addressed by R-33..R-37 in this sync, though R-33..R-37 are domain rules not pure planning-discipline rules. A dedicated planning-discipline workflow upgrade may still be warranted.)
+
+Source: 25 April 2026 — workflow upgrade audit + install session. Diagnostic + R-25..R-32 patch + CLAUDE.md section landed in a single session arc per the documented two-paste install pattern. Per R-25, this canonical entry records the *why* (the five friction patterns) and the *decision* (three artefacts, six things explicitly NOT built); the implementation specifics live in the install session conversation and in the artefacts themselves.
+
+---
+
+### 24 April 2026 — TestFlight architectural roadmap; REVEAL-1B shipped to main as the first item
+
+A LARGE/STRATEGIC architectural critique on 24 April (10 personas, 3 rounds, with external 2026 ecosystem research on RN/Expo/Supabase/AI-assisted-code failure modes) produced a sequenced eight-item roadmap from current state to TestFlight. REVEAL-1B (the first major item) shipped to main the same evening.
+
+**Architectural finding.** Cornr is not a "vibe-coded app" in the failure-mode sense the wider 2026 industry discourse warns about. Discipline rails (canonical, critique gate, two-paste pattern, voice gate, Stale Pattern Gate) and foundational architectural decisions (NativeWind out, default-deny RLS, JWT at every Edge Function, EU residency, expo-secure-store, no client-side API keys, observability wired in Sprint 1) put Cornr ahead of the failure-mode pattern. Risk profile is the inverse: specific, named, fixable now, with a sequence.
+
+**P0 items before S3-T1A (recommend-products Edge Function).**
+- Edge Function golden-path Deno test asserting input shape, output shape, no-PII in payload, all rationales pass voice-gate, and `cache_control: {type: "ephemeral"}` is set (mechanically enforces R-16 prompt caching). Estimated ~3h.
+- KI-05 dual-file parity pre-commit hook fails commit when `src/content/archetypes.ts` and `supabase/functions/_shared/archetypes.ts` diverge on shared keys. Estimated ~1h. Closes the drift loop that already produced one regression on `accentColour` (20 April).
+- Allow-list input validation at Edge Function boundary. In-scope for S3-T1A build, not a separate task.
+
+**P0 items before mock-first runs.**
+- Prod Supabase migration catch-up — close the 3-4 week staging-vs-prod gap currently flagged as a launch blocker. Three independent panel personas named this as the highest-probability cause of meeting-timeline slippage. Estimated 4-6h once started.
+- Edge Function rollback procedure documented and rehearsed (one-command rollback, practiced once before launch). Estimated 30min.
+
+**P0 item before S2-T5 (Profile retake) ships.**
+- Retake rate-limit enforcement Edge Function: server-side check on `engagement_events` for `archetype_retake_started` count in trailing 30-day window. Required for both rewrite-loop data integrity and GDPR purpose-limitation defensibility. Estimated 2h.
+
+**P1 items before TestFlight submission.**
+- GitHub Actions CI runner (npm run check on every PR; not present at time of this decision).
+- New Architecture migration plan as a canonical entry (Expo SDK 55 will force the migration; SDK 54 currently the target).
+
+**REVEAL-1B shipped same evening.** Two-experience reveal architecture (essence first-visit, depth on return-visit, share card production-tested on phone). Ships journey_stage and home_status DB columns, signed-in-no-profile redirect fix. Six commits to main: b6721ea (feat), 238643c (routing fix), 8df70d5 (auth redirect), 8a7e06c (DB columns), 588c0c9 (regression fixes from phone test), 7978697 (handover). Three follow-ups captured: TIER-2-EDITS, CUTOVER-REVEAL-1B, CLEANUP-RESULT-HEX. REVEAL-1B was the queued 12h build that had been parked through three earlier sessions; pressure to ship before May meeting (live-app demo per 22 April reframe) brought it forward.
+
+What did NOT change: the existing canonical decisions on RLS, EU residency, NativeWind removal, archetype methodology. The architectural deep-dive validated the existing posture rather than amending it; the eight items are gaps, not contradictions.
+
+Source: 24 April 2026 — LARGE/STRATEGIC critique panel + same-evening REVEAL-1B implementation session. External research included Lightrun's 2026 AI engineering report (43% of AI-generated code changes require manual debugging in production post-QA), Expo SDK 55 forced New Architecture migration, Supabase first-party CI testing pattern for Edge Functions. Follow-ups: each P0/P1 item is tracked in MC and `docs/operations/security.md`; this canonical entry records the strategic shape, not the per-item implementation status.
+
+---
+
+### 22 April 2026 — Commercial thesis stress-tested vs Glassette evidence; May meeting format reframed to live-app demo
+
+Dan's reply to the kill-it questions arrived on 22 April. The 22-voice adversarial panel was restaged to teardown his answers against Cornr's commercial thesis. The most important data point in Dan's letter was not in his bet-by-bet responses but in the unsolicited opening: Glassette's forward business model is 95% brand-side revenue and 5% consumer-side. They went into a taste-led platform with the same consumer-WTP assumption Cornr's Pro tier rests on, ran the experiment for four years, and pivoted. Their pivoted business has effectively zero recurring revenue from consumer-side monetisation.
+
+The thesis update: Cornr's commercial mix in v1 stays as currently locked — affiliate-primary, brand pilot at 2-5K users (R-4), no consumer subscription. Cornr Pro is deferred until consumer willingness-to-pay is empirically validated in-app, post-launch. The brand pilot threshold (2-5K users) and AI-native commercial positioning (R-11) are reaffirmed by Dan's evidence rather than weakened. Where Dan's evidence pulls hardest is against the long-tail Cornr Pro hypothesis: a four-year adjacent experiment by an operator with similar audience and similar curation thesis suggests UK home-style consumers do not pay for curation at scale. v1 must not be priced on a Pro assumption that hasn't been validated.
+
+The meeting format also shifted as a consequence. Until 22 April, the Dan meeting was framed as a thesis-led conversation with deck and financial model as primary deliverables. Dan's reply made clear he expects to *see the product*, not pitch on slides. Meeting format reframed to live app demo plus talk track, with a slim 4-5 slide deck as backup for anything the live demo cannot show (commercial model, financial projection, v2 Digital Home render, TAM). This compresses Dan-track scope from ~16h to ~7-9h: slimmer deck (~3h), financial 1-pager (~3h), Replicate render of v2 Digital Home as the single visual backstop (~3h). DAN-3 (illustrative Curator segment report) and DAN-4 (share card visual mockup) collapse into the live demo if it works. DAN-5 (mock-first results) ships with the deck if mock-first has run by meeting date; if not, drops cleanly without restructuring.
+
+The meeting-format shift has one downstream consequence: REVEAL-1 moves from "may not ship before May" to "must ship before May." The reveal experience is the single most demonstrable expression of Cornr's archetype thesis, and a pub demo without it would force back to slide-mode anyway. Apple Developer enrolment also became strategically urgent — DUNS clock plus Apple enrolment plus EAS production build plus mock-first plus any further build before Dan is a tight sequence.
+
+One risk worth carrying forward: a live app demo in a pub has a failure mode the deck does not. Network drop, Haiku call failure, reveal glitch — all visible to a CEO opposite. Stress-test the demo path end-to-end on actual mobile data (not home wifi) at least twice before the meeting, and have the 4-5 slide backup pulled up on the phone ready to open if needed.
+
+What did NOT change: archetype methodology, the locked archetype set (7 archetypes, hybrid naming), entry-point D-prime decision, affiliate-primary monetisation model, brand pilot timing at 2-5K users. Those survived Dan's pressure-test. The change is exclusively in the consumer-subscription assumption (deferred until validated) and the meeting format (live demo over slides).
+
+Source: 22 April 2026 — restaged 22-voice adversarial panel against Dan's reply. Panel format per canonical Section 9 LARGE/STRATEGIC sizing. Dan's reply preserved in project knowledge as cornrglassetteintelligence.pdf. Follow-ups: REVEAL-1 priority elevated (REVEAL-1B shipped 24 April per next entry below); Apple Developer enrolment timeline tightened; DAN-1/DAN-2 deliverables rescoped per meeting format reframe.
+
+---
+
 ### 20 April 2026 (evening) — Archetype v3 content shipped; lexicon architecture formalised as R-24
 
 Seven archetype descriptions v3 landed on main as 6d3e127. Four-component structure per the morning's writing brief (essence, observation, sensoryAnchor, behaviouralTruth), plus motifTooltip and userLexicon. Type definition on Description gained motifTooltip: string and userLexicon: string[] as additive-only changes (no renames, preserves every other field). Per-archetype version integers bumped. Merged fast-forward after fresh-head review and 10-voice ship-or-revise panel (convergence 10/10 ship).
