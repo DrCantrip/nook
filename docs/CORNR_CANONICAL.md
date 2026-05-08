@@ -1,9 +1,9 @@
 # Cornr Canonical Context
 
-**Last updated:** 20 April 2026 (late evening — fallback reveal copy shipped on main as 4907e4d, dual-file mirror to supabase/functions/_shared/; archetype v3 ship and R-24 retained from prior evening entry)
+**Last updated:** 6 May 2026 (afternoon — canonical sync covering 22 April through 6 May 2026: commercial thesis stress-test, TestFlight architectural roadmap, workflow infrastructure consolidated, security audits closed, pre-mock-first must-list shipped, business incorporated, brand presentation crystallised)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: 5ed5103 -->
+<!-- CANONICAL-SHA: 2185b7e -->
 <!-- LAST-SYNCED-PK: c86d6e3 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
