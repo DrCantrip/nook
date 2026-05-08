@@ -3,7 +3,7 @@
 **Last updated:** 20 April 2026 (late evening — fallback reveal copy shipped on main as 4907e4d, dual-file mirror to supabase/functions/_shared/; archetype v3 ship and R-24 retained from prior evening entry)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: c86d6e3 -->
+<!-- CANONICAL-SHA: 5ed5103 -->
 <!-- LAST-SYNCED-PK: c86d6e3 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
@@ -79,7 +79,7 @@ Supersedes any prior synthetic persona artefact (per R-9).
 
 Accent palette shifted from 2025 mocha-brown (hue ~29°) toward 2026 terracotta (hue ~16-21°), backed by Lick and Farrow & Ball 2025-2026 UK paint trend data. accent #94653A→#9E5F3C, accent-surface #B28760→#BE7458, accent-light #E8D4BC→#F0D8C0, accent-dark #9B7350→#965E40. All WCAG ratios maintained or improved. Error shifted redder (#AC5342→#A84B42) for 16.1° hue separation from warmer accent.
 
-Icon background established as dedicated token #C4785A (warm terracotta), separate from accent-surface. Icon concept: "cornr" serif wordmark nested inside organic corner mark on terracotta background.
+Icon background established as dedicated token #C4785A (warm terracotta), separate from accent-surface. Icon concept: "Cornr" serif wordmark nested inside organic corner mark on terracotta background.
 
 Four archetype colours revised for style territory authenticity: Curator #2E5A4B→#5C6B4A (teal→olive, MCM fix), Nester #4A7C8A→#5A8A94 (warmer coastal), Storyteller #7A6B4A→#8A6550 (khaki→warm sienna), Urbanist #5A5A6B→#5E5A68 (warmer slate). Maker, Minimalist, Romantic unchanged. Archetype versions bumped for changed archetypes.
 
@@ -116,7 +116,7 @@ Graduated intensity model: reveal screen 100%, share card 100%, home tab ~40%, p
 
 Typography drama on reveal: DM Sans Regular for context lines, Lora-SemiBold 48px for archetype name, NewsreaderItalic 28px for behavioural truth (largest text on screen). The truth is the product moment.
 
-Share card redesign: cornr wordmark at top, archetype name, style territory, behavioural truth as the headline (not the essence line), essence as secondary. No URL until App Store listing is live.
+Share card redesign: Cornr wordmark at top, archetype name, style territory, behavioural truth as the headline (not the essence line), essence as secondary. No URL until App Store listing is live.
 
 Mercedes feedback (first real user, 15 April): identity hook landed ("ENTJ vibe"). Style territory lost ("MCM got a bit lost, mostly behavioural anecdote"). Known gap. Planned resolution: lookbook panel in Phase 3.
 

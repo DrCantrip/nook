@@ -342,3 +342,18 @@ dev sign-out button.
   on each so the next `npm run docs:tokens` produces editorial-rich
   rows. Trivial fix; captures code-side documentation debt.
   Source: DESIGN-TOKENS-CANONICAL-SOT task, 6 May 2026.
+- **REPO-RENAME-CORNR (P3):** GitHub repository rename
+  `DrCantrip/nook` → `DrCantrip/cornr`. GitHub-side action only
+  (settings → rename, plus verifying redirects, webhooks, any CI
+  references, and updating local remotes via
+  `git remote set-url origin git@github.com:DrCantrip/cornr.git`).
+  Out of Claude Code's scope. Should land before TestFlight to
+  avoid post-launch link drift.
+  Source: ICON-CAPITALISATION-CASCADE task, 6 May 2026.
+- **PACKAGE-JSON-NAME-RENAME (P3):** Change `package.json` `"name"`
+  field from `"nook"` to `"cornr"`. Lowercase per npm package
+  naming convention. Trivial change but should land paired with
+  REPO-RENAME-CORNR to minimise churn — the npm name and repo
+  name don't have to match, but coupling them avoids the
+  "why is the package still called nook?" question forever.
+  Source: ICON-CAPITALISATION-CASCADE task, 6 May 2026.
