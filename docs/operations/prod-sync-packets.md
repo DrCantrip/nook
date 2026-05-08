@@ -225,14 +225,6 @@ VALUES ('20260407132051', 'bridge_sprint_data_architecture');
 COMMIT;
 ```
 
-> **pg_cron prerequisite:** Packet 2 calls `cron.schedule` and
-> `cron.unschedule`. The `pg_cron` extension must be enabled on prod
-> (Database → Extensions → enable `pg_cron`). It is enabled on staging.
-> The `cron.unschedule('purge-anonymous-sessions')` line will error if no
-> such job exists on prod yet — if so, comment it out and re-run the
-> packet, then add the new schedule. Confirm via `SELECT * FROM
-> cron.job;` before applying this packet.
-
 Verification (run separately AFTER COMMIT):
 
 ```sql
