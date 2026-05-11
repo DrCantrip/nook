@@ -287,17 +287,18 @@ dev sign-out button.
   any new sign-up path that bypasses the trigger. Low priority —
   post-launch.
   Source: SIGNUP-PUBLIC-USERS-SYNC task, 5 May 2026.
-- **LR-PROD-SYNC (P0 reminder, not new):** The
-  `20260505140000_create_handle_new_user_trigger.sql` migration is
-  part of the production deployment bundle. Production project
-  (`jsrscopoddxoluwaoyak`) was empty at investigation time on 5 May
-  2026 (0 auth.users, 0 public.users, 0 triggers). This migration
-  must run on production BEFORE any TestFlight user signs up — without
-  it, every TestFlight signup will silently drop consent flags and
-  journey_stage exactly as staging did pre-fix. The migration includes
-  a backfill that is no-op on prod (no stranded rows) but the
-  trigger + FK are essential. File this against LR-PROD-SYNC.
-  Source: SIGNUP-PUBLIC-USERS-SYNC task, 5 May 2026.
+- **LR-PROD-SYNC (RESOLVED, 9 May 2026):** All six staging migrations
+  applied to production (`jsrscopoddxoluwaoyak`) via dashboard SQL
+  Editor on 9 May 2026 using the packets in
+  `docs/operations/prod-sync-packets.md`. Clean run, no errors, no
+  rollback. Post-execution verification passed: schema_migrations 6
+  rows matching staging exactly, public schema 10 tables, public.users
+  14 columns, `on_auth_user_created` trigger live on auth.users.
+  SIGNUP-PUBLIC-USERS-SYNC closed at the prod side — `handle_new_user`
+  trigger + `users_id_fkey` FK now enforce the auth↔public sync on
+  production. See run log in prod-sync-packets.md.
+  Source: SIGNUP-PUBLIC-USERS-SYNC task, 5 May 2026; LR-PROD-SYNC
+  execution, 9 May 2026.
 - **REVEAL-FAILURE-TELEMETRY (P2):** Emit PostHog events on reveal
   failure and busy-branch transitions: `reveal_failure` with
   `{screen, retry_count}` payload, and `reveal_busy_shown` when the

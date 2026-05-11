@@ -656,3 +656,37 @@ After all six packets apply, prod's `supabase_migrations.schema_migrations`
 will be a faithful copy of staging's — including the quirk that two of the
 `name` values still carry their original filename-timestamp prefix
 (staging artefact, kept for parity).
+
+---
+
+## Run log
+
+Applied: 9 May 2026
+Operator: Daryll (via Supabase dashboard SQL Editor, manual paste)
+Target: jsrscopoddxoluwaoyak (nook-production)
+
+Pre-flight:
+- All 6 public tables row count = 0
+- auth.users count = 0
+- pg_cron jobs purge-anonymous-sessions + purge-places-cache
+  confirmed present (from 16 March schema)
+- Rollback anchor: scheduled backup 08 May 2026 09:25:08 UTC
+
+Packets applied in order, each verified via schema_migrations
+row count after commit:
+1. add_consent_events_email_opt_in_rate_limit       ✓
+2. bridge_sprint_data_architecture                  ✓
+3. s2_t3b_archetype_scores_and_version_logging      ✓
+4. 20260421000000_reveal_1b_timestamps              ✓
+5. 20260424130000_users_journey_home_status_member  ✓
+6. create_handle_new_user_trigger                   ✓
+
+Post-execution verification:
+- schema_migrations: 6 rows, versions match staging exactly
+- public schema: 10 tables (original 6 + consent_events,
+  editorial_content, archetype_history, engagement_events)
+- public.users: 14 columns (7 original + 7 added)
+- auth.users trigger on_auth_user_created present
+
+No errors during execution. No rollback required.
+SIGNUP-PUBLIC-USERS-SYNC closed at prod side.
