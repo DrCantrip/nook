@@ -3,7 +3,7 @@
 **Last updated:** 6 May 2026 (afternoon — canonical sync covering 22 April through 6 May 2026: commercial thesis stress-test, TestFlight architectural roadmap, workflow infrastructure consolidated, security audits closed, pre-mock-first must-list shipped, business incorporated, brand presentation crystallised)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: 2185b7e -->
+<!-- CANONICAL-SHA: 16d2933 -->
 <!-- LAST-SYNCED-PK: 2185b7e -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
@@ -30,6 +30,18 @@
 ## Section 0 — Strategic Decisions Log
 
 Every strategic decision that shapes Cornr's product, scope, or architecture lives here. Append-only. Each entry: date, decision, alternatives considered, rationale, source.
+
+### 9 May 2026 — LR-PROD-SYNC closed: production migration history brought to staging parity
+
+The six migrations staging accumulated between 7 April and 5 May 2026 were applied to production (`jsrscopoddxoluwaoyak`) on 9 May 2026 via the dashboard SQL Editor, using the pre-prepared packets in `docs/operations/prod-sync-packets.md`. Production had carried the original 16 March six-table schema with zero rows since creation; the `supabase_migrations.schema_migrations` bookkeeping table did not exist (the Supabase CLI auto-creates it, but this run was dashboard-only). Packet 1 bootstrapped that table; packets 1–6 then applied each migration verbatim and recorded the matching `schema_migrations` row using staging's exact `version` values, so production's migration history is now a faithful copy of staging's. Clean run — no errors, no rollback. Post-execution verification passed: 6 migration rows matching staging exactly, 10 public tables (original 6 + consent_events, editorial_content, archetype_history, engagement_events), 14 columns on `public.users` (7 original + 7 added), `on_auth_user_created` trigger live on auth.users. SIGNUP-PUBLIC-USERS-SYNC is closed at the production side: the `handle_new_user` SECURITY DEFINER trigger and the `users_id_fkey` FK now enforce the auth↔public sync on production, so the consent-flag-drop bug that affected staging pre-fix cannot recur on TestFlight.
+
+**Two workflow observations banked** (held below R-N threshold per the one-instance-is-anecdote rule; promote on recurrence):
+- *L-E (candidate R-38, 9 May 2026): tech debt surfaced during execution gets fixed in the same session, not deferred.* Discovery plus fix in one pass. Demonstrated by the Packet 2 cron callout removal during LR-PROD-SYNC prep — the original packet carried a warning that `cron.unschedule('purge-anonymous-sessions')` might error if no such job existed on prod; a source check confirmed the 16 March schema already scheduled both pg_cron jobs, so the callout was obsolete and was stripped in the same session rather than left as a follow-up.
+- *L-F (candidate R-39, 9 May 2026): operational paste material is delivered as a single fenced code block, no narration, no steps interleaved.* Reduces cognitive load mid-execution. Demonstrated during the LR-PROD-SYNC packet sequence — each packet's SQL was printed as one clean `sql` fence on request, with framing, verification, and rollback notes kept outside the block.
+
+Source: LR-PROD-SYNC execution, 9 May 2026 (Daryll, dashboard SQL Editor). Packets prepared at `2943019`, cleanup at `a8f29a9`. Run log in `docs/operations/prod-sync-packets.md`.
+
+---
 
 ### 6 May 2026 — Brand presentation crystallised: icon master locked, capitalisation cascade, design tokens auto-regenerate
 
@@ -855,7 +867,11 @@ One editorial card on the Home tab. Image-led, headline overlay, single CTA. Man
 
 ---
 
-## Section 6 — Database Schema (v1, 9 tables)
+## Section 6 — Database Schema (10 tables, post-LR-PROD-SYNC, prod-mirror)
+
+**Current 10 public tables (staging and prod, post-LR-PROD-SYNC 9 May 2026):**
+- Original 6 (16 March schema): `users`, `style_profiles`, `rooms`, `products`, `wishlisted_products`, `places_cache`
+- Bridge-sprint additions (7–24 April migrations): `consent_events`, `editorial_content`, `archetype_history`, `engagement_events`
 
 Tables added 7 April 2026 in strategic foundation pack: `archetype_history`, `engagement_events`, `editorial_content`. Existing tables with new columns: `users`, `rooms`, `wishlisted_products`.
 
@@ -873,6 +889,10 @@ Tables added 7 April 2026 in strategic foundation pack: `archetype_history`, `en
 | `trades_waitlist` | `id`, `email`, `consent_at`, `retention_until` | Insert for authenticated, select own only |
 
 **Default-deny RLS on every table. CASCADE DELETE on all user-linked FK constraints.**
+
+**RLS-DRIFT-CONSENT-EVENTS (open P2, 9 May 2026):** canonical INSERT policy for `consent_events` is `WITH CHECK (auth.uid() = user_id OR user_id IS NULL)`. Live staging policy is `"Service role can insert consent events"` `WITH CHECK true` for role `public` — not in any committed migration. Provenance under investigation; resolution will either restore canonical intent or document the loosened intent.
+
+**Vestigial `gen_random_uuid()` default on `public.users.id` (candidate-for-removal):** predates the `handle_new_user` trigger which now owns row creation from `auth.users(id)`. A stray bare `INSERT` would get a random id that FK-fails. To be dropped as part of the SIGNUP-PUBLIC-USERS-SYNC ADR if scope permits.
 
 ### pg_cron jobs (4 total)
 
@@ -1685,6 +1705,22 @@ The 6 May SoT pipeline first-run hit the gate (>5% lines changed plus 50 hex hit
 
 Source: 6 May 2026 — DESIGN-TOKENS-CANONICAL-SOT first-run regeneration.
 
+### Tech debt fix-in-session, not deferred (R-38)
+
+When tech debt surfaces during execution of a feature or fix, fix it in the same session unless the fix expands scope by >50%. Deferred tech debt accumulates into discipline-pack-shaped problems.
+
+Graduated from L-E watch-list candidate, panel v2 9 May 2026. Demonstrated by the Packet 2 cron callout removal during LR-PROD-SYNC prep — the original packet carried a warning that `cron.unschedule('purge-anonymous-sessions')` might error if no such job existed on prod; a source check confirmed the 16 March schema already scheduled both pg_cron jobs, so the callout was obsolete and was stripped in the same session rather than left as a follow-up.
+
+Source: 9 May 2026 — LR-PROD-SYNC execution.
+
+### Operational paste as single fenced block (R-39)
+
+When delivering operational content meant for paste-and-execute (SQL packets, shell sequences, prompts), deliver as a single fenced code block without narration interleaved between commands. Narration goes above or below the block, never within.
+
+Graduated from L-F watch-list candidate, panel v2 9 May 2026. Reduces cognitive load mid-execution. Demonstrated during the LR-PROD-SYNC packet sequence — each packet's SQL was printed as one clean `sql` fence on request, with framing, verification, and rollback notes kept outside the block.
+
+Source: 9 May 2026 — LR-PROD-SYNC execution.
+
 ---
 
 ## Section 14 — Design System
@@ -1831,6 +1867,8 @@ The reveal screen (first-visit and return-visit, per 14.7) fault-tolerates Edge 
 **Reveal-busy guard**: while the rationale call is in flight, the share button is disabled (share would otherwise capture mid-load state). Share re-enables on success or final abort.
 
 Source: 5 May 2026 — REVEAL-RETRY-STATE design + implementation. Architecture co-designed with reveal-error copy work (REVEAL-ERROR-COPY at e0c55ec).
+
+**KI-02 stamp-ritual exemption** — design gap deferred to dedicated session (KI-02 currently treats stamp-only commits as if they required a content edit). See MC backlog `KI-02-STAMP-RITUAL-EXEMPTION`.
 
 ---
 
