@@ -3,8 +3,8 @@
 **Last updated:** 6 May 2026 (afternoon — canonical sync covering 22 April through 6 May 2026: commercial thesis stress-test, TestFlight architectural roadmap, workflow infrastructure consolidated, security audits closed, pre-mock-first must-list shipped, business incorporated, brand presentation crystallised)
 
 <!-- CONTRACT-VERSION: 1 -->
-<!-- CANONICAL-SHA: 16d2933 -->
-<!-- LAST-SYNCED-PK: 2185b7e -->
+<!-- CANONICAL-SHA: 9859cd5 -->
+<!-- LAST-SYNCED-PK: 9859cd5 -->
 
 > Drift warning for future sessions: if CANONICAL-SHA and LAST-SYNCED-PK differ, the Project Knowledge copy is STALE. Trust git. Run /sync-canonical after any re-upload.
 
