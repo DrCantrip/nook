@@ -25,7 +25,7 @@ Discipline-pack work day. Step 4 closed (stamp-bump, Phase 1.0 stderr probe, par
 
 ## SIGNUP runtime smoke status: NOT RUN
 
-The `+audit15` / `+audit16` staging signup verification was not executed at session close. SIGNUP-PUBLIC-USERS-SYNC is provisionally-closed on staging based on synthetic INSERT verification (run in-session by CC against staging via `mcp__supabase__apply_migration` + smoke INSERT + cleanup). Full runtime closure requires the phone-side `+audit15`/`+audit16` flow.
+The `+audit15` / `+audit16` staging signup verification was not executed at session close. SIGNUP-PUBLIC-USERS-SYNC has had NO runtime verification on staging. What was verified: migration applied via `mcp__supabase__apply_migration` and the new function body confirmed via `pg_get_functiondef` to project `email_marketing_opt_in` and `audience_data_opt_in` from `raw_user_meta_data` via `COALESCE(...::boolean, false)`. The runtime path — `auth.signUp` → `handle_new_user` trigger fires → `public.users` row written with consent flags — has not been exercised. Function-body inspection confirms the migration CAN project consent flags; it does NOT confirm the trigger fires correctly on signup. LANE PRE (phone-side `+audit15`/`+audit16` flow) is the first runtime exercise of the path.
 
 **Smoke procedure (5 min):**
 
