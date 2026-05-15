@@ -33,12 +33,25 @@ export function useAuth() {
 
   const isAnonymous = session?.user?.is_anonymous === true;
 
-  const signUp = (email: string, password: string) => {
+  const signUp = (
+    email: string,
+    password: string,
+    metadata?: Record<string, unknown>,
+  ) => {
     if (isAnonymous) {
-      // Upgrade anonymous user — preserves existing user_id and linked data
-      return supabase.auth.updateUser({ email, password });
+      // Upgrade anonymous user — preserves existing user_id and linked data.
+      // Metadata lands in user.user_metadata. Note: the AFTER INSERT trigger
+      // on auth.users does NOT fire on updateUser, so the public.users row
+      // for an anon-upgraded user keeps the consent flags it had at anon
+      // creation (i.e. false). See ADR-001 — anon-upgrade reconciliation
+      // is a follow-up.
+      return supabase.auth.updateUser({ email, password, data: metadata });
     }
-    return supabase.auth.signUp({ email, password });
+    return supabase.auth.signUp({
+      email,
+      password,
+      options: metadata ? { data: metadata } : undefined,
+    });
   };
 
   const signIn = (email: string, password: string) =>

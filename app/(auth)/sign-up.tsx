@@ -21,8 +21,10 @@ import { recordEvent } from "../../src/services/engagement";
 import { STRINGS } from "../../src/content/strings";
 import { colors, spacing, radius, typography } from "../../src/theme/tokens";
 import { useMotionPreference } from "../../src/hooks/useMotionPreference";
+import { createLogger } from "../../lib/log";
 
 const S = STRINGS.signUp;
+const log = createLogger("SIGNUP-PUBLIC-USERS-SYNC");
 
 function WhyWeAskExpander({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
@@ -81,7 +83,10 @@ export default function SignUpScreen() {
     setLoading(true);
     setSubmitted(true);
     try {
-      const { data, error: authError } = await signUp(email.trim(), password);
+      const { data, error: authError } = await signUp(email.trim(), password, {
+        email_marketing_opt_in: marketingOptIn,
+        audience_data_opt_in: audienceDataOptIn,
+      });
       if (authError) {
         setError(authError.message);
         return;
@@ -91,15 +96,8 @@ export default function SignUpScreen() {
       if (userId) {
         await identify(userId);
         try {
-          await Promise.resolve(
-            supabase
-              .from("users")
-              .update({
-                email_marketing_opt_in: marketingOptIn,
-                audience_data_opt_in: audienceDataOptIn,
-              })
-              .eq("id", userId)
-          );
+          // Consent flags propagated via raw_user_meta_data → handle_new_user trigger.
+          // See docs/adr/ADR-001-signup-consent-trigger-mirror.md.
           await Promise.resolve(
             supabase.from("consent_events").insert([
               {
@@ -130,6 +128,11 @@ export default function SignUpScreen() {
         }
       }
 
+      log.info("consent flags propagated via raw_user_meta_data", {
+        userId: data?.user?.id,
+        marketingOptIn,
+        audienceDataOptIn,
+      });
       setSuccess(S.checkEmail);
     } catch {
       setError(S.genericError);
