@@ -690,3 +690,162 @@ Post-execution verification:
 
 No errors during execution. No rollback required.
 SIGNUP-PUBLIC-USERS-SYNC closed at prod side.
+
+---
+
+# Follow-up packet 7 — SIGNUP-PUBLIC-USERS-SYNC consent propagation (15 May 2026)
+
+Solo follow-up to LR-PROD-SYNC. Not part of the 9 May six-packet batch. Ships the `handle_new_user` trigger body extension that landed on staging at `d0f5aef` (15 May 2026) and was runtime-verified on staging via LANE PRE the same day.
+
+## Packet metadata
+
+| Field | Value |
+|---|---|
+| Date prepared | 2026-05-15 |
+| Target project | `jsrscopoddxoluwaoyak` (nook-production) |
+| Migration file | `supabase/migrations/20260515120000_handle_new_user_consent_propagation.sql` |
+| Originating commit | `d0f5aef` — *fix(signup): consent flags via raw_user_meta_data + trigger, not client UPDATE* |
+| Staging version | `20260515093020` |
+| Staging name | `handle_new_user_consent_propagation` |
+| Gating | **LANE PRE PASS on staging** — `daryll.cowan+audit15@gmail.com` (both opt-ins TRUE) and `daryll.cowan+audit16@gmail.com` (both opt-ins FALSE), runtime-verified end-to-end client → `auth.users.raw_user_meta_data` → `handle_new_user` trigger → `public.users` with microsecond-matched `created_at` on both cases. Discriminator confirmed: client sends unchecked boxes as **explicit JSON `false`** (real boolean type, both keys present in `raw_user_meta_data`), not omitted keys. |
+| Execution | Dashboard SQL Editor, manual paste, Daryll-operated. Single transaction. |
+
+## Pre-execution verification (run first; paste output into run log)
+
+```sql
+-- Capture prod's current handle_new_user body BEFORE the change.
+-- Expected: the 5 May body that writes only (id, email, created_at).
+-- Save the returned text — it's the rollback artefact.
+SELECT pg_get_functiondef('public.handle_new_user'::regproc);
+
+-- Confirm prod's schema_migrations does NOT already have this version.
+-- Expected: zero rows.
+SELECT version, name
+FROM supabase_migrations.schema_migrations
+WHERE version = '20260515093020';
+
+-- Sanity: current row count on auth.users (gap-window check).
+-- Expected: 0 if TestFlight still gated. If non-zero, surface the gap window
+-- explicitly in the run log — those users got pre-fix trigger behaviour and
+-- their consent flags will be `false` regardless of what they chose.
+SELECT count(*) AS auth_users_count FROM auth.users;
+```
+
+## Migration packet
+
+> **Nested-transaction note** (same as Packet 6): the migration source file wraps its body in `BEGIN; ... COMMIT;`. Pasted inside the outer wrapper that records the schema_migrations row, it produces two harmless Postgres warnings (inner `BEGIN` → *there is already a transaction in progress*; outer `COMMIT` → *there is no transaction in progress*). Net effect: SQL all executes atomically. The inner block is commented out below to avoid the warnings entirely.
+
+```sql
+BEGIN;
+
+-- SIGNUP-PUBLIC-USERS-SYNC — extend handle_new_user to project consent flags
+-- Date: 15 May 2026
+-- See repo file supabase/migrations/20260515120000_handle_new_user_consent_propagation.sql for full header.
+--
+-- Replaces handle_new_user() body to additionally read email_marketing_opt_in
+-- and audience_data_opt_in keys from NEW.raw_user_meta_data, cast each to
+-- boolean (NULL-safe via COALESCE → false), and INSERT them into public.users
+-- alongside the existing (id, email, created_at) projection. Function
+-- signature unchanged. Existing trigger on_auth_user_created continues to
+-- invoke the function. Idempotent: CREATE OR REPLACE FUNCTION.
+
+-- (inner) BEGIN;
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+  RETURNS trigger
+  LANGUAGE plpgsql
+  SECURITY DEFINER
+  SET search_path = public, pg_temp
+AS $$
+BEGIN
+  INSERT INTO public.users (
+    id,
+    email,
+    created_at,
+    email_marketing_opt_in,
+    audience_data_opt_in
+  )
+  VALUES (
+    NEW.id,
+    NEW.email,
+    NEW.created_at,
+    COALESCE((NEW.raw_user_meta_data->>'email_marketing_opt_in')::boolean, false),
+    COALESCE((NEW.raw_user_meta_data->>'audience_data_opt_in')::boolean, false)
+  );
+  RETURN NEW;
+END;
+$$;
+
+-- (inner) COMMIT;
+
+-- Record migration as applied — staging's exact version + name for parity.
+INSERT INTO supabase_migrations.schema_migrations (version, name)
+VALUES ('20260515093020', 'handle_new_user_consent_propagation');
+
+COMMIT;
+```
+
+## Post-execution verification (run after COMMIT)
+
+```sql
+-- Confirm the new body landed.
+-- Expected: function body INSERTs id, email, created_at,
+-- email_marketing_opt_in, audience_data_opt_in with the two COALESCE
+-- expressions; SECURITY DEFINER and search_path preserved.
+SELECT pg_get_functiondef('public.handle_new_user'::regproc);
+
+-- Confirm the schema_migrations row.
+-- Expected: one row with version '20260515093020' and name
+-- 'handle_new_user_consent_propagation'.
+SELECT version, name
+FROM supabase_migrations.schema_migrations
+WHERE version = '20260515093020';
+
+-- Confirm the trigger is still wired to the (updated) function.
+-- Expected: AFTER INSERT ON auth.users, EXECUTE FUNCTION handle_new_user().
+SELECT pg_get_triggerdef(oid) AS trigger_def
+FROM pg_trigger
+WHERE tgname = 'on_auth_user_created';
+```
+
+The post-execution `pg_get_functiondef` output should match staging's verbatim (modulo Postgres's normalised whitespace — staging shows `SET search_path TO 'public', 'pg_temp'` after Postgres normalisation of the file's `SET search_path = public, pg_temp`). Staging body was verified via `mcp__supabase__execute_sql` from this preparation session and matches the function body in this packet.
+
+## Rollback
+
+If the post-execution verification surfaces a problem (function body differs from staging, trigger somehow dropped, schema_migrations row duplicated), restore the prior body by re-running the 5 May Packet 6 function block:
+
+```sql
+BEGIN;
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+  RETURNS trigger
+  LANGUAGE plpgsql
+  SECURITY DEFINER
+  SET search_path = public, pg_temp
+AS $$
+BEGIN
+  INSERT INTO public.users (id, email, created_at)
+  VALUES (NEW.id, NEW.email, NEW.created_at);
+  RETURN NEW;
+END;
+$$;
+
+DELETE FROM supabase_migrations.schema_migrations
+WHERE version = '20260515093020';
+
+COMMIT;
+```
+
+This restores production to the post-LR-PROD-SYNC state (Packet 6 body, no consent projection). No data rollback required — any rows inserted between apply and rollback retain their consent values (column values are valid; only the trigger's future behaviour changes).
+
+If TestFlight signups have started between apply and rollback, those users' consent flags are correctly recorded on `public.users` and remain so post-rollback — only the trigger's future inserts revert to the pre-fix shape.
+
+## Cross-check addendum to staging mapping
+
+Append to the cross-check table at the top of this document when Packet 7 lands:
+
+| Filename                                                                  | Version (staging) | Name (staging)                          |
+|---------------------------------------------------------------------------|-------------------|------------------------------------------|
+| `20260515120000_handle_new_user_consent_propagation.sql`                  | `20260515093020`  | `handle_new_user_consent_propagation`    |
+
+After this packet applies, prod's `supabase_migrations.schema_migrations` gains one row matching staging's `20260515093020` entry, bringing the total to seven migrations — the original six from LR-PROD-SYNC plus this follow-up.
