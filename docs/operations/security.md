@@ -77,12 +77,13 @@ that all PII appears as `[email scrubbed]`, `[uuid scrubbed]`, or
 ### Verification
 
 25 April 2026 — fired test event from `app/(app)/home.tsx` `__DEV__`-guarded
-button on staging. Captured in Sentry US issue REACT-NATIVE-6
-(cornr-technologies.sentry.io). Issue title and Stack Trace Error value
+button on staging. Captured in Sentry EU issue REACT-NATIVE-6
+(cornr-technologies.de.sentry.io). Issue title and Stack Trace Error value
 both confirmed all three scrub patterns: `[email scrubbed]`,
 `[uuid scrubbed]`, `[postcode scrubbed]`. Two events transmitted (button
 tapped twice in error), both scrubbed identically. Test button removed in
-same commit.
+same commit. Region reference corrected 16 May 2026 — see SENTRY-EU-MIGRATION
+closure note.
 
 ### Followups generated
 
@@ -90,13 +91,11 @@ same commit.
   This audit covers the React Native client only — Edge Functions in
   `supabase/functions/` may have their own Sentry init that needs the
   same `beforeSend` treatment.
-- **SENTRY-EU-MIGRATION (P1):** Sentry org `cornr-technologies` is on the
-  US region (`cornr-technologies.sentry.io`), not EU as memory and
-  canonical claim. Migration is non-trivial — Sentry does not support
-  cross-region migration. Options: accept and update canonical to reflect
-  US region; or recreate org in EU region and redirect DSN (requires
-  re-instrumenting and accepting loss of issue history). GDPR
-  implications either way. Decide before any public release.
+- **SENTRY-EU-MIGRATION (CLOSED, 16 May 2026):** CLOSED 16 May 2026 —
+  phantom issue. Sentry org verified EU-region (Data Storage Region =
+  European Union, DSN on .de.sentry.io Frankfurt) from the Sentry settings
+  page. The earlier US-region claim was a 7 Apr URL-slug inference error,
+  not a residency fact. No migration required.
 - **HOME-SIGNOUT-01 (P1):** Profile screen sign-out missing — observed
   during SEC-AUDIT-03 testing that sign-out is unreachable from Profile
   tab. Reclassified from HOME-REGRESSION-01 after SEC-AUDIT-04 audit
